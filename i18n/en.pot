@@ -5,38 +5,101 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-01-03T10:11:58.219Z\n"
-"PO-Revision-Date: 2026-01-03T10:11:58.220Z\n"
+"POT-Creation-Date: 2026-04-08T09:05:06.342Z\n"
+"PO-Revision-Date: 2026-04-08T09:05:06.342Z\n"
 
-msgid "ERROR"
-msgstr "ERROR"
+msgid "Navigation"
+msgstr "Navigation"
 
-msgid "Loading..."
-msgstr "Loading..."
+msgid "Dashboard"
+msgstr "Dashboard"
 
-msgid "Hello {{name}}"
-msgstr "Hello {{name}}"
+msgid "Overview"
+msgstr "Overview"
 
-msgid "Welcome to DHIS2 with TypeScript!"
-msgstr "Welcome to DHIS2 with TypeScript!"
+msgid "Reports"
+msgstr "Reports"
 
-msgid "Error"
-msgstr "Error"
+msgid "Powered by DHIS2"
+msgstr "Powered by DHIS2"
 
-msgid "Error loading the data elements"
-msgstr "Error loading the data elements"
+msgid "Climate Dashboard"
+msgstr "Climate Dashboard"
 
-msgid "ID"
-msgstr "ID"
+msgid "Welcome"
+msgstr "Welcome"
 
-msgid "Name"
-msgstr "Name"
+msgid "This section is coming soon."
+msgstr "This section is coming soon."
 
-msgid "Domain"
-msgstr "Domain"
+msgid "Connection error"
+msgstr "Connection error"
 
-msgid "Value Type"
-msgstr "Value Type"
+msgid "Key Climate Indicators"
+msgstr "Key Climate Indicators"
 
-msgid "Created by"
-msgstr "Created by"
+msgid "Climate Trends & Analysis"
+msgstr "Climate Trends & Analysis"
+
+msgid "Climate Trends Over Time"
+msgstr "Climate Trends Over Time"
+
+msgid "Chart View"
+msgstr "Chart View"
+
+msgid "Table View"
+msgstr "Table View"
+
+msgid "Select organization units and periods to view climate data"
+msgstr "Select organization units and periods to view climate data"
+
+msgid "Average Temperature"
+msgstr "Average Temperature"
+
+msgid "Total Precipitation"
+msgstr "Total Precipitation"
+
+msgid "Humidity Level"
+msgstr "Humidity Level"
+
+msgid "Temperature"
+msgstr "Temperature"
+
+msgid "Precipitation"
+msgstr "Precipitation"
+
+msgid "Humidity"
+msgstr "Humidity"
+
+msgid "Climate Overview"
+msgstr "Climate Overview"
+
+msgid "Live data"
+msgstr "Live data"
+
+msgid "Key Indicators"
+msgstr "Key Indicators"
+
+msgid "Current period values"
+msgstr "Current period values"
+
+msgid "Trends & Patterns"
+msgstr "Trends & Patterns"
+
+msgid "Last 12 months"
+msgstr "Last 12 months"
+
+msgid "Monthly Summary"
+msgstr "Monthly Summary"
+
+msgid "All indicators — last 12 months"
+msgstr "All indicators — last 12 months"
+
+msgid "Toggle fullscreen"
+msgstr "Toggle fullscreen"
+
+msgid "No data available"
+msgstr "No data available"
+
+msgid "No data"
+msgstr "No data"
