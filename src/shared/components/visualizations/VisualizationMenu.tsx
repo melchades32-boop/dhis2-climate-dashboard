@@ -1,0 +1,132 @@
+import { Button, FlyoutMenu, MenuItem, MenuSectionHeader, Popover } from '@dhis2/ui'
+import {
+    IconClock16,
+    IconDownload16,
+    IconFullscreen16,
+    IconLocation16,
+    IconMore16,
+} from '@dhis2/ui-icons'
+import { OrgUnitSelectorModal, PeriodSelectorModal } from '@hisptz/dhis2-ui'
+import { useRef, useState } from 'react'
+import { useFilters } from '@/shared/hooks/useFilters'
+
+interface VisualizationMenuProps {
+    onFullscreen: () => void
+    selectedOrgUnits?: string[]
+    selectedPeriods?: string[]
+    onOrgUnitChange?: (ids: string[]) => void
+    onPeriodChange?: (ids: string[]) => void
+}
+
+export function VisualizationMenu({
+    onFullscreen,
+    selectedOrgUnits: itemOrgUnits,
+    selectedPeriods: itemPeriods,
+    onOrgUnitChange,
+    onPeriodChange,
+}: VisualizationMenuProps) {
+    const menuRef = useRef<HTMLDivElement>(null)
+    const [menuOpen, setMenuOpen] = useState(false)
+    const [ouOpen, setOuOpen] = useState(false)
+    const [periodOpen, setPeriodOpen] = useState(false)
+
+    const { orgUnitIds, periodIds, setOrgUnitIds, setPeriodIds } = useFilters()
+    const isPerItem = onOrgUnitChange !== undefined || onPeriodChange !== undefined
+    const activeOrgUnits = isPerItem ? (itemOrgUnits ?? []) : orgUnitIds
+    const activePeriods = isPerItem ? (itemPeriods ?? []) : periodIds
+
+    function handleOuUpdate(selection: { orgUnits?: Array<{ id: string }> }) {
+        const ids = (selection.orgUnits ?? []).map((ou) => ou.id)
+        if (isPerItem) {
+            onOrgUnitChange?.(ids)
+        } else {
+            setOrgUnitIds(ids)
+        }
+        setOuOpen(false)
+    }
+
+    function handlePeriodUpdate(selected: string[]) {
+        if (isPerItem) {
+            onPeriodChange?.(selected)
+        } else {
+            setPeriodIds(selected)
+        }
+        setPeriodOpen(false)
+    }
+
+    return (
+        <>
+            <div ref={menuRef}>
+                <Button
+                    small
+                    secondary
+                    icon={<IconMore16 />}
+                    onClick={() => setMenuOpen((o) => !o)}
+                />
+            </div>
+
+            {menuOpen && menuRef.current && (
+                <Popover
+                    reference={menuRef.current}
+                    placement="bottom-end"
+                    onClickOutside={() => setMenuOpen(false)}
+                >
+                    <FlyoutMenu>
+                        <MenuSectionHeader label="View" />
+                        <MenuItem
+                            label="Full page"
+                            icon={<IconFullscreen16 />}
+                            onClick={() => {
+                                setMenuOpen(false)
+                                onFullscreen()
+                            }}
+                        />
+                        <MenuSectionHeader label="Filters" />
+                        <MenuItem
+                            label="Location"
+                            icon={<IconLocation16 />}
+                            onClick={() => {
+                                setMenuOpen(false)
+                                setOuOpen(true)
+                            }}
+                        />
+                        <MenuItem
+                            label="Period"
+                            icon={<IconClock16 />}
+                            onClick={() => {
+                                setMenuOpen(false)
+                                setPeriodOpen(true)
+                            }}
+                        />
+                        <MenuItem
+                            label="Download"
+                            icon={<IconDownload16 />}
+                            onClick={() => setMenuOpen(false)}
+                        />
+                    </FlyoutMenu>
+                </Popover>
+            )}
+
+            {ouOpen && (
+                <OrgUnitSelectorModal
+                    value={{
+                        orgUnits: activeOrgUnits.map((id) => ({ id, children: [] })),
+                    }}
+                    onUpdate={handleOuUpdate}
+                    onClose={() => setOuOpen(false)}
+                    hide={false}
+                />
+            )}
+
+            {periodOpen && (
+                <PeriodSelectorModal
+                    selectedPeriods={activePeriods}
+                    onUpdate={handlePeriodUpdate}
+                    onClose={() => setPeriodOpen(false)}
+                    hide={false}
+                    enablePeriodSelector
+                />
+            )}
+        </>
+    )
+}
