@@ -53,6 +53,41 @@ export function getOrgUnitSelectionFromIds(ous: string[]) {
     return orgUnitSelection
 }
 
+function extractPeriodIds(
+    view: MapConfig['mapViews'][number]
+): string[] {
+    const allDimensions = [
+        ...(view.columns ?? []),
+        ...(view.rows ?? []),
+        ...(view.filters ?? []),
+    ]
+    const fromDimensions = allDimensions
+        .filter(({ dimension }) => dimension === 'pe')
+        .flatMap(({ items }) => items.map(({ id }) => id))
+
+    if (!isEmpty(fromDimensions)) {
+        return fromDimensions
+    }
+
+    const relative = view.relativePeriods ?? {}
+    return Object.entries(relative)
+        .filter(([, enabled]) => enabled)
+        .map(([key]) =>
+            key.replace(/([A-Z])/g, '_$1').toUpperCase()
+        )
+}
+
+function extractOrgUnitIds(view: MapConfig['mapViews'][number]): string[] {
+    const allDimensions = [
+        ...(view.columns ?? []),
+        ...(view.rows ?? []),
+        ...(view.filters ?? []),
+    ]
+    return allDimensions
+        .filter(({ dimension }) => dimension === 'ou')
+        .flatMap(({ items }) => items.map(({ id }) => id))
+}
+
 export const MapVisualizer = memo(function MapVisualizer({
     mapConfig,
     setRef,
@@ -61,26 +96,31 @@ export const MapVisualizer = memo(function MapVisualizer({
 }: MapViewProps) {
     const thematicLayers = useMemo(() => {
         return mapConfig.mapViews
-            ?.filter((view) => view.layer.includes(MapLayerType.THEMATIC))
+            ?.filter((view) => view.layer === MapLayerType.THEMATIC)
             ?.map((view) => {
-                const dataItem = head(head(view.columns)!.items)
+                const dataItem = head(head(view.columns)?.items)
+                if (!dataItem) { return null }
+
+                const normalizedColorScale = view.colorScale?.toLowerCase()
+                const colorClass = normalizedColorScale
+                    ? getColorScale(normalizedColorScale)
+                    : undefined
+
                 return {
                     id: view.id,
                     enabled: true,
                     type: view.thematicMapType?.toLowerCase() ?? 'choropleth',
                     dataItem: {
-                        id: dataItem!.id,
-                        type: dataItem!.dimensionItemType,
+                        id: dataItem.id,
+                        type: dataItem.dimensionItemType ?? 'INDICATOR',
                         legendSet: view.legendSet?.id,
-                        displayName: view.displayName ?? dataItem?.name,
+                        displayName: view.displayName ?? dataItem.name,
                         legendConfig: {
                             scale: view.classes,
-                            colorClass: view.colorScale
-                                ? getColorScale(view.colorScale)
-                                : undefined,
+                            colorClass,
                         },
                     },
-                    name: view.displayName ?? dataItem?.name,
+                    name: view.displayName ?? dataItem.name,
                     control: {
                         enabled: true,
                         position: 'topright',
@@ -88,27 +128,25 @@ export const MapVisualizer = memo(function MapVisualizer({
                     radius: view.radiusHigh,
                 } as ThematicLayerConfig
             })
+            .filter((l): l is ThematicLayerConfig => l !== null)
     }, [mapConfig.mapViews])
 
     const boundaryLayer = useMemo(() => {
         return head(
             mapConfig.mapViews
                 ?.filter((view) => view.layer === MapLayerType.ORG_UNIT)
-                .map((view) => {
-                    return {
-                        id: view.id,
-                        enabled: true,
-                    } as MapProps['boundaryLayer']
-                })
+                .map((view) => ({
+                    id: view.id,
+                    enabled: true,
+                }) as MapProps['boundaryLayer'])
         )
     }, [mapConfig.mapViews])
 
     const earthEngineLayers: EarthEngineLayerConfig[] = useMemo(() => {
         return mapConfig.mapViews
-            .filter((mapView) => mapView.layer === MapLayerType.EARTH_ENGINE)
+            .filter((view) => view.layer === MapLayerType.EARTH_ENGINE)
             .map((view) => {
                 const config = JSON.parse(view.config!)
-
                 return {
                     id: config.band,
                     enabled: true,
@@ -127,34 +165,27 @@ export const MapVisualizer = memo(function MapVisualizer({
     }, [mapConfig.mapViews])
 
     const activePeriodSelection = useMemo(() => {
-        if (periodSelection) {
-            return periodSelection
-        }
-        const periods = head(
-            mapConfig.mapViews.filter((view) =>
-                view.layer.includes(MapLayerType.THEMATIC)
-            )
+        if (periodSelection) { return periodSelection }
+
+        const thematicView = mapConfig.mapViews.find(
+            (view) => view.layer === MapLayerType.THEMATIC
         )
-            ?.filters?.map(({ items }) => items.map(({ id }) => id))
-            .flat()
-        return {
-            periods: !isEmpty(periods) ? periods : ['THIS_YEAR'],
-        }
+        if (!thematicView) { return { periods: ['THIS_YEAR'] } }
+
+        const periods = extractPeriodIds(thematicView)
+        return { periods: !isEmpty(periods) ? periods : ['THIS_YEAR'] }
     }, [mapConfig.mapViews, periodSelection])
 
     const activeOrgUnitSelection = useMemo(() => {
-        if (orgUnitSelection) {
-            return orgUnitSelection
-        }
-        const orgUnitConfig = head(
-            mapConfig.mapViews.filter(
-                (view) => !view.layer.includes(MapLayerType.ORG_UNIT)
-            )
-        )
-            ?.rows?.map(({ items }) => items.map(({ id }) => id))
-            .flat()
+        if (orgUnitSelection) { return orgUnitSelection }
 
-        return getOrgUnitSelectionFromIds(orgUnitConfig ?? [])
+        const thematicView = mapConfig.mapViews.find(
+            (view) => view.layer === MapLayerType.THEMATIC
+        )
+        if (!thematicView) { return getOrgUnitSelectionFromIds([]) }
+
+        const ids = extractOrgUnitIds(thematicView)
+        return getOrgUnitSelectionFromIds(ids)
     }, [mapConfig.mapViews, orgUnitSelection])
 
     return (
@@ -173,39 +204,23 @@ export const MapVisualizer = memo(function MapVisualizer({
                 },
             }}
             earthEngineLayers={earthEngineLayers}
-            base={{
-                enabled: false,
-                url: '',
-                attribution: '',
-            }}
+            base={{ enabled: false, url: '', attribution: '' }}
             controls={[
                 {
                     type: 'scale',
                     position: 'bottomleft',
-                    options: {
-                        imperial: false,
-                        metric: true,
-                    },
+                    options: { imperial: false, metric: true },
                 },
-                {
-                    type: 'compass',
-                    position: 'bottomleft',
-                },
+                { type: 'compass', position: 'bottomleft' },
             ]}
-            legends={{
-                collapsible: true,
-                enabled: true,
-                position: 'topright',
-            }}
+            legends={{ collapsible: true, enabled: true, position: 'topright' }}
             setRef={setRef}
             showPeriodTitle
             periodSelection={activePeriodSelection}
             boundaryLayer={boundaryLayer}
             orgUnitSelection={activeOrgUnitSelection}
             thematicLayers={thematicLayers}
-            analyticsOptions={{
-                displayProperty: 'SHORTNAME',
-            }}
+            analyticsOptions={{ displayProperty: 'SHORTNAME' }}
         />
     )
 })
