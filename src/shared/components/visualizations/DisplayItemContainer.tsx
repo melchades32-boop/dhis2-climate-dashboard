@@ -1,24 +1,20 @@
-import { CircularLoader, NoticeBox, Card } from '@dhis2/ui'
+import { Card, CircularLoader, NoticeBox } from '@dhis2/ui'
 import React, { Suspense, memo } from 'react'
-import type { DisplayItemProps } from '@/shared/interfaces/visualization'
+import { FullScreen, useFullScreenHandle } from 'react-full-screen'
+import { VisualizationMenu } from './VisualizationMenu'
+import type { ChartRef, DisplayItemProps } from '@/shared/schemas'
 
-
+//TODO
 const CardLoading = () => (
-    <div className="flex items-center justify-center h-64">
+    <div className="flex h-64 items-center justify-center">
         <CircularLoader />
     </div>
 )
 
-interface CardErrorProps {
-    error?: Error | null
-    title?: string
-}
-
-const CardError = ({ error, title }: CardErrorProps) => (
+const CardError = ({ error, title }: { error?: Error | null; title?: string }) => (
     <div className="p-4">
         <NoticeBox error title={title || 'Visualization Error'}>
-            {error?.message ||
-                'An error occurred while loading the visualization'}
+            {error?.message || 'An error occurred while loading the visualization'}
         </NoticeBox>
     </div>
 )
@@ -47,39 +43,77 @@ class VisualizationErrorBoundary extends React.Component<
 
     render() {
         if (this.state.hasError) {
-            return (
-                <CardError error={this.state.error} title={this.props.title} />
-            )
+            return <CardError error={this.state.error} title={this.props.title} />
         }
-
         return this.props.children
     }
 }
 
-export const DisplayItemContainer = memo<DisplayItemProps>(
-    ({ children, title, loading = false, error = null }) => {
+interface DisplayItemContainerProps extends DisplayItemProps {
+    chartRef?: ChartRef
+    selectedOrgUnits?: string[]
+    selectedPeriods?: string[]
+    onOrgUnitChange?: (ids: string[]) => void
+    onPeriodChange?: (ids: string[]) => void
+}
+
+export const DisplayItemContainer = memo<DisplayItemContainerProps>(
+    ({
+        children,
+        title,
+        loading = false,
+        error = null,
+        chartRef,
+        selectedOrgUnits,
+        selectedPeriods,
+        onOrgUnitChange,
+        onPeriodChange,
+    }) => {
+        const handle = useFullScreenHandle()
+
+        function handleFullscreen() {
+            if (handle.active) {
+                handle.exit()
+            } else {
+                handle.enter()
+            }
+            setTimeout(() => chartRef?.current?.chart?.reflow(), 100)
+        }
+
         return (
             <Card className="h-full w-full">
-                {title && (
-                    <div className="px-4 py-3 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                            {title}
-                        </h3>
+                <div className="flex h-full flex-col">
+                    <div className="flex shrink-0 items-center justify-between  px-4 py-2">
+                        {title && (
+                            <h3 className="text-base font-semibold text-gray-900">
+                                {title}
+                            </h3>
+                        )}
+                        <div className="ml-auto">
+                            <VisualizationMenu
+                            onFullscreen={handleFullscreen}
+                            selectedOrgUnits={selectedOrgUnits}
+                            selectedPeriods={selectedPeriods}
+                            onOrgUnitChange={onOrgUnitChange}
+                            onPeriodChange={onPeriodChange}
+                        />
+                        </div>
                     </div>
-                )}
-
-                <div className="flex-1 p-4">
-                    {error ? (
-                        <CardError error={error} title={title} />
-                    ) : loading ? (
-                        <CardLoading />
-                    ) : (
-                        <VisualizationErrorBoundary title={title}>
-                            <Suspense fallback={<CardLoading />}>
-                                {children}
-                            </Suspense>
-                        </VisualizationErrorBoundary>
-                    )}
+                    <FullScreen handle={handle} className="min-h-0 flex-1 bg-white">
+                        <div className="h-full overflow-hidden p-4">
+                            {error ? (
+                                <CardError error={error} title={title} />
+                            ) : loading ? (
+                                <CardLoading />
+                            ) : (
+                                <VisualizationErrorBoundary title={title}>
+                                    <Suspense fallback={<CardLoading />}>
+                                        {children}
+                                    </Suspense>
+                                </VisualizationErrorBoundary>
+                            )}
+                        </div>
+                    </FullScreen>
                 </div>
             </Card>
         )
