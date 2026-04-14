@@ -34,16 +34,21 @@ export function YearOverYearVisualizer({
             const categories = value.metaData?.dimensions?.pe ?? []
             return {
                 name: PeriodUtility.getPeriodById(key).name,
+                dataLabels: {
+                    enabled: true,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    formatter(this: any) {
+                        if (this.y == null) { return null }
+                        return Highcharts.numberFormat(this.y as number, 0, '.', ',')
+                    },
+                    style: { fontSize: '10px', fontWeight: 'normal', textOutline: 'none' },
+                },
                 data: categories.map((category) => {
                     const row = rows.find((row) => row.includes(category))
-
-                    if (!row) {
-                        return null
-                    }
-
+                    if (!row) { return null }
                     return parseFloat(row[valueIndex]!)
                 }),
-            } as Highcharts.SeriesOptionsType
+            } as unknown as Highcharts.SeriesOptionsType
         })
     }, [analytics])
 
@@ -64,18 +69,21 @@ export function YearOverYearVisualizer({
             visualization?.type === VisualizationChartType.YEAR_OVER_YEAR_LINE
                 ? 'line'
                 : 'column'
+        const subtitleText = visualization?.title
+            ?? (isEmpty(visualization?.filters)
+                ? ''
+                : visualization.filters
+                    ?.map((filter) =>
+                        filter.items.map((item) => item.displayName).join(', ')
+                    )
+                    .join(', '))
+
         return {
             chart: { type: chartType },
-            title: {
-                text: isEmpty(visualization?.filters)
-                    ? ''
-                    : visualization.filters
-                          ?.map((filter) =>
-                              filter.items
-                                  .map((item) => item.displayName)
-                                  .join(', ')
-                          )
-                          .join(', '),
+            title: { text: '' },
+            subtitle: {
+                text: subtitleText,
+                style: { color: '#000', fontSize: '16px', fontWeight: 'bold' },
             },
             xAxis: { categories, title: { text: '' } },
             yAxis: { title: { text: '' } },
@@ -85,11 +93,7 @@ export function YearOverYearVisualizer({
             credits: { enabled: false },
             exporting: {
                 sourceWidth: 1200,
-                buttons: {
-                    contextButton: {
-                        enabled: false,
-                    },
-                },
+                buttons: { contextButton: { enabled: false } },
             },
             colors,
         }
