@@ -11,6 +11,8 @@ import {
 import {
     getChartLayout,
     getChartType,
+    getMultiSeriesConfig,
+    getSeriesColors,
     getVisualizationLegendSet,
 } from '@/shared/utils'
 
@@ -28,9 +30,12 @@ export const ChartVisualizer = memo(function ChartVisualizer({
     colors,
     setRef,
 }: ChartVisualizerProps) {
-    const type = getChartType(visualization)
+    const multiSeries = getMultiSeriesConfig(visualization)
+    const type = multiSeries ? 'multi-series' : getChartType(visualization)
     const layout = getChartLayout(visualization)
     const legendSet = getVisualizationLegendSet(visualization)
+    const { seriesColors, hasCustomColors } = getSeriesColors(visualization)
+    const activeColors = hasCustomColors ? seriesColors : colors
 
     const ref = useRef<HTMLDivElement>(null)
     const { height = 0 } = useResizeObserver<HTMLDivElement>({
@@ -52,13 +57,24 @@ export const ChartVisualizer = memo(function ChartVisualizer({
                 setRef={setRef}
                 config={{
                     type,
-                    colors,
+                    colors: activeColors,
                     layout,
                     height: height,
-                    showFilterAsTitle: !isEmpty(visualization.filters),
+                    showFilterAsTitle: visualization.subtitle
+                        ? false
+                        : !isEmpty(visualization.filters),
                     name: visualization.displayName,
                     allowChartTypeChange: false,
                     legendSet: legendSet,
+                    multiSeries,
+                    highChartOverrides: visualization.subtitle
+                        ? {
+                              subtitle: {
+                                  text: visualization.subtitle,
+                                  style: { color: '#000', fontSize: '16px', fontWeight:'bold' },
+                              },
+                          }
+                        : undefined,
                 }}
             />
         </div>
