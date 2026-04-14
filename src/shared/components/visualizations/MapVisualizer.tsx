@@ -53,41 +53,6 @@ export function getOrgUnitSelectionFromIds(ous: string[]) {
     return orgUnitSelection
 }
 
-function extractPeriodIds(
-    view: MapConfig['mapViews'][number]
-): string[] {
-    const allDimensions = [
-        ...(view.columns ?? []),
-        ...(view.rows ?? []),
-        ...(view.filters ?? []),
-    ]
-    const fromDimensions = allDimensions
-        .filter(({ dimension }) => dimension === 'pe')
-        .flatMap(({ items }) => items.map(({ id }) => id))
-
-    if (!isEmpty(fromDimensions)) {
-        return fromDimensions
-    }
-
-    const relative = view.relativePeriods ?? {}
-    return Object.entries(relative)
-        .filter(([, enabled]) => enabled)
-        .map(([key]) =>
-            key.replace(/([A-Z])/g, '_$1').toUpperCase()
-        )
-}
-
-function extractOrgUnitIds(view: MapConfig['mapViews'][number]): string[] {
-    const allDimensions = [
-        ...(view.columns ?? []),
-        ...(view.rows ?? []),
-        ...(view.filters ?? []),
-    ]
-    return allDimensions
-        .filter(({ dimension }) => dimension === 'ou')
-        .flatMap(({ items }) => items.map(({ id }) => id))
-}
-
 export const MapVisualizer = memo(function MapVisualizer({
     mapConfig,
     setRef,
@@ -96,15 +61,10 @@ export const MapVisualizer = memo(function MapVisualizer({
 }: MapViewProps) {
     const thematicLayers = useMemo(() => {
         return mapConfig.mapViews
-            ?.filter((view) => view.layer === MapLayerType.THEMATIC)
+            ?.filter((view) => view.layer.includes(MapLayerType.THEMATIC))
             ?.map((view) => {
                 const dataItem = head(head(view.columns)?.items)
                 if (!dataItem) { return null }
-
-                const normalizedColorScale = view.colorScale?.toLowerCase()
-                const colorClass = normalizedColorScale
-                    ? getColorScale(normalizedColorScale)
-                    : undefined
 
                 return {
                     id: view.id,
@@ -117,7 +77,9 @@ export const MapVisualizer = memo(function MapVisualizer({
                         displayName: view.displayName ?? dataItem.name,
                         legendConfig: {
                             scale: view.classes,
-                            colorClass,
+                            colorClass: view.colorScale
+                                ? getColorScale(view.colorScale)
+                                : undefined,
                         },
                     },
                     name: view.displayName ?? dataItem.name,
@@ -167,25 +129,31 @@ export const MapVisualizer = memo(function MapVisualizer({
     const activePeriodSelection = useMemo(() => {
         if (periodSelection) { return periodSelection }
 
-        const thematicView = mapConfig.mapViews.find(
-            (view) => view.layer === MapLayerType.THEMATIC
+        const periods = head(
+            mapConfig.mapViews.filter((view) =>
+                view.layer.includes(MapLayerType.THEMATIC)
+            )
         )
-        if (!thematicView) { return { periods: ['THIS_YEAR'] } }
+            ?.filters?.map(({ items }) => items.map(({ id }) => id))
+            .flat()
 
-        const periods = extractPeriodIds(thematicView)
-        return { periods: !isEmpty(periods) ? periods : ['THIS_YEAR'] }
+        return {
+            periods: !isEmpty(periods) ? periods : ['THIS_YEAR'],
+        }
     }, [mapConfig.mapViews, periodSelection])
 
     const activeOrgUnitSelection = useMemo(() => {
         if (orgUnitSelection) { return orgUnitSelection }
 
-        const thematicView = mapConfig.mapViews.find(
-            (view) => view.layer === MapLayerType.THEMATIC
+        const orgUnitConfig = head(
+            mapConfig.mapViews.filter(
+                (view) => !view.layer.includes(MapLayerType.ORG_UNIT)
+            )
         )
-        if (!thematicView) { return getOrgUnitSelectionFromIds([]) }
+            ?.rows?.map(({ items }) => items.map(({ id }) => id))
+            .flat()
 
-        const ids = extractOrgUnitIds(thematicView)
-        return getOrgUnitSelectionFromIds(ids)
+        return getOrgUnitSelectionFromIds(orgUnitConfig ?? [])
     }, [mapConfig.mapViews, orgUnitSelection])
 
     return (
