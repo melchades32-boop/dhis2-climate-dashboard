@@ -3,8 +3,8 @@ import { analyticsDimensionSchema } from './visualization'
 
 export enum MapLayerType {
     THEMATIC = 'thematic',
-    ORG_UNIT = 'orgUnit',
-    EARTH_ENGINE = 'earthEngine',
+    ORG_UNIT = 'boundary',
+    EARTH_ENGINE = 'earthengine',
 }
 
 export enum ThematicMapType {
@@ -16,85 +16,93 @@ export const mapSchema = z.object({
     id: z.string(),
     basemap: z.string().optional(),
     name: z.string(),
-    zoom: z.number(),
+    zoom: z.number().optional(),
     mapViews: z.array(
         z.object({
             id: z.string(),
-            categoryDimensions: z.array(
-                z.object({
-                    categoryOptions: z.array(z.object({ id: z.string() })),
-                    category: z.object({ id: z.string() }),
-                })
-            ),
-            periods: z.array(z.object({ id: z.string(), name: z.string() })),
-            relativePeriods: z.record(z.string(), z.boolean()),
-            type: z.string(),
-            organisationUnits: z.array(
-                z.object({ id: z.string(), path: z.string() })
-            ),
+            layer: z.string(),
+            thematicMapType: z.string().optional(),
+            type: z.string().optional(),
+            name: z.string().optional(),
+            displayName: z.string().optional(),
+            colorScale: z.string().optional(),
+            classes: z.number().optional(),
             config: z.string().optional(),
-            thematicMapType: z.nativeEnum(ThematicMapType),
-            layer: z.nativeEnum(MapLayerType),
-            organisationUnitLevels: z.array(z.number()),
-            itemOrganisationUnitGroups: z.array(z.string()),
-            organisationUnitGroupSetDimensions: z.array(
-                z.object({ id: z.string() })
-            ),
-            name: z.string(),
             radiusHigh: z.number().optional(),
             radiusLow: z.number().optional(),
-            dataDimensionItems: z.array(
-                z
-                    .object({
-                        dataDimensionItemType: z.string(),
-                    })
-                    .and(
-                        z.record(
-                            z.enum([
-                                'dataElement',
-                                'indicator',
-                                'programIndicator',
-                            ]),
-                            z.object({ id: z.string() })
+            legendSet: z.object({ id: z.string() }).optional(),
+            relativePeriods: z.record(z.string(), z.boolean()).optional(),
+            userOrganisationUnit: z.boolean().optional(),
+            userOrganisationUnitChildren: z.boolean().optional(),
+            userOrganisationUnitGrandChildren: z.boolean().optional(),
+            organisationUnitLevels: z.array(z.number()).optional().default([]),
+            itemOrganisationUnitGroups: z.array(z.string()).optional().default([]),
+            organisationUnits: z
+                .array(z.object({ id: z.string(), path: z.string() }))
+                .optional()
+                .default([]),
+            dataDimensionItems: z
+                .array(
+                    z
+                        .object({ dataDimensionItemType: z.string() })
+                        .and(
+                            z.record(
+                                z.enum(['dataElement', 'indicator', 'programIndicator']),
+                                z.object({ id: z.string() })
+                            )
                         )
-                    )
-            ),
-            columns: z.array(
-                z.object({
-                    id: z.string(),
-                    dimension: analyticsDimensionSchema,
-                    items: z.array(
-                        z.object({
-                            id: z.string(),
-                            dimensionItemType: z.string(),
-                            name: z.string(),
-                        })
-                    ),
-                })
-            ),
-            displayName: z.string(),
-            legendSet: z.object({
-                id: z.string(),
-            }),
-            colorScale: z.string(),
-            classes: z.number(),
-            rows: z.array(
-                z.object({
-                    id: z.string(),
-                    dimension: analyticsDimensionSchema,
-                    items: z.array(z.object({ id: z.string() })),
-                })
-            ),
-            filters: z.array(
-                z.object({
-                    id: z.string(),
-                    dimension: analyticsDimensionSchema,
-                    items: z.array(z.object({ id: z.string() })),
-                })
-            ),
-            userOrganisationUnit: z.boolean(),
-            userOrganisationUnitChildren: z.boolean(),
-            userOrganisationUnitGrandChildren: z.boolean(),
+                )
+                .optional()
+                .default([]),
+            columns: z
+                .array(
+                    z.object({
+                        id: z.string(),
+                        dimension: analyticsDimensionSchema,
+                        items: z.array(
+                            z.object({
+                                id: z.string(),
+                                dimensionItemType: z.string().optional(),
+                                name: z.string().optional(),
+                            })
+                        ),
+                    })
+                )
+                .optional()
+                .default([]),
+            rows: z
+                .array(
+                    z.object({
+                        id: z.string(),
+                        dimension: analyticsDimensionSchema,
+                        items: z.array(z.object({ id: z.string() })),
+                    })
+                )
+                .optional()
+                .default([]),
+            filters: z
+                .array(
+                    z.object({
+                        id: z.string(),
+                        dimension: analyticsDimensionSchema,
+                        items: z.array(z.object({ id: z.string() })),
+                    })
+                )
+                .optional()
+                .default([]),
+            categoryDimensions: z
+                .array(
+                    z.object({
+                        categoryOptions: z.array(z.object({ id: z.string() })),
+                        category: z.object({ id: z.string() }),
+                    })
+                )
+                .optional()
+                .default([]),
+            organisationUnitGroupSetDimensions: z
+                .array(z.object({ id: z.string() }))
+                .optional()
+                .default([]),
         })
     ),
 })
