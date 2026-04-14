@@ -3,14 +3,25 @@ import { analyticsDimensionSchema } from './visualization'
 
 export enum MapLayerType {
     THEMATIC = 'thematic',
-    ORG_UNIT = 'boundary',
-    EARTH_ENGINE = 'earthengine',
+    ORG_UNIT = 'orgUnit',
+    EARTH_ENGINE = 'earthEngine',
 }
 
 export enum ThematicMapType {
     CHOROPLETH = 'choropleth',
     BUBBLE = 'bubble',
 }
+
+const mapItemSchema = z.object({
+    id: z.string(),
+    dimensionItemType: z.string().optional(),
+    name: z.string().optional(),
+})
+
+const mapDimensionSchema = z.object({
+    dimension: analyticsDimensionSchema,
+    items: z.array(mapItemSchema),
+})
 
 export const mapSchema = z.object({
     id: z.string(),
@@ -54,42 +65,9 @@ export const mapSchema = z.object({
                 )
                 .optional()
                 .default([]),
-            columns: z
-                .array(
-                    z.object({
-                        id: z.string(),
-                        dimension: analyticsDimensionSchema,
-                        items: z.array(
-                            z.object({
-                                id: z.string(),
-                                dimensionItemType: z.string().optional(),
-                                name: z.string().optional(),
-                            })
-                        ),
-                    })
-                )
-                .optional()
-                .default([]),
-            rows: z
-                .array(
-                    z.object({
-                        id: z.string(),
-                        dimension: analyticsDimensionSchema,
-                        items: z.array(z.object({ id: z.string() })),
-                    })
-                )
-                .optional()
-                .default([]),
-            filters: z
-                .array(
-                    z.object({
-                        id: z.string(),
-                        dimension: analyticsDimensionSchema,
-                        items: z.array(z.object({ id: z.string() })),
-                    })
-                )
-                .optional()
-                .default([]),
+            columns: z.array(mapDimensionSchema).optional().default([]),
+            rows: z.array(mapDimensionSchema).optional().default([]),
+            filters: z.array(mapDimensionSchema).optional().default([]),
             categoryDimensions: z
                 .array(
                     z.object({
