@@ -1,3 +1,5 @@
 export * from './useAnalytics'
+export * from './useFilters'
+export * from './useMapConfig'
 export * from './useVisualization'
 export * from './useVisualizationRefs'
