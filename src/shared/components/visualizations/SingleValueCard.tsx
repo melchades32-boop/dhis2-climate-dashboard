@@ -67,8 +67,7 @@ export function SingleValueCard({
                         </span>
                         {periodLabel && (
                             <span
-                                className="line-clamp-1 text-xs"
-                                style={{ color: valueColor }}
+                                className="line-clamp-1 text-xs text-gray-500"
                                 title={periodLabel}
                             >
                                 {periodLabel}
