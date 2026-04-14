@@ -3,14 +3,17 @@ import { RefObject } from 'react'
 import { ChartVisualizer } from './ChartVisualizer'
 import { SingleValueVisualizer } from './SingleValueVisualizer'
 import { TableVisualizer } from './TableVisualizer'
+import { YearOverYearVisualizer } from './YearOverYearVisualizer'
 import {
     AnalyticsData,
     VisualizationChartType,
     VisualizationConfig,
+    YearOverYearVisualizationConfig,
 } from '@/shared/schemas'
 
 export function ChartSelector({
     analytics,
+    yoyAnalytics,
     visualization,
     tableRef,
     setRef,
@@ -19,7 +22,8 @@ export function ChartSelector({
     containerRef,
 }: {
     setRef: RefObject<HighchartsReact.RefObject | null>
-    analytics: AnalyticsData
+    analytics?: AnalyticsData
+    yoyAnalytics?: Map<string, AnalyticsData>
     visualization: VisualizationConfig
     tableRef: RefObject<HTMLTableElement | null>
     fullScreen: boolean
@@ -32,7 +36,7 @@ export function ChartSelector({
             return (
                 <SingleValueVisualizer
                     visualization={visualization}
-                    analytics={analytics}
+                    analytics={analytics!}
                     colors={colors}
                     containerRef={containerRef}
                 />
@@ -42,8 +46,18 @@ export function ChartSelector({
                 <TableVisualizer
                     fullScreen={fullScreen}
                     setRef={tableRef}
-                    analytics={analytics}
+                    analytics={analytics!}
                     visualization={visualization}
+                />
+            )
+        case VisualizationChartType.YEAR_OVER_YEAR_LINE:
+        case VisualizationChartType.YEAR_OVER_YEAR_COLUMN:
+            return (
+                <YearOverYearVisualizer
+                    analytics={yoyAnalytics}
+                    visualization={visualization as YearOverYearVisualizationConfig}
+                    colors={colors}
+                    setRef={setRef}
                 />
             )
         default:
@@ -51,7 +65,7 @@ export function ChartSelector({
                 <ChartVisualizer
                     colors={colors}
                     setRef={setRef}
-                    analytics={analytics}
+                    analytics={analytics!}
                     visualization={visualization}
                 />
             )
