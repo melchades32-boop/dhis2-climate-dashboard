@@ -41,7 +41,7 @@ export function useAnalytics({
     visualizationConfig,
     params,
 }: {
-    visualizationConfig: VisualizationConfig
+    visualizationConfig: VisualizationConfig | null
     params: Map<string, string>
 }) {
     const [selectedOrgUnits, setSelectedOrgUnits] = useState<string[]>([])
@@ -54,6 +54,7 @@ export function useAnalytics({
     })
 
     useEffect(() => {
+        if (!visualizationConfig) { return }
         refetch({
             filters: getVisualizationFilters(visualizationConfig, {
                 searchParams: params,
@@ -66,7 +67,7 @@ export function useAnalytics({
                 selectedPeriods,
             }),
         })
-    }, [refetch, params, selectedOrgUnits, selectedPeriods])
+    }, [refetch, params, selectedOrgUnits, selectedPeriods, visualizationConfig])
 
     return {
         loading,
