@@ -57,7 +57,7 @@ export const visualizationFields = [
     'rowSubTotals',
     'rowTotals',
     'rows[dimension,filter,items[dimensionItem~rename(id),name,displayName,displayShortName,dimensionItemType,expression,access]]',
-    'series',
+    'series[dimensionItem,type,axis,color]',
     'seriesKey',
     'shortName',
     'showData',
@@ -256,6 +256,7 @@ export const visualizationSchema = z.object({
     displayDescription: z.string().optional(),
     digitGroupSeparator: z.nativeEnum(DigitGroupSeparator),
     displayDensity: z.nativeEnum(DisplayDensity),
+    colorSet: z.string().optional(),
     displayName: z.string(),
     displayShortName: z.string().optional(),
     displaySubtitle: z.string().optional(),
@@ -320,7 +321,16 @@ export const visualizationSchema = z.object({
     rowSubTotals: z.boolean(),
     rowTotals: z.boolean(),
     rows: z.array(dimension),
-    series: z.array(z.object({})).optional(),
+    series: z
+        .array(
+            z.object({
+                dimensionItem: z.string(),
+                type: z.string().optional(),
+                axis: z.number().optional(),
+                color: z.string().optional(),
+            })
+        )
+        .optional(),
     seriesKey: z.object({
         hidden: z.boolean(),
     }),

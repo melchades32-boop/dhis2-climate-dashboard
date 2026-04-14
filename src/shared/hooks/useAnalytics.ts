@@ -106,7 +106,7 @@ export function useYearOverYearAnalytics({
     visualizationConfig,
     params,
 }: {
-    visualizationConfig: YearOverYearVisualizationConfig
+    visualizationConfig: YearOverYearVisualizationConfig | null
     params: Map<string, string>
 }) {
     const [data, setData] = useState<Map<string, AnalyticsData>>()
@@ -120,7 +120,7 @@ export function useYearOverYearAnalytics({
     }>(analyticsQuery, { lazy: true })
 
     const selectedRelativePeriods = Object.entries(
-        visualizationConfig.relativePeriods || {}
+        visualizationConfig?.relativePeriods || {}
     )
         .filter(([, value]) => value === true)
         .map(([key]) => snakeCase(key).toUpperCase())
@@ -134,23 +134,24 @@ export function useYearOverYearAnalytics({
     const years =
         selectedYears.length > 0
             ? selectedYears
-            : visualizationConfig.yearlySeries || []
+            : visualizationConfig?.yearlySeries || []
 
     const yearsToFetch = normalizeYears(years)
 
-    const orgUnitFilter = (visualizationConfig.filters || []).find(
+    const orgUnitFilter = (visualizationConfig?.filters || []).find(
         (filter) => filter.dimension === 'ou'
     )
     const orgUnits = orgUnitFilter
         ? orgUnitFilter.items.map((item) => item.id)
         : []
 
-    const dataFilter = (visualizationConfig.filters || []).find(
+    const dataFilter = (visualizationConfig?.filters || []).find(
         (filter) => filter.dimension === 'dx'
     )
     const dx = dataFilter ? dataFilter.items.map((item) => item.id) : []
 
     useEffect(() => {
+        if (!visualizationConfig) { return }
         async function fetchYearlyAnalytics() {
             const yearData = new Map<string, AnalyticsData>()
             for (const yearId of yearsToFetch.reverse()) {

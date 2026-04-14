@@ -3,7 +3,6 @@ import { ChartSelector } from './ChartSelector'
 import { DisplayItemContainer } from './DisplayItemContainer'
 import { SingleValueCard } from './SingleValueCard'
 import { useAnalytics, useYearOverYearAnalytics } from '@/shared/hooks/useAnalytics'
-import { useColorSet } from '@/shared/hooks/useColorSet'
 import { useFilters } from '@/shared/hooks/useFilters'
 import { useVisualization } from '@/shared/hooks/useVisualization'
 import { useVisualizationRefs } from '@/shared/hooks/useVisualizationRefs'
@@ -33,7 +32,6 @@ export function VisualizationItem({
     const { chartRef, tableRef } = useVisualizationRefs()
 
     const isYoY = visualization?.type !== undefined && YOY_TYPES.has(visualization.type)
-    const { colors: fetchedColors } = useColorSet(visualization?.colorSet)
 
     const {
         analytics,
@@ -64,8 +62,6 @@ export function VisualizationItem({
     const activeOrgUnits = isYoY ? yoyOrgUnits : selectedOrgUnits
     const activePeriods = isYoY ? yoyPeriods : selectedPeriods
 
-    const activeColors = fetchedColors ?? colors
-
     const loading = vizLoading || (isYoY ? yoyLoading : analyticsLoading)
     const isSingleValue = visualization?.type === VisualizationChartType.SINGLE_VALUE
 
@@ -76,7 +72,7 @@ export function VisualizationItem({
                     visualization={visualization}
                     analytics={analytics}
                     loading={loading}
-                    colors={activeColors}
+                    colors={colors}
                     selectedOrgUnits={activeOrgUnits}
                     selectedPeriods={activePeriods}
                     onOrgUnitChange={activeSetOrgUnits}
@@ -116,7 +112,7 @@ export function VisualizationItem({
                         setRef={chartRef}
                         tableRef={tableRef}
                         fullScreen={false}
-                        colors={activeColors}
+                        colors={colors}
                     />
                 )}
             </DisplayItemContainer>

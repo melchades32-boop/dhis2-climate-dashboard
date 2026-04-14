@@ -1,5 +1,6 @@
 import { ChartType } from '@hisptz/dhis2-analytics'
 import { LegendSet } from '@hisptz/dhis2-utils'
+import type { YAxisOptions } from 'highcharts'
 import {
     camelCase,
     compact,
@@ -15,6 +16,17 @@ import {
     LegendSetConfig,
     VisualizationConfig,
 } from '@/shared/schemas'
+
+
+interface MultiSeriesConfig {
+    series?: Array<{ id: string; as: 'column' | 'line'; yAxis?: number }>
+    yAxes?: Array<Partial<YAxisOptions>>
+}
+
+export interface MultiSeriesColors {
+    seriesColors: string[]
+    hasCustomColors: boolean
+}
 
 export function getChartLayout(visualization: VisualizationConfig): {
     category: AnalyticsDimensionSchema[]
@@ -63,6 +75,47 @@ export function getOrgUnits(visualization: VisualizationConfig): Array<string> {
             .filter(({ dimension }) => dimension === 'ou')
             .map((item) => item.items.map((item) => item.id))
     )
+}
+
+export type { MultiSeriesConfig }
+
+export function getMultiSeriesConfig(
+    config: VisualizationConfig
+): MultiSeriesConfig | undefined {
+    if (!config.series || config.series.length === 0) { return undefined }
+
+    const allDimensions = [
+        ...config.columns,
+        ...config.rows,
+        ...config.filters,
+    ]
+    const dxItems =
+        allDimensions.find((d) => d.dimension === 'dx')?.items ?? []
+
+    const seriesItems = config.series.map((s, i) => ({
+        id: dxItems[i]?.id ?? s.dimensionItem,
+        as: (s.type?.toLowerCase() === 'column' ? 'column' : 'line') as
+            | 'column'
+            | 'line',
+        // DHIS2 axis 1 → left (yAxis 0), axis 2+ → right (yAxis 1)
+        yAxis: (s.axis ?? 1) > 1 ? 1 : 0,
+    }))
+
+    const hasSecondAxis = config.series.some((s) => (s.axis ?? 1) > 1)
+    const yAxes = hasSecondAxis
+        ? [{ opposite: false }, { opposite: true }]
+        : undefined
+
+    return { series: seriesItems, yAxes }
+}
+
+export function getSeriesColors(config: VisualizationConfig): MultiSeriesColors {
+    const seriesColors = (config.series ?? []).map((s) => s.color ?? '')
+    const hasCustomColors = seriesColors.some((c) => c !== '')
+    return {
+        seriesColors: hasCustomColors ? seriesColors : [],
+        hasCustomColors,
+    }
 }
 
 export function getChartType(config: VisualizationConfig): ChartType {

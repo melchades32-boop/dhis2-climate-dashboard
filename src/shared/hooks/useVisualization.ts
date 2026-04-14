@@ -1,5 +1,6 @@
 import { useDataQuery } from '@dhis2/app-runtime'
 import type { VisualizationConfig } from '@/shared/schemas/visualization'
+import { visualizationFields } from '@/shared/schemas/visualization'
 
 interface UseVisualizationProps {
     visualizationId: string
@@ -15,17 +16,9 @@ interface UseVisualizationResult {
 const VISUALIZATION_QUERY = {
     visualization: {
         resource: 'visualizations',
-        id: ({ id }: { id: string }) => id,
+        id: ({ id }: Record<string, unknown>) => id as string,
         params: {
-            fields: [
-                'id',
-                'displayName',
-                'type',
-                'dataDimensionItems[dataDimension[id,displayName]]',
-                'rows[dimension,items[id,displayName]]',
-                'columns[dimension,items[id,displayName]]',
-                'filters[dimension,items[id,displayName]]',
-            ].join(','),
+            fields: visualizationFields.join(','),
         },
     },
 }
