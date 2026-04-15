@@ -1,7 +1,6 @@
-import { Button, FlyoutMenu, MenuItem, MenuSectionHeader, Popover } from '@dhis2/ui'
+import { Button, Card, MenuItem, Popover } from '@dhis2/ui'
 import {
     IconClock16,
-    IconDownload16,
     IconFullscreen16,
     IconLocation16,
     IconMore16,
@@ -71,8 +70,8 @@ export function VisualizationMenu({
                     placement="bottom-end"
                     onClickOutside={() => setMenuOpen(false)}
                 >
-                    <FlyoutMenu>
-                        <MenuSectionHeader label="View" />
+                    <Card>
+                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">View</div>
                         <MenuItem
                             label="Full page"
                             icon={<IconFullscreen16 />}
@@ -81,7 +80,7 @@ export function VisualizationMenu({
                                 onFullscreen()
                             }}
                         />
-                        <MenuSectionHeader label="Filters" />
+                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Filters</div>
                         <MenuItem
                             label="Location"
                             icon={<IconLocation16 />}
@@ -98,12 +97,12 @@ export function VisualizationMenu({
                                 setPeriodOpen(true)
                             }}
                         />
-                        <MenuItem
+                        {/* <MenuItem
                             label="Download"
                             icon={<IconDownload16 />}
                             onClick={() => setMenuOpen(false)}
-                        />
-                    </FlyoutMenu>
+                        /> */}
+                    </Card>
                 </Popover>
             )}
 
