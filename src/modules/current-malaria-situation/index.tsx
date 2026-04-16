@@ -23,35 +23,36 @@ export const Route = createFileRoute('/current-malaria-situation/')({
 
 function CurrentMalariaSituation() {
     return (
-        <div className="flex gap-4">
-            {/* Left column — 70% */}
-            <div className="flex flex-col gap-4 flex-7 min-w-0">
-                <div className="grid grid-cols-4 gap-2">
+        <div className="flex flex-col gap-4 xl:flex-row">
+            {/* Left column */}
+            <div className="flex flex-col gap-4 min-w-0 xl:flex-7">
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                     <VisualizationItem id={TOTAL_FEVER_ID} className="h-36" />
                     <VisualizationItem id={CONFIRMED_FACILITY_ID} className="h-36" />
                     <VisualizationItem id={CLINICAL_DIAGNOSIS_ID} className="h-36" />
                     <VisualizationItem id={CONFIRMED_COMMUNITY_ID} className="h-36" />
                 </div>
-                <div className="flex gap-2 h-105">
-                    <VisualizationItem id={MONTHLY_TREND_ID} className="flex-3 h-full" />
-                    <div className="flex flex-col gap-2 flex-1">
-                        <VisualizationItem id={SEVERE_CASES_ID} className="flex-1" />
-                        <VisualizationItem id={SEVERE_TREATED_ID} className="flex-1" />
-                        <VisualizationItem id={DEATHS_ID} className="flex-1" />
+                <div className="flex flex-col gap-2 md:flex-row md:h-105">
+                    <VisualizationItem id={MONTHLY_TREND_ID} className="h-80 md:h-full md:flex-3" />
+                    <div className="grid grid-cols-3 gap-2 md:flex md:flex-col md:flex-1">
+                        <VisualizationItem id={SEVERE_CASES_ID} className="h-36 md:h-auto md:flex-1" />
+                        <VisualizationItem id={SEVERE_TREATED_ID} className="h-36 md:h-auto md:flex-1" />
+                        <VisualizationItem id={DEATHS_ID} className="h-36 md:h-auto md:flex-1" />
                     </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
                     <VisualizationItem id={ANC_POSITIVITY_ID} className="h-80" />
                     <VisualizationItem id={CONFIRMED_MALE_ID} className="h-80" />
                     <VisualizationItem id={CONFIRMED_FEMALE_ID} className="h-80" />
                 </div>
             </div>
 
-            {/* Right column — 30% */}
-            <div className="flex flex-col gap-2 flex-3 min-w-0">
+            {/* Right column */}
+            <div className="flex flex-col gap-2 min-w-0 xl:flex-3">
                 <VisualizationItem id={OUTCOMES_ID} className="h-96" />
-                <MapItem id={MAP_ID} className="flex-1 min-h-120" />
+                <MapItem id={MAP_ID} className="h-120 xl:flex-1 xl:min-h-120" />
             </div>
+
         </div>
     )
 }
