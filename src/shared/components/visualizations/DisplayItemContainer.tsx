@@ -1,10 +1,10 @@
+import i18n from '@dhis2/d2-i18n'
 import { Card, CircularLoader, NoticeBox } from '@dhis2/ui'
 import React, { Suspense, memo } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { VisualizationMenu } from './VisualizationMenu'
 import type { ChartRef, DisplayItemProps } from '@/shared/schemas'
 
-//TODO
 const CardLoading = () => (
     <div className="flex h-64 items-center justify-center">
         <CircularLoader />
@@ -13,8 +13,8 @@ const CardLoading = () => (
 
 const CardError = ({ error, title }: { error?: Error | null; title?: string }) => (
     <div className="p-4">
-        <NoticeBox error title={title || 'Visualization Error'}>
-            {error?.message || 'An error occurred while loading the visualization'}
+        <NoticeBox error title={title ?? i18n.t('Visualization Error')}>
+            {error?.message ?? i18n.t('An error occurred while loading the visualization')}
         </NoticeBox>
     </div>
 )
@@ -77,7 +77,10 @@ export const DisplayItemContainer = memo<DisplayItemContainerProps>(
             } else {
                 handle.enter()
             }
-            setTimeout(() => chartRef?.current?.chart?.reflow(), 100)
+        }
+
+        function handleFullscreenChange() {
+            chartRef?.current?.chart?.reflow()
         }
 
         return (
@@ -99,7 +102,7 @@ export const DisplayItemContainer = memo<DisplayItemContainerProps>(
                         />
                         </div>
                     </div>
-                    <FullScreen handle={handle} className="min-h-0 flex-1 bg-white">
+                    <FullScreen handle={handle} className="min-h-0 flex-1 bg-white" onChange={handleFullscreenChange}>
                         <div className="h-full overflow-hidden p-4">
                             {error ? (
                                 <CardError error={error} title={title} />

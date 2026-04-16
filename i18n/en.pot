@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-04-14T20:34:22.013Z\n"
-"PO-Revision-Date: 2026-04-14T20:34:22.013Z\n"
+"POT-Creation-Date: 2026-04-16T11:29:34.791Z\n"
+"PO-Revision-Date: 2026-04-16T11:29:34.791Z\n"
 
 msgid "Location"
 msgstr "Location"
@@ -17,5 +17,20 @@ msgstr "Period"
 msgid "Org unit"
 msgstr "Org unit"
 
+msgid "Visualization Error"
+msgstr "Visualization Error"
+
+msgid "An error occurred while loading the visualization"
+msgstr "An error occurred while loading the visualization"
+
 msgid "No data"
 msgstr "No data"
+
+msgid "View"
+msgstr "View"
+
+msgid "Full page"
+msgstr "Full page"
+
+msgid "Filters"
+msgstr "Filters"

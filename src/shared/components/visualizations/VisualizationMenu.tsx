@@ -1,3 +1,4 @@
+import i18n from '@dhis2/d2-i18n'
 import { Button, Card, MenuItem, Popover } from '@dhis2/ui'
 import {
     IconClock16,
@@ -71,18 +72,18 @@ export function VisualizationMenu({
                     onClickOutside={() => setMenuOpen(false)}
                 >
                     <Card>
-                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">View</div>
+                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{i18n.t('View')}</div>
                         <MenuItem
-                            label="Full page"
+                            label={i18n.t('Full page')}
                             icon={<IconFullscreen16 />}
                             onClick={() => {
                                 setMenuOpen(false)
                                 onFullscreen()
                             }}
                         />
-                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Filters</div>
+                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{i18n.t('Filters')}</div>
                         <MenuItem
-                            label="Location"
+                            label={i18n.t('Location')}
                             icon={<IconLocation16 />}
                             onClick={() => {
                                 setMenuOpen(false)
@@ -90,7 +91,7 @@ export function VisualizationMenu({
                             }}
                         />
                         <MenuItem
-                            label="Period"
+                            label={i18n.t('Period')}
                             icon={<IconClock16 />}
                             onClick={() => {
                                 setMenuOpen(false)

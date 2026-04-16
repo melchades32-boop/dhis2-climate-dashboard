@@ -13,7 +13,10 @@ export function getLegendColorFromValue({
     legendSet?: LegendSetLike
     value?: number
 }): string | null {
-    if (!legendSet && !value) {
+    if (!legendSet) {
+        return null
+    }
+    if (value === undefined || isNaN(value)) {
         return null
     }
     const legends = legendSet?.legends ?? []
