@@ -1,7 +1,7 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { z } from 'zod'
 import { AppTabs } from '@/shared/components/AppTabs'
-import { FilterBar } from '@/shared/components/FilterBar'
+import { FilterBarCompact } from '@/shared/components/FilterBarCompact'
 
 export const Route = createRootRoute({
     validateSearch: z.object({
@@ -13,10 +13,12 @@ export const Route = createRootRoute({
 
 function RootComponent() {
     return (
-        <div className="flex h-full w-full flex-col">
+        <div className="flex h-full w-full flex-col bg-gray-50">
             <AppTabs />
-            <FilterBar />
             <main className="flex-1 overflow-y-auto p-6">
+                <div className="h-26 pb-4" >
+                    <FilterBarCompact />
+                </div>
                 <Outlet />
             </main>
         </div>
