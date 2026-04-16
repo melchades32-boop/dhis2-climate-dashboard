@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { VisualizationMenu } from './VisualizationMenu'
 import type { AnalyticsData, VisualizationConfig } from '@/shared/schemas'
-import { numberFormatter } from '@/shared/utils'
+import { getForeground, getLegendColorFromValue, numberFormatter } from '@/shared/utils'
 
 interface SingleValueCardProps {
     visualization: VisualizationConfig
@@ -52,22 +52,39 @@ export function SingleValueCard({
     const displayValue = isNaN(value)
         ? '—'
         : isPercentage
-          ? `${numberFormatter(value)}%`
-          : numberFormatter(value)
+            ? `${numberFormatter(value)}%`
+            : numberFormatter(value)
 
-    const valueColor = colors[0] ?? '#147cd7'
+    const legendStyle = visualization.legend?.style
+    const legendColor = useMemo(
+        () => getLegendColorFromValue({ value, legendSet: visualization.legend?.set }),
+        [value, visualization.legend?.set]
+    )
+    const bgColor = legendStyle === 'FILL' && legendColor ? legendColor : undefined
+    const fgColor = bgColor ? getForeground(bgColor) : undefined
+    const valueColor = legendStyle === 'TEXT' && legendColor
+        ? legendColor
+        : (fgColor ?? colors[0] ?? '#147cd7')
 
     return (
         <FullScreen handle={handle} className="h-full">
-            <div className="flex h-full flex-col justify-between rounded border border-gray-200 bg-white p-4 shadow-sm">
+            <div
+                className="flex h-full flex-col justify-between rounded border border-gray-200 p-4 shadow-sm"
+                style={{ backgroundColor: bgColor ?? '#ffffff' }}
+            >
                 <div className="flex items-start justify-between gap-2">
                     <div className="flex min-w-0 flex-col gap-1">
-                        <span className="text-sm font-bold leading-tight text-gray-900">
+                        <span
+                            className="text-sm font-bold leading-tight line-clamp-3"
+                            style={{ color: fgColor ?? '#111827' }}
+                            title={visualization.displayName}
+                        >
                             {visualization.displayName}
                         </span>
                         {periodLabel && (
                             <span
-                                className="line-clamp-1 text-xs text-gray-500"
+                                className="line-clamp-1 text-xs"
+                                style={{ color: fgColor ?? '#6b7280' }}
                                 title={periodLabel}
                             >
                                 {periodLabel}

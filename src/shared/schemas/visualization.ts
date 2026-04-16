@@ -298,6 +298,15 @@ export const visualizationSchema = z.object({
                     name: z.string(),
                     displayName: z.string(),
                     displayShortName: z.string().optional(),
+                    legends: z.array(
+                        z.object({
+                            id: z.string(),
+                            name: z.string(),
+                            color: z.string(),
+                            startValue: z.number(),
+                            endValue: z.number(),
+                        })
+                    ).optional(),
                 })
                 .optional(),
         })

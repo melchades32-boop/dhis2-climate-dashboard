@@ -49,7 +49,7 @@ function CurrentMalariaSituation() {
 
             {/* Right column */}
             <div className="flex flex-col gap-2 min-w-0 xl:flex-3">
-                <VisualizationItem id={OUTCOMES_ID} className="h-96" />
+                <VisualizationItem id={OUTCOMES_ID} colors={['#125687', '#43a047', '#e53935']} className="h-96" />
                 <MapItem id={MAP_ID} className="h-120 xl:flex-1 xl:min-h-120" />
             </div>
 

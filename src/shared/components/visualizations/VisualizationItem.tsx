@@ -9,7 +9,7 @@ import { useVisualizationRefs } from '@/shared/hooks/useVisualizationRefs'
 import { VisualizationChartType, YearOverYearVisualizationConfig } from '@/shared/schemas'
 
 
-const DEFAULT_COLORS = ['#147cd7', '#e53935', '#43a047', '#8e24aa', '#f9a825']
+const DEFAULT_COLORS = ['#125687', '#e53935', '#43a047', '#8e24aa', '#f9a825']
 
 const YOY_TYPES = new Set([
     VisualizationChartType.YEAR_OVER_YEAR_LINE,
