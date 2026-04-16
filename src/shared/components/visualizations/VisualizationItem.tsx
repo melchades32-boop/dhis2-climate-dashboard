@@ -1,4 +1,3 @@
-import { CircularLoader } from '@dhis2/ui'
 import { ChartSelector } from './ChartSelector'
 import { DisplayItemContainer } from './DisplayItemContainer'
 import { SingleValueCard } from './SingleValueCard'
@@ -65,11 +64,11 @@ export function VisualizationItem({
     const loading = vizLoading || (isYoY ? yoyLoading : analyticsLoading)
     const isSingleValue = visualization?.type === VisualizationChartType.SINGLE_VALUE
 
-    if (isSingleValue && visualization) {
+    if (isSingleValue) {
         return (
             <div className={className}>
                 <SingleValueCard
-                    visualization={visualization}
+                    visualization={visualization!}
                     analytics={analytics}
                     loading={loading}
                     colors={colors}
@@ -78,14 +77,6 @@ export function VisualizationItem({
                     onOrgUnitChange={activeSetOrgUnits}
                     onPeriodChange={activeSetPeriods}
                 />
-            </div>
-        )
-    }
-
-    if (isSingleValue && vizLoading) {
-        return (
-            <div className={`${className ?? ''} flex items-center justify-center rounded border border-gray-200 bg-white`}>
-                <CircularLoader />
             </div>
         )
     }

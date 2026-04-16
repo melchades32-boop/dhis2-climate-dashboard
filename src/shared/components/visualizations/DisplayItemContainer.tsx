@@ -6,7 +6,7 @@ import { VisualizationMenu } from './VisualizationMenu'
 import type { ChartRef, DisplayItemProps } from '@/shared/schemas'
 
 const CardLoading = () => (
-    <div className="flex h-64 items-center justify-center">
+    <div className="flex h-full items-center justify-center">
         <CircularLoader />
     </div>
 )
