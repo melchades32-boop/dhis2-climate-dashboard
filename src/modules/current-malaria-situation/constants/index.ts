@@ -1,9 +1,13 @@
-export const SINGLE_VALUE_IDS = [
-    'Y84OyZE4xl1',
-    'i3tXkgQC5Ch',
-    'HXXaN5DlzPy',
-    'a0mgU9XScOo',
-] as const
-
-export const MAP_ID = 'N16mRCj6aBg'
-export const BAR_CHART_ID = 'xNVizJ76JuU'
+export const TOTAL_FEVER_ID = 'IiwQzDGNNkw'
+export const CONFIRMED_FACILITY_ID = 'FKw0ccQbAJ2'
+export const CLINICAL_DIAGNOSIS_ID = 'ewU4Qoo3oyv'
+export const CONFIRMED_COMMUNITY_ID = 'MJqBS0Ln1TW'
+export const MONTHLY_TREND_ID = 'bCbxJDlb0ru'
+export const OUTCOMES_ID = 'r4KSTFDjfc3'
+export const SEVERE_CASES_ID = 'nnjHx2vh0ip'
+export const SEVERE_TREATED_ID = 'NKPojkgizok'
+export const DEATHS_ID = 'MC6aEkeR7OW'
+export const ANC_POSITIVITY_ID = 'YZAc75qa0tj'
+export const CONFIRMED_MALE_ID = 'njaHw3BFoaX'
+export const CONFIRMED_FEMALE_ID = 'JDZ7zFfrs0g'
+export const MAP_ID = 'X93jCrzwHEB'
