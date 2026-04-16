@@ -14,7 +14,7 @@ export function FilterBar() {
     }
 
     return (
-        <div className="flex items-center gap-3 border-b border-gray-200 bg-gray-50 px-6 py-2.5">
+        <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50 px-6 py-2.5">
             <div className="flex items-center gap-1.5 text-gray-400">
                 <IconFilter16 />
                 <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">
