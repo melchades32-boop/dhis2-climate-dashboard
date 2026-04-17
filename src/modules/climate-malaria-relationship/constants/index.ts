@@ -1,6 +1,5 @@
-export const LINE_CHART_IDS = [
-    'wrtPkm1Rv4y',
-    'OUpDCbyuED2',
-    'puOGkpXEcky',
-    'bmg0YliBZ6B',
-] as const
+export const CLIMATIC_SUITABILITY_MAP_ID = 'Tit6Mnw3Vxm'
+export const PRECIPITATION_MALARIA_MAP_ID = 'GBIO5jk4gYD'
+export const TEMPERATURE_CORRELATION_VIZ_ID = 'GwWgJn7ijOI'
+export const PRECIPITATION_CORRELATION_VIZ_ID = 'wPcetIOuu8e'
+export const HUMIDITY_CORRELATION_VIZ_ID = 'aIzVPCcXNku'
