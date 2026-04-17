@@ -87,7 +87,10 @@ export const MapVisualizer = memo(function MapVisualizer({
                         enabled: true,
                         position: 'topright',
                     },
-                    radius: view.radiusHigh,
+                    radius: {
+                        min: view.radiusLow ?? 8,
+                        max: view.radiusHigh ?? 15,
+                    },
                 } as ThematicLayerConfig
             })
             .filter((l): l is ThematicLayerConfig => l !== null)
@@ -165,6 +168,7 @@ export const MapVisualizer = memo(function MapVisualizer({
                 bounceAtZoomLimits: true,
                 boxZoom: true,
                 zoom: mapConfig.zoom ?? 1,
+                attributionControl: false,
                 style: {
                     height: '100%',
                     width: '100%',
