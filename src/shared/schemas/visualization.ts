@@ -330,6 +330,26 @@ export const visualizationSchema = z.object({
     rowSubTotals: z.boolean(),
     rowTotals: z.boolean(),
     rows: z.array(dimension),
+    axes: z
+        .array(
+            z.object({
+                index: z.number(),
+                type: z.string().optional(),
+                title: z
+                    .object({
+                        text: z.string().optional(),
+                        textMode: z.string().optional(),
+                        fontStyle: z
+                            .object({
+                                bold: z.boolean().optional(),
+                                textColor: z.string().optional(),
+                            })
+                            .optional(),
+                    })
+                    .optional(),
+            })
+        )
+        .optional(),
     series: z
         .array(
             z.object({

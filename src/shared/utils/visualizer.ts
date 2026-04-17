@@ -14,6 +14,7 @@ import {
     DataDimensionItem,
     DimensionConfig,
     LegendSetConfig,
+    VisualizationChartType,
     VisualizationConfig,
 } from '@/shared/schemas'
 
@@ -92,30 +93,85 @@ export function getMultiSeriesConfig(
     const dxItems =
         allDimensions.find((d) => d.dimension === 'dx')?.items ?? []
 
-    const seriesItems = config.series.map((s, i) => ({
-        id: dxItems[i]?.id ?? s.dimensionItem,
-        as: (s.type?.toLowerCase() === 'column' ? 'column' : 'line') as
-            | 'column'
-            | 'line',
-        // DHIS2 axis 1 → left (yAxis 0), axis 2+ → right (yAxis 1)
-        yAxis: (s.axis ?? 1) > 1 ? 1 : 0,
-    }))
+  
+    const overrideById = new Map(config.series.map((s) => [s.dimensionItem, s]))
+ 
+    const baseAs: 'column' | 'line' =
+        config.type === VisualizationChartType.COLUMN ||
+        config.type === VisualizationChartType.BAR
+            ? 'column'
+            : 'line'
 
-    const hasSecondAxis = config.series.some((s) => (s.axis ?? 1) > 1)
+    const seriesItems = dxItems.map((item) => {
+        const override = overrideById.get(item.id)
+        const as: 'column' | 'line' = override?.type
+            ? (override.type.toLowerCase() === 'column' ? 'column' : 'line')
+            : baseAs
+         const yAxis = override?.axis ?? 0
+        return { id: item.id, as, yAxis }
+    })
+
+    // Only activate multi-series if there is a genuine mix of types or axes
+    const uniqueTypes = new Set(seriesItems.map((s) => s.as))
+    const uniqueAxes = new Set(seriesItems.map((s) => s.yAxis))
+    if (uniqueTypes.size <= 1 && uniqueAxes.size <= 1) { return undefined }
+
+    const hasSecondAxis = uniqueAxes.has(1)
+    const axisConfigs = config.axes ?? []
+    const axisBase = (index: number) => {
+        const axisConfig = axisConfigs.find((a) => a.index === index)
+        const titleText = axisConfig?.title?.text ?? ''
+        const titleColor = axisConfig?.title?.fontStyle?.textColor ?? '#000000'
+        const bold = axisConfig?.title?.fontStyle?.bold ?? false
+        return {
+            title: {
+                text: titleText,
+                style: {
+                    color: titleColor,
+                    fontWeight: bold ? 'bold' : 'normal',
+                    fontSize: '14px',
+                },
+            },
+            labels: {
+                enabled: true,
+                style: { color: '#000000', fontWeight: 'normal', fontSize: '14px' },
+            },
+            plotLines: [
+                { color: '#000000', dashStyle: 'Solid', width: 2, zIndex: 1000, label: { text: '' } },
+                { color: '#bbbbbb', dashStyle: 'Solid', zIndex: 1000, width: 2, label: { text: '' } },
+            ],
+        }
+    }
+
     const yAxes = hasSecondAxis
-        ? [{ opposite: false }, { opposite: true }]
+        ? [axisBase(0), { ...axisBase(1), opposite: true }]
         : undefined
 
     return { series: seriesItems, yAxes }
 }
 
 export function getSeriesColors(config: VisualizationConfig): MultiSeriesColors {
-    const seriesColors = (config.series ?? []).map((s) => s.color ?? '')
-    const hasCustomColors = seriesColors.some((c) => c !== '')
-    return {
-        seriesColors: hasCustomColors ? seriesColors : [],
-        hasCustomColors,
+    if (!config.series || config.series.length === 0) {
+        return { seriesColors: [], hasCustomColors: false }
     }
+
+    const colorById = new Map(
+        config.series.filter((s) => s.color).map((s) => [s.dimensionItem, s.color!])
+    )
+    if (colorById.size === 0) {
+        return { seriesColors: [], hasCustomColors: false }
+    }
+
+    const allDimensions = [
+        ...config.columns,
+        ...config.rows,
+        ...config.filters,
+    ]
+    const dxItems =
+        allDimensions.find((d) => d.dimension === 'dx')?.items ?? []
+
+    const seriesColors = dxItems.map((item) => colorById.get(item.id) ?? '')
+    return { seriesColors, hasCustomColors: true }
 }
 
 export function getChartType(config: VisualizationConfig): ChartType {
