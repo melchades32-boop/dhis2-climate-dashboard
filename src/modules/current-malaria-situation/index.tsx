@@ -27,17 +27,17 @@ function CurrentMalariaSituation() {
             {/* Left column */}
             <div className="flex flex-col gap-4 min-w-0 xl:flex-7">
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-                    <VisualizationItem id={TOTAL_FEVER_ID} className="h-36" />
-                    <VisualizationItem id={CONFIRMED_FACILITY_ID} className="h-36" />
-                    <VisualizationItem id={CLINICAL_DIAGNOSIS_ID} className="h-36" />
-                    <VisualizationItem id={CONFIRMED_COMMUNITY_ID} className="h-36" />
+                    <VisualizationItem id={TOTAL_FEVER_ID} className="h-40" />
+                    <VisualizationItem id={CONFIRMED_FACILITY_ID} className="h-40" />
+                    <VisualizationItem id={CLINICAL_DIAGNOSIS_ID} className="h-40" />
+                    <VisualizationItem id={CONFIRMED_COMMUNITY_ID} className="h-40" />
                 </div>
-                <div className="flex flex-col gap-2 md:flex-row md:h-105">
-                    <VisualizationItem id={MONTHLY_TREND_ID} className="h-80 md:h-full md:flex-3" />
+                <div className="flex flex-col gap-2 md:flex-row md:h-128">
+                    <VisualizationItem id={MONTHLY_TREND_ID} className="h-96 md:h-full md:flex-3" />
                     <div className="grid grid-cols-3 gap-2 md:flex md:flex-col md:flex-1">
-                        <VisualizationItem id={SEVERE_CASES_ID} className="h-36 md:h-auto md:flex-1" />
-                        <VisualizationItem id={SEVERE_TREATED_ID} className="h-36 md:h-auto md:flex-1" />
-                        <VisualizationItem id={DEATHS_ID} className="h-36 md:h-auto md:flex-1" />
+                        <VisualizationItem id={SEVERE_CASES_ID} className="h-36 md:flex-1" />
+                        <VisualizationItem id={SEVERE_TREATED_ID} className="h-36 md:flex-1" />
+                        <VisualizationItem id={DEATHS_ID} className="h-36 md:flex-1" />
                     </div>
                 </div>
                 <div className="grid grid-cols-1 gap-2 md:grid-cols-3">

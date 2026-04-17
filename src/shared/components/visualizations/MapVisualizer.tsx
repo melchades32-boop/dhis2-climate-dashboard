@@ -88,8 +88,8 @@ export const MapVisualizer = memo(function MapVisualizer({
                         position: 'topright',
                     },
                     radius: {
-                        min: view.radiusLow ?? 8,
-                        max: view.radiusHigh ?? 15,
+                        min: view.radiusLow ?? 20,
+                        max: view.radiusHigh ?? 20,
                     },
                 } as ThematicLayerConfig
             })

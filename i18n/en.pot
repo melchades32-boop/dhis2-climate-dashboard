@@ -5,14 +5,17 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-04-16T11:29:34.791Z\n"
-"PO-Revision-Date: 2026-04-16T11:29:34.791Z\n"
+"POT-Creation-Date: 2026-04-17T10:13:20.376Z\n"
+"PO-Revision-Date: 2026-04-17T10:13:20.376Z\n"
 
 msgid "Location"
 msgstr "Location"
 
 msgid "Period"
 msgstr "Period"
+
+msgid "Clear filters"
+msgstr "Clear filters"
 
 msgid "Org unit"
 msgstr "Org unit"
@@ -34,3 +37,11 @@ msgstr "Full page"
 
 msgid "Filters"
 msgstr "Filters"
+
+msgctxt "Application title"
+msgid "__MANIFEST_APP_TITLE"
+msgstr "dhis2-climate-dashboard"
+
+msgctxt "Application description"
+msgid "__MANIFEST_APP_DESCRIPTION"
+msgstr ""

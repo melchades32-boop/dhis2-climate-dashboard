@@ -1,6 +1,6 @@
 import i18n from '@dhis2/d2-i18n'
-import { Card } from '@dhis2/ui'
-import { IconCalendar16, IconWorld16 } from '@dhis2/ui-icons'
+import { Button, Card } from '@dhis2/ui'
+import { IconCalendar16, IconCross16, IconWorld16 } from '@dhis2/ui-icons'
 import { OrgUnitSelectorModal, PeriodSelectorModal } from '@hisptz/dhis2-ui'
 import { useState } from 'react'
 import { useFilters } from '@/shared/hooks/useFilters'
@@ -33,7 +33,9 @@ function FilterInput({
 export function FilterBarCompact() {
     const [ouOpen, setOuOpen] = useState(false)
     const [peOpen, setPeOpen] = useState(false)
-    const { orgUnitIds, setOrgUnitIds, periodIds, setPeriodIds } = useFilters()
+    const { orgUnitIds, setOrgUnitIds, periodIds, setPeriodIds, clearFilters } = useFilters()
+
+    const hasFilters = orgUnitIds.length > 0 || periodIds.length > 0
 
     const ouValue = orgUnitIds.length > 0
         ? i18n.t('{{count}} selected', { count: orgUnitIds.length })
@@ -45,7 +47,7 @@ export function FilterBarCompact() {
 
     return (
         <Card>
-            <div className='flex gap-4 p-4'>
+            <div className='flex items-end gap-4 p-4'>
                 <FilterInput
                     label={i18n.t('Location')}
                     value={ouValue}
@@ -58,6 +60,16 @@ export function FilterBarCompact() {
                     icon={<IconCalendar16 />}
                     onClick={() => setPeOpen(true)}
                 />
+                {hasFilters && (
+                    <Button
+                        small
+                        secondary
+                        icon={<IconCross16 />}
+                        onClick={clearFilters}
+                    >
+                        {i18n.t('Clear filters')}
+                    </Button>
+                )}
 
                 {ouOpen && (
                     <OrgUnitSelectorModal

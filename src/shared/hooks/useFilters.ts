@@ -23,11 +23,16 @@ export function useFilters() {
     if (search.ou) { paramsMap.set('ou', search.ou) }
     if (search.pe) { paramsMap.set('pe', search.pe) }
 
+    function clearFilters() {
+        navigate({ search: { ou: undefined, pe: undefined } })
+    }
+
     return {
         orgUnitIds: search.ou ? search.ou.split(',') : [],
         periodIds: search.pe ? search.pe.split(',') : [],
         setOrgUnitIds,
         setPeriodIds,
+        clearFilters,
         paramsMap,
     }
 }
