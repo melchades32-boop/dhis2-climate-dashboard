@@ -1,5 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { LINE_CHART_IDS } from './constants'
+import {
+    CLIMATIC_SUITABILITY_MAP_ID,
+    HUMIDITY_CORRELATION_VIZ_ID,
+    PRECIPITATION_CORRELATION_VIZ_ID,
+    PRECIPITATION_MALARIA_MAP_ID,
+    TEMPERATURE_CORRELATION_VIZ_ID,
+} from './constants'
+import { MapItem } from '@/shared/components/visualizations/MapItem'
 import { VisualizationItem } from '@/shared/components/visualizations/VisualizationItem'
 
 export const Route = createFileRoute('/climate-malaria-relationship/')({
@@ -8,10 +15,18 @@ export const Route = createFileRoute('/climate-malaria-relationship/')({
 
 function ClimateMalariaRelationship() {
     return (
-        <div className="grid grid-cols-1 gap-4">
-            {LINE_CHART_IDS.map((id) => (
-                <VisualizationItem key={id} id={id} className="h-160" />
-            ))}
+        <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <MapItem id={CLIMATIC_SUITABILITY_MAP_ID} className="h-160" />
+                <MapItem id={PRECIPITATION_MALARIA_MAP_ID} className="h-160" />
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <VisualizationItem id={TEMPERATURE_CORRELATION_VIZ_ID} className="h-160" />
+                <VisualizationItem id={PRECIPITATION_CORRELATION_VIZ_ID} className="h-160" />
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+                <VisualizationItem id={HUMIDITY_CORRELATION_VIZ_ID} className="h-160" />
+            </div>
         </div>
     )
 }
