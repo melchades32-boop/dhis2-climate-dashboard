@@ -4,6 +4,7 @@ import {
     HUMIDITY_CORRELATION_VIZ_ID,
     PRECIPITATION_CORRELATION_VIZ_ID,
     PRECIPITATION_MALARIA_MAP_ID,
+    RELATIONSHIP_BTN_CLIMATE_COVARIATES_ID,
     TEMPERATURE_CORRELATION_VIZ_ID,
 } from './constants'
 import { MapItem } from '@/shared/components/visualizations/MapItem'
@@ -24,8 +25,10 @@ function ClimateMalariaRelationship() {
                 <VisualizationItem id={TEMPERATURE_CORRELATION_VIZ_ID} className="h-160" />
                 <VisualizationItem id={PRECIPITATION_CORRELATION_VIZ_ID} className="h-160" />
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <VisualizationItem id={HUMIDITY_CORRELATION_VIZ_ID} className="h-160" />
+                <VisualizationItem id={RELATIONSHIP_BTN_CLIMATE_COVARIATES_ID} className="h-160" />
+
             </div>
         </div>
     )
