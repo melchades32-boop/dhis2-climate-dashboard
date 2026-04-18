@@ -11,10 +11,17 @@ const CardLoading = () => (
     </div>
 )
 
-const CardError = ({ error, title }: { error?: Error | null; title?: string }) => (
+const CardError = ({
+    error,
+    title,
+}: {
+    error?: Error | null
+    title?: string
+}) => (
     <div className="p-4">
         <NoticeBox error title={title ?? i18n.t('Visualization Error')}>
-            {error?.message ?? i18n.t('An error occurred while loading the visualization')}
+            {error?.message ??
+                i18n.t('An error occurred while loading the visualization')}
         </NoticeBox>
     </div>
 )
@@ -43,7 +50,9 @@ class VisualizationErrorBoundary extends React.Component<
 
     render() {
         if (this.state.hasError) {
-            return <CardError error={this.state.error} title={this.props.title} />
+            return (
+                <CardError error={this.state.error} title={this.props.title} />
+            )
         }
         return this.props.children
     }
@@ -94,15 +103,19 @@ export const DisplayItemContainer = memo<DisplayItemContainerProps>(
                         )}
                         <div className="ml-auto">
                             <VisualizationMenu
-                            onFullscreen={handleFullscreen}
-                            selectedOrgUnits={selectedOrgUnits}
-                            selectedPeriods={selectedPeriods}
-                            onOrgUnitChange={onOrgUnitChange}
-                            onPeriodChange={onPeriodChange}
-                        />
+                                onFullscreen={handleFullscreen}
+                                selectedOrgUnits={selectedOrgUnits}
+                                selectedPeriods={selectedPeriods}
+                                onOrgUnitChange={onOrgUnitChange}
+                                onPeriodChange={onPeriodChange}
+                            />
                         </div>
                     </div>
-                    <FullScreen handle={handle} className="min-h-0 flex-1 bg-white" onChange={handleFullscreenChange}>
+                    <FullScreen
+                        handle={handle}
+                        className="min-h-0 flex-1 bg-white"
+                        onChange={handleFullscreenChange}
+                    >
                         <div className="h-full overflow-hidden p-4">
                             {error ? (
                                 <CardError error={error} title={title} />

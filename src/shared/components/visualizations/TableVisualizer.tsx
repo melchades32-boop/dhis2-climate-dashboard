@@ -2,13 +2,21 @@ import { DHIS2PivotTable } from '@hisptz/dhis2-analytics'
 import { LegendSet } from '@hisptz/dhis2-utils'
 import { isArray, isEmpty } from 'lodash'
 import { RefObject, useMemo } from 'react'
-import { AnalyticsData, DimensionConfig, VisualizationConfig } from '@/shared/schemas'
+import {
+    AnalyticsData,
+    DimensionConfig,
+    VisualizationConfig,
+} from '@/shared/schemas'
 import { getVisualizationLegendSet } from '@/shared/utils'
 
 function getDimensionLabel(dim: DimensionConfig): string | undefined {
-    if (dim.dimension !== 'ou') { return undefined }
+    if (dim.dimension !== 'ou') {
+        return undefined
+    }
     const levelItem = dim.items.find((item) => item.id.startsWith('LEVEL-'))
-    if (!levelItem) { return undefined }
+    if (!levelItem) {
+        return undefined
+    }
     const name = levelItem.displayName || levelItem.name
     return name ? `${name} levels` : undefined
 }

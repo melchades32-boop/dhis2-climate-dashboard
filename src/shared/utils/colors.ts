@@ -12,4 +12,3 @@ export function getForeground(backgroundColor: string) {
 
     return brightness > threshold ? 'black' : 'white'
 }
-

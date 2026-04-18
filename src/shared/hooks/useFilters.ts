@@ -9,19 +9,29 @@ export function useFilters() {
 
     function setOrgUnitIds(ids: string[]) {
         navigate({
-            search: { ...search, ou: ids.length > 0 ? ids.join(',') : undefined },
+            search: {
+                ...search,
+                ou: ids.length > 0 ? ids.join(',') : undefined,
+            },
         })
     }
 
     function setPeriodIds(ids: string[]) {
         navigate({
-            search: { ...search, pe: ids.length > 0 ? ids.join(',') : undefined },
+            search: {
+                ...search,
+                pe: ids.length > 0 ? ids.join(',') : undefined,
+            },
         })
     }
 
     const paramsMap = new Map<string, string>()
-    if (search.ou) { paramsMap.set('ou', search.ou) }
-    if (search.pe) { paramsMap.set('pe', search.pe) }
+    if (search.ou) {
+        paramsMap.set('ou', search.ou)
+    }
+    if (search.pe) {
+        paramsMap.set('pe', search.pe)
+    }
 
     function clearFilters() {
         navigate({ search: { ou: undefined, pe: undefined } })

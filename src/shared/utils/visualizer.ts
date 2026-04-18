@@ -18,7 +18,6 @@ import {
     VisualizationConfig,
 } from '@/shared/schemas'
 
-
 interface MultiSeriesConfig {
     series?: Array<{ id: string; as: 'column' | 'line'; yAxis?: number }>
     yAxes?: Array<Partial<YAxisOptions>>
@@ -83,19 +82,15 @@ export type { MultiSeriesConfig }
 export function getMultiSeriesConfig(
     config: VisualizationConfig
 ): MultiSeriesConfig | undefined {
-    if (!config.series || config.series.length === 0) { return undefined }
+    if (!config.series || config.series.length === 0) {
+        return undefined
+    }
 
-    const allDimensions = [
-        ...config.columns,
-        ...config.rows,
-        ...config.filters,
-    ]
-    const dxItems =
-        allDimensions.find((d) => d.dimension === 'dx')?.items ?? []
+    const allDimensions = [...config.columns, ...config.rows, ...config.filters]
+    const dxItems = allDimensions.find((d) => d.dimension === 'dx')?.items ?? []
 
-  
     const overrideById = new Map(config.series.map((s) => [s.dimensionItem, s]))
- 
+
     const baseAs: 'column' | 'line' =
         config.type === VisualizationChartType.COLUMN ||
         config.type === VisualizationChartType.BAR
@@ -105,16 +100,20 @@ export function getMultiSeriesConfig(
     const seriesItems = dxItems.map((item) => {
         const override = overrideById.get(item.id)
         const as: 'column' | 'line' = override?.type
-            ? (override.type.toLowerCase() === 'column' ? 'column' : 'line')
+            ? override.type.toLowerCase() === 'column'
+                ? 'column'
+                : 'line'
             : baseAs
-         const yAxis = override?.axis ?? 0
+        const yAxis = override?.axis ?? 0
         return { id: item.id, as, yAxis }
     })
 
     // Only activate multi-series if there is a genuine mix of types or axes
     const uniqueTypes = new Set(seriesItems.map((s) => s.as))
     const uniqueAxes = new Set(seriesItems.map((s) => s.yAxis))
-    if (uniqueTypes.size <= 1 && uniqueAxes.size <= 1) { return undefined }
+    if (uniqueTypes.size <= 1 && uniqueAxes.size <= 1) {
+        return undefined
+    }
 
     const hasSecondAxis = uniqueAxes.has(1)
     const axisConfigs = config.axes ?? []
@@ -134,11 +133,27 @@ export function getMultiSeriesConfig(
             },
             labels: {
                 enabled: true,
-                style: { color: '#000000', fontWeight: 'normal', fontSize: '14px' },
+                style: {
+                    color: '#000000',
+                    fontWeight: 'normal',
+                    fontSize: '14px',
+                },
             },
             plotLines: [
-                { color: '#000000', dashStyle: 'Solid', width: 2, zIndex: 1000, label: { text: '' } },
-                { color: '#bbbbbb', dashStyle: 'Solid', zIndex: 1000, width: 2, label: { text: '' } },
+                {
+                    color: '#000000',
+                    dashStyle: 'Solid',
+                    width: 2,
+                    zIndex: 1000,
+                    label: { text: '' },
+                },
+                {
+                    color: '#bbbbbb',
+                    dashStyle: 'Solid',
+                    zIndex: 1000,
+                    width: 2,
+                    label: { text: '' },
+                },
             ],
         }
     }
@@ -150,25 +165,24 @@ export function getMultiSeriesConfig(
     return { series: seriesItems, yAxes }
 }
 
-export function getSeriesColors(config: VisualizationConfig): MultiSeriesColors {
+export function getSeriesColors(
+    config: VisualizationConfig
+): MultiSeriesColors {
     if (!config.series || config.series.length === 0) {
         return { seriesColors: [], hasCustomColors: false }
     }
 
     const colorById = new Map(
-        config.series.filter((s) => s.color).map((s) => [s.dimensionItem, s.color!])
+        config.series
+            .filter((s) => s.color)
+            .map((s) => [s.dimensionItem, s.color!])
     )
     if (colorById.size === 0) {
         return { seriesColors: [], hasCustomColors: false }
     }
 
-    const allDimensions = [
-        ...config.columns,
-        ...config.rows,
-        ...config.filters,
-    ]
-    const dxItems =
-        allDimensions.find((d) => d.dimension === 'dx')?.items ?? []
+    const allDimensions = [...config.columns, ...config.rows, ...config.filters]
+    const dxItems = allDimensions.find((d) => d.dimension === 'dx')?.items ?? []
 
     const seriesColors = dxItems.map((item) => colorById.get(item.id) ?? '')
     return { seriesColors, hasCustomColors: true }

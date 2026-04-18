@@ -38,14 +38,27 @@ export function YearOverYearVisualizer({
                     enabled: true,
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     formatter(this: any) {
-                        if (this.y == null) { return null }
-                        return Highcharts.numberFormat(this.y as number, 0, '.', ',')
+                        if (this.y == null) {
+                            return null
+                        }
+                        return Highcharts.numberFormat(
+                            this.y as number,
+                            0,
+                            '.',
+                            ','
+                        )
                     },
-                    style: { fontSize: '10px', fontWeight: 'normal', textOutline: 'none' },
+                    style: {
+                        fontSize: '10px',
+                        fontWeight: 'normal',
+                        textOutline: 'none',
+                    },
                 },
                 data: categories.map((category) => {
                     const row = rows.find((row) => row.includes(category))
-                    if (!row) { return null }
+                    if (!row) {
+                        return null
+                    }
                     return parseFloat(row[valueIndex]!)
                 }),
             } as unknown as Highcharts.SeriesOptionsType
@@ -69,14 +82,17 @@ export function YearOverYearVisualizer({
             visualization?.type === VisualizationChartType.YEAR_OVER_YEAR_LINE
                 ? 'line'
                 : 'column'
-        const subtitleText = visualization?.title
-            ?? (isEmpty(visualization?.filters)
+        const subtitleText =
+            visualization?.title ??
+            (isEmpty(visualization?.filters)
                 ? ''
                 : visualization.filters
-                    ?.map((filter) =>
-                        filter.items.map((item) => item.displayName).join(', ')
-                    )
-                    .join(', '))
+                      ?.map((filter) =>
+                          filter.items
+                              .map((item) => item.displayName)
+                              .join(', ')
+                      )
+                      .join(', '))
 
         return {
             chart: { type: chartType },

@@ -1,78 +1,112 @@
 import Highcharts from 'highcharts'
 import 'highcharts/highcharts-more'
 import HighchartsReact from 'highcharts-react-official'
-import { forwardRef, useMemo } from 'react'
+import { forwardRef, useMemo, useRef } from 'react'
+import { useResizeObserver } from 'usehooks-ts'
+import type { ForecastRow } from '@/modules/chap-forecast-alerts/schemas'
+import { formatPeriod } from '@/modules/chap-forecast-alerts/utils/periods'
 import type { ChartRef } from '@/shared/schemas'
 
-//TODO Dummy data matching the chart's period range (202310 → 202512)
-const PERIODS = [
-    '202310', '202311', '202312',
-    '202401', '202402', '202403', '202404', '202405', '202406',
-    '202407', '202408', '202409', '202410', '202411', '202412',
-    '202501', '202502', '202503', '202504', '202505', '202506',
-    '202507', '202508', '202509', '202510', '202511', '202512',
-]
+interface PredictionChartProps {
+    rows: ForecastRow[]
+    historicalCount: number
+    orgUnitName?: string
+}
 
-const ACTUAL_CASES: (number | null)[] = [
-    1600, 1450, 1500,
-    1550, 1480, 1520, 1600, 2200, 5700, 4800, 3600, 2700,
-    2600, 2600, 2550,
-    2600, 200, 500, 1200, 1800, 1900,
-    2000, 1900, 1850, 3400, null, null,
-]
+function buildForecastLabel(rows: ForecastRow[]): string {
+    const pred = rows.filter((r) => r.isPrediction)
+    if (pred.length === 0) {
+        return ''
+    }
+    const first = formatPeriod(pred[0].period)
+    const last = formatPeriod(pred[pred.length - 1].period)
+    const [firstMon, firstYear] = first.split(' ')
+    const [lastMon, lastYear] = last.split(' ')
+    return firstYear === lastYear
+        ? `${firstMon}–${lastMon} ${firstYear}`
+        : `${first}–${last}`
+}
 
-// Prediction starts at index 24 (202510)
-const PREDICTION_START = 24
+export const PredictionChart = forwardRef<
+    HighchartsReact.RefObject,
+    PredictionChartProps
+>(function PredictionChart({ rows, historicalCount, orgUnitName }, ref) {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const { height = 0 } = useResizeObserver<HTMLDivElement>({
+        // @ts-expect-error ref will always have a nullable value
+        ref: containerRef!,
+        box: 'border-box',
+    })
 
-const MEDIAN_PREDICTION: (number | null)[] = PERIODS.map((_, i) =>
-    i >= PREDICTION_START ? [2900, 2400, 1600][i - PREDICTION_START] : null,
-)
+    const options = useMemo<Highcharts.Options>(() => {
+        const categories = rows.map((r) => r.label)
+        const forecastLabel = buildForecastLabel(rows)
+        const subtitleParts = [
+            orgUnitName,
+            forecastLabel ? `CHAP Forecast: ${forecastLabel}` : '',
+        ].filter(Boolean)
 
-const BAND_80: ([number, number] | null)[] = PERIODS.map((_, i) =>
-    i >= PREDICTION_START
-        ? ([
-              [900, 4100],
-              [700, 3800],
-              [400, 4200],
-          ][i - PREDICTION_START] as [number, number])
-        : null,
-)
+        // Actual cases — historical only
+        const actualData: (number | null)[] = rows.map((r) =>
+            !r.isPrediction ? r.actual : null
+        )
 
-const BAND_50: ([number, number] | null)[] = PERIODS.map((_, i) =>
-    i >= PREDICTION_START
-        ? ([
-              [2300, 3500],
-              [1800, 3100],
-              [1000, 2500],
-          ][i - PREDICTION_START] as [number, number])
-        : null,
-)
+        // Median forecast — anchor to last historical point for visual continuity
+        const lastHistoricalIdx = historicalCount - 1
+        const medianData: (number | null)[] = rows.map((r, i) => {
+            if (r.isPrediction) {
+                return r.quantileMedian
+            }
+            if (i === lastHistoricalIdx) {
+                return r.actual
+            }
+            return null
+        })
 
-export const PredictionChart = forwardRef<HighchartsReact.RefObject>(
-function PredictionChart(_props, ref) {
-    const options = useMemo<Highcharts.Options>(
-        () => ({
+        // 80% CI band Q10–Q90
+        const band80: ([number, number] | null)[] = rows.map((r) =>
+            r.isPrediction && r.quantileLow !== null && r.quantileHigh !== null
+                ? [r.quantileLow, r.quantileHigh]
+                : null
+        )
+
+        // 50% CI band Q25–Q75
+        const band50: ([number, number] | null)[] = rows.map((r) =>
+            r.isPrediction &&
+            r.quantileMidLow !== null &&
+            r.quantileMidHigh !== null
+                ? [r.quantileMidLow, r.quantileMidHigh]
+                : null
+        )
+
+        return {
             chart: {
                 type: 'line',
+                height: height || undefined,
                 style: { fontFamily: 'inherit' },
+                animation: false,
             },
-            title: {
-                text: 'Prediction for OPD - IPD-Comm - Malaria (OPD) for Abiemnhom County',
-                style: { fontSize: '14px', fontWeight: '600' },
-            },
+            title: { text: undefined },
+            subtitle:
+                subtitleParts.length > 0
+                    ? {
+                          text: subtitleParts.join(' | '),
+                          style: { fontSize: '12px', color: '#6b7280' },
+                          align: 'left',
+                      }
+                    : undefined,
             xAxis: {
-                categories: PERIODS,
-                tickInterval: 2,
+                categories,
                 labels: { style: { fontSize: '11px' } },
             },
             yAxis: {
-                title: { text: undefined },
+                title: { text: 'Confirmed Cases' },
                 min: 0,
                 tickAmount: 5,
                 labels: {
                     formatter() {
                         const v = this.value as number
-                        return v >= 1000 ? `${v / 1000}k` : `${v}`
+                        return v >= 1000 ? `${(v / 1000).toFixed(1)}k` : `${v}`
                     },
                 },
             },
@@ -85,63 +119,122 @@ function PredictionChart(_props, ref) {
             tooltip: {
                 shared: true,
                 crosshairs: true,
+                formatter() {
+                    const pts = this.points ?? []
+                    let s = `<b>${this.x}</b><br/>`
+                    for (const pt of pts) {
+                        s += `<span style="color:${pt.color}">\u25CF</span> ${pt.series.name}: `
+                        if (
+                            pt.point.low !== undefined &&
+                            pt.point.high !== undefined
+                        ) {
+                            s += `${Math.round(pt.point.low).toLocaleString()} – ${Math.round(pt.point.high).toLocaleString()}`
+                        } else {
+                            s +=
+                                pt.y !== null && pt.y !== undefined
+                                    ? Math.round(pt.y).toLocaleString()
+                                    : '—'
+                        }
+                        s += '<br/>'
+                    }
+                    return s
+                },
+                useHTML: true,
             },
             plotOptions: {
                 arearange: {
                     lineWidth: 0,
                     marker: { enabled: false },
                     states: { hover: { lineWidthPlus: 0 } },
+                    connectNulls: false,
                 },
                 line: {
                     marker: { enabled: false },
+                    connectNulls: false,
                 },
             },
             series: [
                 {
                     type: 'line',
                     name: 'Actual Cases',
-                    data: ACTUAL_CASES,
+                    data: actualData,
                     color: '#f97316',
                     lineWidth: 2,
                     zIndex: 4,
+                    dataLabels: {
+                        enabled: true,
+                        formatter() {
+                            if (this.y === null || this.y === undefined) {
+                                return null
+                            }
+                            return this.y >= 1000
+                                ? `${(this.y / 1000).toFixed(1)}k`
+                                : `${Math.round(this.y)}`
+                        },
+                        style: {
+                            fontSize: '10px',
+                            fontWeight: '600',
+                            color: '#f97316',
+                            textOutline: 'none',
+                        },
+                    },
                 },
                 {
                     type: 'line',
-                    name: 'Median prediction',
-                    data: MEDIAN_PREDICTION,
+                    name: 'Median Forecast',
+                    data: medianData,
                     color: '#1e3a8a',
-                    lineWidth: 3,
+                    lineWidth: 2,
+                    dashStyle: 'ShortDash',
                     zIndex: 5,
-                    dashStyle: 'Solid',
+                    dataLabels: {
+                        enabled: true,
+                        formatter() {
+                            if (this.y === null || this.y === undefined) {
+                                return null
+                            }
+                            return this.y >= 1000
+                                ? `${(this.y / 1000).toFixed(1)}k`
+                                : `${Math.round(this.y)}`
+                        },
+                        style: {
+                            fontSize: '10px',
+                            fontWeight: '600',
+                            color: '#1e3a8a',
+                            textOutline: 'none',
+                        },
+                    },
                 },
                 {
                     type: 'arearange',
-                    name: '80% prediction interval',
-                    data: BAND_80,
+                    name: '80% interval (Q10–Q90)',
+                    data: band80,
                     color: '#93c5fd',
-                    fillOpacity: 0.35,
+                    fillOpacity: 0.3,
                     zIndex: 2,
-                    linkedTo: ':previous',
                 },
                 {
                     type: 'arearange',
-                    name: '50% prediction interval',
-                    data: BAND_50,
+                    name: '50% interval (Q25–Q75)',
+                    data: band50,
                     color: '#3b82f6',
                     fillOpacity: 0.45,
                     zIndex: 3,
                 },
             ],
+            exporting: { enabled: false },
             credits: { enabled: false },
-        }),
-        [],
-    )
+        }
+    }, [rows, historicalCount, orgUnitName, height])
 
     return (
-        <HighchartsReact
-            highcharts={Highcharts}
-            options={options}
-            ref={ref as ChartRef}
-        />
+        <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+            <HighchartsReact
+                highcharts={Highcharts}
+                options={options}
+                ref={ref as ChartRef}
+                containerProps={{ style: { height: '100%' } }}
+            />
+        </div>
     )
 })

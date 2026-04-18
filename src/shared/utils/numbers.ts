@@ -3,4 +3,3 @@ export const numberFormatter = (value: number) =>
         notation: 'standard',
         maximumFractionDigits: 2,
     }).format(value)
-

@@ -54,7 +54,9 @@ export function useAnalytics({
     })
 
     useEffect(() => {
-        if (!visualizationConfig) { return }
+        if (!visualizationConfig) {
+            return
+        }
         refetch({
             filters: getVisualizationFilters(visualizationConfig, {
                 searchParams: params,
@@ -67,7 +69,13 @@ export function useAnalytics({
                 selectedPeriods,
             }),
         })
-    }, [refetch, params, selectedOrgUnits, selectedPeriods, visualizationConfig])
+    }, [
+        refetch,
+        params,
+        selectedOrgUnits,
+        selectedPeriods,
+        visualizationConfig,
+    ])
 
     return {
         loading,
@@ -151,7 +159,9 @@ export function useYearOverYearAnalytics({
     const dx = dataFilter ? dataFilter.items.map((item) => item.id) : []
 
     useEffect(() => {
-        if (!visualizationConfig) { return }
+        if (!visualizationConfig) {
+            return
+        }
         async function fetchYearlyAnalytics() {
             const yearData = new Map<string, AnalyticsData>()
             for (const yearId of yearsToFetch.reverse()) {

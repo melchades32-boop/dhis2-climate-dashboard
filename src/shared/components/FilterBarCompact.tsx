@@ -33,21 +33,24 @@ function FilterInput({
 export function FilterBarCompact() {
     const [ouOpen, setOuOpen] = useState(false)
     const [peOpen, setPeOpen] = useState(false)
-    const { orgUnitIds, setOrgUnitIds, periodIds, setPeriodIds, clearFilters } = useFilters()
+    const { orgUnitIds, setOrgUnitIds, periodIds, setPeriodIds, clearFilters } =
+        useFilters()
 
     const hasFilters = orgUnitIds.length > 0 || periodIds.length > 0
 
-    const ouValue = orgUnitIds.length > 0
-        ? i18n.t('{{count}} selected', { count: orgUnitIds.length })
-        : ''
+    const ouValue =
+        orgUnitIds.length > 0
+            ? i18n.t('{{count}} selected', { count: orgUnitIds.length })
+            : ''
 
-    const peValue = periodIds.length > 0
-        ? i18n.t('{{count}} selected', { count: periodIds.length })
-        : ''
+    const peValue =
+        periodIds.length > 0
+            ? i18n.t('{{count}} selected', { count: periodIds.length })
+            : ''
 
     return (
         <Card>
-            <div className='flex items-end gap-4 p-4'>
+            <div className="flex items-end gap-4 p-4">
                 <FilterInput
                     label={i18n.t('Location')}
                     value={ouValue}
@@ -73,9 +76,18 @@ export function FilterBarCompact() {
 
                 {ouOpen && (
                     <OrgUnitSelectorModal
-                        value={{ orgUnits: orgUnitIds.map((id) => ({ id, children: [] })) }}
-                        onUpdate={(sel: { orgUnits?: Array<{ id: string }> }) => {
-                            setOrgUnitIds((sel.orgUnits ?? []).map((ou) => ou.id))
+                        value={{
+                            orgUnits: orgUnitIds.map((id) => ({
+                                id,
+                                children: [],
+                            })),
+                        }}
+                        onUpdate={(sel: {
+                            orgUnits?: Array<{ id: string }>
+                        }) => {
+                            setOrgUnitIds(
+                                (sel.orgUnits ?? []).map((ou) => ou.id)
+                            )
                             setOuOpen(false)
                         }}
                         onClose={() => setOuOpen(false)}

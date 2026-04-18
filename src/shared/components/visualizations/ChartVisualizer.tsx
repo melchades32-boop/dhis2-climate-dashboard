@@ -69,11 +69,15 @@ export const ChartVisualizer = memo(function ChartVisualizer({
                     multiSeries,
                     highChartOverrides: visualization.subtitle
                         ? {
-                            subtitle: {
-                                text: visualization.subtitle,
-                                style: { color: '#000', fontSize: '16px', fontWeight: 'bold' },
-                            },
-                        }
+                              subtitle: {
+                                  text: visualization.subtitle,
+                                  style: {
+                                      color: '#000',
+                                      fontSize: '16px',
+                                      fontWeight: 'bold',
+                                  },
+                              },
+                          }
                         : undefined,
                 }}
             />

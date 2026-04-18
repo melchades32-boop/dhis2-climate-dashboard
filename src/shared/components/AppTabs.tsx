@@ -3,7 +3,10 @@ import { useNavigate, useRouterState } from '@tanstack/react-router'
 
 const TABS = [
     { to: '/current-malaria-situation', label: '1. Current Malaria Situation' },
-    { to: '/climate-malaria-relationship', label: '2. Climate & Malaria Relationship' },
+    {
+        to: '/climate-malaria-relationship',
+        label: '2. Climate & Malaria Relationship',
+    },
     { to: '/chap-forecast-alerts', label: '3. CHAP Forecast & Alerts' },
 ] as const
 

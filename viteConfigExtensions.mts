@@ -13,7 +13,10 @@ const viteConfig = defineConfig(async (configEnv: ConfigEnv) => {
         plugins: [
             TanStackRouterVite({
                 routesDirectory: path.resolve(__dirname, 'src/modules'),
-                generatedRouteTree: path.resolve(__dirname, 'src/routeTree.gen.ts'),
+                generatedRouteTree: path.resolve(
+                    __dirname,
+                    'src/routeTree.gen.ts'
+                ),
             }),
             tailwindcss(),
         ],

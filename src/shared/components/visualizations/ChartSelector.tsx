@@ -55,7 +55,9 @@ export function ChartSelector({
             return (
                 <YearOverYearVisualizer
                     analytics={yoyAnalytics}
-                    visualization={visualization as YearOverYearVisualizationConfig}
+                    visualization={
+                        visualization as YearOverYearVisualizationConfig
+                    }
                     colors={colors}
                     setRef={setRef}
                 />

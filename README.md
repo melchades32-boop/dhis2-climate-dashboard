@@ -6,11 +6,11 @@ A DHIS2 web application that visualizes the relationship between climate variabl
 
 The dashboard provides three main views:
 
-| Page | Route | Description |
-|------|-------|-------------|
-| **Current Malaria Situation** | `/current-malaria-situation` | Key malaria indicators — confirmed cases, deaths, outcomes, fever totals — displayed as single-value cards, charts, and a map |
+| Page                             | Route                           | Description                                                                                                                             |
+| -------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Current Malaria Situation**    | `/current-malaria-situation`    | Key malaria indicators — confirmed cases, deaths, outcomes, fever totals — displayed as single-value cards, charts, and a map           |
 | **Climate–Malaria Relationship** | `/climate-malaria-relationship` | Side-by-side maps and bar/line combo charts showing how temperature, precipitation, and humidity correlate with confirmed malaria cases |
-| **CHAP Forecast & Alerts** | `/chap-forecast-alerts` | Malaria forecast and alert visualizations (in development) |
+| **CHAP Forecast & Alerts**       | `/chap-forecast-alerts`         | Malaria forecast and alert visualizations (in development)                                                                              |
 
 A compact filter bar at the top of every page lets users scope all visualizations by **org unit** and **period**.
 
@@ -73,17 +73,17 @@ To deploy, run `pnpm build` first, then `pnpm deploy`. The command will prompt f
 
 ## Tech Stack
 
-| Layer | Library |
-|-------|---------|
-| Framework | React 18 + TypeScript (strict) |
-| DHIS2 platform | `@dhis2/app-runtime`, `@dhis2/ui`, `@dhis2/cli-app-scripts` |
-| Analytics / maps | `@hisptz/dhis2-analytics` (charts, pivot tables, maps) |
-| Charts (custom) | Highcharts + `highcharts-react-official` |
-| Routing | TanStack Router (file-based) |
-| Data fetching | TanStack Query |
-| Schema validation | Zod |
-| Styling | Tailwind CSS v4 |
-| Internationalisation | `@dhis2/d2-i18n` |
+| Layer                | Library                                                     |
+| -------------------- | ----------------------------------------------------------- |
+| Framework            | React 18 + TypeScript (strict)                              |
+| DHIS2 platform       | `@dhis2/app-runtime`, `@dhis2/ui`, `@dhis2/cli-app-scripts` |
+| Analytics / maps     | `@hisptz/dhis2-analytics` (charts, pivot tables, maps)      |
+| Charts (custom)      | Highcharts + `highcharts-react-official`                    |
+| Routing              | TanStack Router (file-based)                                |
+| Data fetching        | TanStack Query                                              |
+| Schema validation    | Zod                                                         |
+| Styling              | Tailwind CSS v4                                             |
+| Internationalisation | `@dhis2/d2-i18n`                                            |
 
 ## Project Structure
 

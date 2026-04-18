@@ -4,13 +4,18 @@ import { useMemo } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { VisualizationMenu } from './VisualizationMenu'
 import type { AnalyticsData, VisualizationConfig } from '@/shared/schemas'
-import { getForeground, getLegendColorFromValue, numberFormatter } from '@/shared/utils'
+import {
+    getForeground,
+    getLegendColorFromValue,
+    numberFormatter,
+} from '@/shared/utils'
 
 interface SingleValueCardProps {
     visualization: VisualizationConfig
     analytics?: AnalyticsData
     colors?: string[]
     loading?: boolean
+    showMenu?: boolean
     selectedOrgUnits?: string[]
     selectedPeriods?: string[]
     onOrgUnitChange?: (ids: string[]) => void
@@ -22,6 +27,7 @@ export function SingleValueCard({
     analytics,
     colors = ['#147cd7'],
     loading = false,
+    showMenu = true,
     selectedOrgUnits,
     selectedPeriods,
     onOrgUnitChange,
@@ -38,12 +44,18 @@ export function SingleValueCard({
     const isPercentage = dataItem?.indicatorType?.factor === 100
 
     const periodLabel = useMemo(() => {
-        if (visualization.subtitle) { return visualization.subtitle }
-        if (!metaData) { return '' }
+        if (visualization.subtitle) {
+            return visualization.subtitle
+        }
+        if (!metaData) {
+            return ''
+        }
         const labels = visualization.filters.flatMap((filter) => {
             const dimensions = metaData.dimensions[filter.dimension] ?? []
             return flatten(
-                dimensions.map((dim) => metaData.items[dim]?.name).filter(Boolean)
+                dimensions
+                    .map((dim) => metaData.items[dim]?.name)
+                    .filter(Boolean)
             )
         })
         return labels.join(' & ')
@@ -52,19 +64,25 @@ export function SingleValueCard({
     const displayValue = isNaN(value)
         ? '—'
         : isPercentage
-            ? `${numberFormatter(value)}%`
-            : numberFormatter(value)
+          ? `${numberFormatter(value)}%`
+          : numberFormatter(value)
 
     const legendStyle = visualization.legend?.style
     const legendColor = useMemo(
-        () => getLegendColorFromValue({ value, legendSet: visualization.legend?.set }),
+        () =>
+            getLegendColorFromValue({
+                value,
+                legendSet: visualization.legend?.set,
+            }),
         [value, visualization.legend?.set]
     )
-    const bgColor = legendStyle === 'FILL' && legendColor ? legendColor : undefined
+    const bgColor =
+        legendStyle === 'FILL' && legendColor ? legendColor : undefined
     const fgColor = bgColor ? getForeground(bgColor) : undefined
-    const valueColor = legendStyle === 'TEXT' && legendColor
-        ? legendColor
-        : (fgColor ?? colors[0] ?? '#147cd7')
+    const valueColor =
+        legendStyle === 'TEXT' && legendColor
+            ? legendColor
+            : (fgColor ?? colors[0] ?? '#147cd7')
 
     return (
         <FullScreen handle={handle} className="h-full">
@@ -91,20 +109,25 @@ export function SingleValueCard({
                             </span>
                         )}
                     </div>
-                    <VisualizationMenu
-                        onFullscreen={() => handle.enter()}
-                        selectedOrgUnits={selectedOrgUnits}
-                        selectedPeriods={selectedPeriods}
-                        onOrgUnitChange={onOrgUnitChange}
-                        onPeriodChange={onPeriodChange}
-                    />
+                    {showMenu && (
+                        <VisualizationMenu
+                            onFullscreen={() => handle.enter()}
+                            selectedOrgUnits={selectedOrgUnits}
+                            selectedPeriods={selectedPeriods}
+                            onOrgUnitChange={onOrgUnitChange}
+                            onPeriodChange={onPeriodChange}
+                        />
+                    )}
                 </div>
 
                 <div className="flex flex-1 items-center justify-center">
                     {loading ? (
                         <CircularLoader />
                     ) : (
-                        <span className="text-5xl font-bold" style={{ color: valueColor }}>
+                        <span
+                            className="text-5xl font-bold"
+                            style={{ color: valueColor }}
+                        >
                             {displayValue}
                         </span>
                     )}

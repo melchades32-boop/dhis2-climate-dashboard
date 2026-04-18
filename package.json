@@ -11,6 +11,8 @@
         "test": "d2-app-scripts test",
         "deploy": "d2-app-scripts deploy",
         "lint": "eslint && prettier -c .",
+        "lint:check": "eslint .",
+        "check-types": "tsc --noEmit",
         "format": "prettier . -w"
     },
     "dependencies": {

@@ -47,7 +47,10 @@ export const mapSchema = z.object({
             userOrganisationUnitChildren: z.boolean().optional(),
             userOrganisationUnitGrandChildren: z.boolean().optional(),
             organisationUnitLevels: z.array(z.number()).optional().default([]),
-            itemOrganisationUnitGroups: z.array(z.string()).optional().default([]),
+            itemOrganisationUnitGroups: z
+                .array(z.string())
+                .optional()
+                .default([]),
             organisationUnits: z
                 .array(z.object({ id: z.string(), path: z.string() }))
                 .optional()
@@ -58,7 +61,11 @@ export const mapSchema = z.object({
                         .object({ dataDimensionItemType: z.string() })
                         .and(
                             z.record(
-                                z.enum(['dataElement', 'indicator', 'programIndicator']),
+                                z.enum([
+                                    'dataElement',
+                                    'indicator',
+                                    'programIndicator',
+                                ]),
                                 z.object({ id: z.string() })
                             )
                         )

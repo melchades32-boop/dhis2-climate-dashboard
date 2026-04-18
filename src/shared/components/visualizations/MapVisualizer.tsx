@@ -64,7 +64,9 @@ export const MapVisualizer = memo(function MapVisualizer({
             ?.filter((view) => view.layer.includes(MapLayerType.THEMATIC))
             ?.map((view) => {
                 const dataItem = head(head(view.columns)?.items)
-                if (!dataItem) { return null }
+                if (!dataItem) {
+                    return null
+                }
 
                 return {
                     id: view.id,
@@ -100,10 +102,13 @@ export const MapVisualizer = memo(function MapVisualizer({
         return head(
             mapConfig.mapViews
                 ?.filter((view) => view.layer === MapLayerType.ORG_UNIT)
-                .map((view) => ({
-                    id: view.id,
-                    enabled: true,
-                }) as MapProps['boundaryLayer'])
+                .map(
+                    (view) =>
+                        ({
+                            id: view.id,
+                            enabled: true,
+                        }) as MapProps['boundaryLayer']
+                )
         )
     }, [mapConfig.mapViews])
 
@@ -130,7 +135,9 @@ export const MapVisualizer = memo(function MapVisualizer({
     }, [mapConfig.mapViews])
 
     const activePeriodSelection = useMemo(() => {
-        if (periodSelection) { return periodSelection }
+        if (periodSelection) {
+            return periodSelection
+        }
 
         const periods = head(
             mapConfig.mapViews.filter((view) =>
@@ -146,7 +153,9 @@ export const MapVisualizer = memo(function MapVisualizer({
     }, [mapConfig.mapViews, periodSelection])
 
     const activeOrgUnitSelection = useMemo(() => {
-        if (orgUnitSelection) { return orgUnitSelection }
+        if (orgUnitSelection) {
+            return orgUnitSelection
+        }
 
         const orgUnitConfig = head(
             mapConfig.mapViews.filter(

@@ -18,20 +18,22 @@ export function MapItem({ id, className }: MapItemProps) {
     const [selectedOrgUnits, setSelectedOrgUnits] = useState<string[]>([])
     const [selectedPeriods, setSelectedPeriods] = useState<string[]>([])
 
-    const activeOrgUnits = selectedOrgUnits.length > 0
-        ? selectedOrgUnits
-        : (paramsMap.get('ou')?.split(',') ?? [])
-    const activePeriods = selectedPeriods.length > 0
-        ? selectedPeriods
-        : (paramsMap.get('pe')?.split(',') ?? [])
+    const activeOrgUnits =
+        selectedOrgUnits.length > 0
+            ? selectedOrgUnits
+            : (paramsMap.get('ou')?.split(',') ?? [])
+    const activePeriods =
+        selectedPeriods.length > 0
+            ? selectedPeriods
+            : (paramsMap.get('pe')?.split(',') ?? [])
 
-    const orgUnitSelection = activeOrgUnits.length > 0
-        ? getOrgUnitSelectionFromIds(activeOrgUnits)
-        : undefined
+    const orgUnitSelection =
+        activeOrgUnits.length > 0
+            ? getOrgUnitSelectionFromIds(activeOrgUnits)
+            : undefined
 
-    const periodSelection = activePeriods.length > 0
-        ? { periods: activePeriods }
-        : undefined
+    const periodSelection =
+        activePeriods.length > 0 ? { periods: activePeriods } : undefined
 
     return (
         <div className={className}>
@@ -47,7 +49,9 @@ export function MapItem({ id, className }: MapItemProps) {
                 {mapConfig && (
                     <MapVisualizer
                         mapConfig={mapConfig}
-                        setRef={(map) => { mapRef.current = map }}
+                        setRef={(map) => {
+                            mapRef.current = map
+                        }}
                         orgUnitSelection={orgUnitSelection}
                         periodSelection={periodSelection}
                     />

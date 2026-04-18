@@ -31,7 +31,8 @@ export function VisualizationMenu({
     const [periodOpen, setPeriodOpen] = useState(false)
 
     const { orgUnitIds, periodIds, setOrgUnitIds, setPeriodIds } = useFilters()
-    const isPerItem = onOrgUnitChange !== undefined || onPeriodChange !== undefined
+    const isPerItem =
+        onOrgUnitChange !== undefined || onPeriodChange !== undefined
     const activeOrgUnits = isPerItem ? (itemOrgUnits ?? []) : orgUnitIds
     const activePeriods = isPerItem ? (itemPeriods ?? []) : periodIds
 
@@ -72,7 +73,9 @@ export function VisualizationMenu({
                     onClickOutside={() => setMenuOpen(false)}
                 >
                     <Card>
-                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{i18n.t('View')}</div>
+                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            {i18n.t('View')}
+                        </div>
                         <MenuItem
                             label={i18n.t('Full page')}
                             icon={<IconFullscreen16 />}
@@ -81,7 +84,9 @@ export function VisualizationMenu({
                                 onFullscreen()
                             }}
                         />
-                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{i18n.t('Filters')}</div>
+                        <div className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            {i18n.t('Filters')}
+                        </div>
                         <MenuItem
                             label={i18n.t('Location')}
                             icon={<IconLocation16 />}
@@ -110,7 +115,10 @@ export function VisualizationMenu({
             {ouOpen && (
                 <OrgUnitSelectorModal
                     value={{
-                        orgUnits: activeOrgUnits.map((id) => ({ id, children: [] })),
+                        orgUnits: activeOrgUnits.map((id) => ({
+                            id,
+                            children: [],
+                        })),
                     }}
                     onUpdate={handleOuUpdate}
                     onClose={() => setOuOpen(false)}

@@ -1,12 +1,17 @@
 import { ChartSelector } from './ChartSelector'
 import { DisplayItemContainer } from './DisplayItemContainer'
 import { SingleValueCard } from './SingleValueCard'
-import { useAnalytics, useYearOverYearAnalytics } from '@/shared/hooks/useAnalytics'
+import {
+    useAnalytics,
+    useYearOverYearAnalytics,
+} from '@/shared/hooks/useAnalytics'
 import { useFilters } from '@/shared/hooks/useFilters'
 import { useVisualization } from '@/shared/hooks/useVisualization'
 import { useVisualizationRefs } from '@/shared/hooks/useVisualizationRefs'
-import { VisualizationChartType, YearOverYearVisualizationConfig } from '@/shared/schemas'
-
+import {
+    VisualizationChartType,
+    YearOverYearVisualizationConfig,
+} from '@/shared/schemas'
 
 const DEFAULT_COLORS = ['#125687', '#e53935', '#43a047', '#8e24aa', '#f9a825']
 
@@ -26,11 +31,16 @@ export function VisualizationItem({
     colors = DEFAULT_COLORS,
     className,
 }: VisualizationItemProps) {
-    const { visualization, loading: vizLoading, error } = useVisualization({ visualizationId: id })
+    const {
+        visualization,
+        loading: vizLoading,
+        error,
+    } = useVisualization({ visualizationId: id })
     const { paramsMap } = useFilters()
     const { chartRef, tableRef } = useVisualizationRefs()
 
-    const isYoY = visualization?.type !== undefined && YOY_TYPES.has(visualization.type)
+    const isYoY =
+        visualization?.type !== undefined && YOY_TYPES.has(visualization.type)
 
     const {
         analytics,
@@ -52,7 +62,9 @@ export function VisualizationItem({
         selectedOrgUnits: yoyOrgUnits,
         selectedPeriods: yoyPeriods,
     } = useYearOverYearAnalytics({
-        visualizationConfig: isYoY ? (visualization as YearOverYearVisualizationConfig) : null,
+        visualizationConfig: isYoY
+            ? (visualization as YearOverYearVisualizationConfig)
+            : null,
         params: paramsMap,
     })
 
@@ -62,7 +74,8 @@ export function VisualizationItem({
     const activePeriods = isYoY ? yoyPeriods : selectedPeriods
 
     const loading = vizLoading || (isYoY ? yoyLoading : analyticsLoading)
-    const isSingleValue = visualization?.type === VisualizationChartType.SINGLE_VALUE
+    const isSingleValue =
+        visualization?.type === VisualizationChartType.SINGLE_VALUE
 
     if (isSingleValue) {
         return (
