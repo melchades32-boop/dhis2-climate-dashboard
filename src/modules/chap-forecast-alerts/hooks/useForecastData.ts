@@ -9,6 +9,7 @@ import {
     QUANTILE_MEDIAN_ID,
     QUANTILE_MID_HIGH_ID,
     QUANTILE_MID_LOW_ID,
+    THRESHOLD_INDICATOR_ID,
 } from '../constants'
 import type { ForecastRow } from '../schemas'
 import {
@@ -53,6 +54,20 @@ const predictionsQuery = {
     },
 }
 
+const thresholdQuery = {
+    result: {
+        resource: 'analytics',
+        params: (vars: Record<string, unknown>) => ({
+            dimension: [
+                `dx:${THRESHOLD_INDICATOR_ID}`,
+                `pe:${(vars.periods as string[]).join(';')}`,
+            ],
+            filter: `ou:${vars.orgUnitId}`,
+            skipMeta: true,
+        }),
+    },
+}
+
 export function useForecastData(orgUnitId: string | null) {
     const historicalPeriods = useMemo(
         () => getHistoricalPeriods(HISTORICAL_MONTHS),
@@ -79,18 +94,27 @@ export function useForecastData(orgUnitId: string | null) {
         refetch: refetchPred,
     } = useDataQuery<AnalyticsQueryData>(predictionsQuery, { lazy: true })
 
+    const {
+        data: threshData,
+        loading: threshLoading,
+        refetch: refetchThresh,
+    } = useDataQuery<AnalyticsQueryData>(thresholdQuery, { lazy: true })
+
     useEffect(() => {
         if (!orgUnitId) {
             return
         }
         refetchActual({ orgUnitId, periods: historicalPeriods })
         refetchPred({ orgUnitId, periods: predictionPeriods })
+        refetchThresh({ orgUnitId, periods: allPeriods })
     }, [
         orgUnitId,
         historicalPeriods,
         predictionPeriods,
+        allPeriods,
         refetchActual,
         refetchPred,
+        refetchThresh,
     ])
 
     const rows = useMemo<ForecastRow[]>(() => {
@@ -105,11 +129,16 @@ export function useForecastData(orgUnitId: string | null) {
             ? parseAnalyticsRows(predData.result.headers, predData.result.rows)
             : new Map<string, Map<string, number>>()
 
+        const threshMap = threshData?.result
+            ? parseAnalyticsRows(threshData.result.headers, threshData.result.rows)
+            : new Map<string, Map<string, number>>()
+
         const historicalSet = new Set(historicalPeriods)
 
         return allPeriods.map((period): ForecastRow => {
             const actualByDx = actualMap.get(period)
             const predByDx = predMap.get(period)
+            const threshByDx = threshMap.get(period)
             const isPrediction = !historicalSet.has(period)
 
             return {
@@ -121,14 +150,15 @@ export function useForecastData(orgUnitId: string | null) {
                 quantileMedian: predByDx?.get(QUANTILE_MEDIAN_ID) ?? null,
                 quantileMidHigh: predByDx?.get(QUANTILE_MID_HIGH_ID) ?? null,
                 quantileHigh: predByDx?.get(QUANTILE_HIGH_ID) ?? null,
+                threshold: threshByDx?.get(THRESHOLD_INDICATOR_ID) ?? null,
                 isPrediction,
             }
         })
-    }, [actualData, predData, allPeriods, historicalPeriods])
+    }, [actualData, predData, threshData, allPeriods, historicalPeriods])
 
     return {
         rows,
-        loading: actualLoading || predLoading,
+        loading: actualLoading || predLoading || threshLoading,
         historicalPeriods,
         predictionPeriods,
         allPeriods,

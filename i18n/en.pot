@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-04-20T10:08:28.547Z\n"
-"PO-Revision-Date: 2026-04-20T10:08:28.547Z\n"
+"POT-Creation-Date: 2026-04-20T12:22:34.854Z\n"
+"PO-Revision-Date: 2026-04-20T12:22:34.855Z\n"
 
 msgid "States"
 msgstr "States"
@@ -38,6 +38,15 @@ msgstr "Visualization Error"
 msgid "An error occurred while loading the visualization"
 msgstr "An error occurred while loading the visualization"
 
+msgid "Chart"
+msgstr "Chart"
+
+msgid "Table"
+msgstr "Table"
+
+msgid "Quantiles"
+msgstr "Quantiles"
+
 msgid "No data"
 msgstr "No data"
 
@@ -49,11 +58,3 @@ msgstr "Full page"
 
 msgid "Filters"
 msgstr "Filters"
-
-msgctxt "Application title"
-msgid "__MANIFEST_APP_TITLE"
-msgstr "FLLOW-M Malaria & Climate Dashboard"
-
-msgctxt "Application description"
-msgid "__MANIFEST_APP_DESCRIPTION"
-msgstr ""

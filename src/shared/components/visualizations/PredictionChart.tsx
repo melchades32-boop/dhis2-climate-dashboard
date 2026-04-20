@@ -1,11 +1,29 @@
+import i18n from '@dhis2/d2-i18n'
+import { Tab, TabBar } from '@dhis2/ui'
 import Highcharts from 'highcharts'
 import 'highcharts/highcharts-more'
 import HighchartsReact from 'highcharts-react-official'
-import { forwardRef, useMemo, useRef } from 'react'
+import { forwardRef, useMemo, useRef, useState } from 'react'
 import { useResizeObserver } from 'usehooks-ts'
 import type { ForecastRow } from '@/modules/chap-forecast-alerts/schemas'
 import { formatPeriod } from '@/modules/chap-forecast-alerts/utils/periods'
 import type { ChartRef } from '@/shared/schemas'
+
+function fmt(val: number | null): string {
+    if (val === null) {
+        return '—'
+    }
+    return val.toLocaleString('en-GB', { maximumFractionDigits: 0 })
+}
+
+const QUANTILE_ROWS: { label: string; get: (r: ForecastRow) => number | null }[] = [
+    { label: 'Quantile 0.1 (low)',   get: (r) => r.quantileLow },
+    { label: 'Quantile 0.25',        get: (r) => r.quantileMidLow },
+    { label: 'Quantile 0.5 (median)',get: (r) => r.quantileMedian },
+    { label: 'Quantile 0.75',        get: (r) => r.quantileMidHigh },
+    { label: 'Quantile 0.9 (high)',  get: (r) => r.quantileHigh },
+    { label: 'Threshold',            get: (r) => r.threshold },
+]
 
 interface PredictionChartProps {
     rows: ForecastRow[]
@@ -26,10 +44,12 @@ function buildForecastLabel(rows: ForecastRow[]): string {
         : `${first}–${last}`
 }
 
+
 export const PredictionChart = forwardRef<
     HighchartsReact.RefObject,
     PredictionChartProps
 >(function PredictionChart({ rows, orgUnitName }, ref) {
+    const [view, setView] = useState<'chart' | 'table'>('chart')
     const containerRef = useRef<HTMLDivElement>(null)
     const { height = 0 } = useResizeObserver<HTMLDivElement>({
         // @ts-expect-error ref will always have a nullable value
@@ -49,8 +69,6 @@ export const PredictionChart = forwardRef<
             !r.isPrediction ? r.actual : null
         )
 
-        // Find the last row where isPrediction is false — that's where we
-        // anchor the median line to create a visual connection to the forecast.
         const lastHistoricalIdx = rows.reduce(
             (last, r, i) => (!r.isPrediction ? i : last),
             -1
@@ -65,14 +83,12 @@ export const PredictionChart = forwardRef<
             return null
         })
 
-        // 80% CI band Q10–Q90
         const band80: ([number, number] | null)[] = rows.map((r) =>
             r.isPrediction && r.quantileLow !== null && r.quantileHigh !== null
                 ? [r.quantileLow, r.quantileHigh]
                 : null
         )
 
-        // 50% CI band Q25–Q75
         const band50: ([number, number] | null)[] = rows.map((r) =>
             r.isPrediction &&
             r.quantileMidLow !== null &&
@@ -171,7 +187,7 @@ export const PredictionChart = forwardRef<
                     type: 'line',
                     name: 'Actual Cases',
                     data: actualData,
-                    color: '#f97316',
+                    color: '#16a34a',
                     lineWidth: 2,
                     zIndex: 4,
                     dataLabels: {
@@ -187,7 +203,7 @@ export const PredictionChart = forwardRef<
                         style: {
                             fontSize: '10px',
                             fontWeight: '600',
-                            color: '#f97316',
+                            color: '#16a34a',
                             textOutline: 'none',
                         },
                     },
@@ -234,20 +250,77 @@ export const PredictionChart = forwardRef<
                     fillOpacity: 0.45,
                     zIndex: 3,
                 },
+                {
+                    type: 'line',
+                    name: 'Threshold',
+                    data: rows.map((r) => r.threshold),
+                    color: '#dc2626',
+                    lineWidth: 2,
+                    dashStyle: 'line',
+                    zIndex: 6,
+                    marker: { enabled: false },
+                    dataLabels: { enabled: false },
+                },
             ],
             exporting: { enabled: false },
             credits: { enabled: false },
         }
     }, [rows, orgUnitName, height])
 
+    const predictionRows = rows.filter((r) => r.isPrediction)
+
     return (
-        <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-            <HighchartsReact
-                highcharts={Highcharts}
-                options={options}
-                ref={ref as ChartRef}
-                containerProps={{ style: { height: '100%' } }}
-            />
+        <div className="flex h-full flex-col">
+            <div className="shrink-0 border-b border-gray-200">
+                <TabBar>
+                    <Tab selected={view === 'chart'} onClick={() => setView('chart')}>
+                        {i18n.t('Chart')}
+                    </Tab>
+                    <Tab selected={view === 'table'} onClick={() => setView('table')}>
+                        {i18n.t('Table')}
+                    </Tab>
+                </TabBar>
+            </div>
+
+            {view === 'chart' ? (
+                <div ref={containerRef} className="min-h-0 flex-1">
+                    <HighchartsReact
+                        highcharts={Highcharts}
+                        options={options}
+                        ref={ref as ChartRef}
+                        containerProps={{ style: { height: '100%' } }}
+                    />
+                </div>
+            ) : (
+                <div className="overflow-auto pt-3">
+                    <table className="w-full border-collapse text-sm">
+                        <thead>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <th className="px-4 py-3 text-left font-medium text-gray-600">
+                                    {i18n.t('Quantiles')}
+                                </th>
+                                {predictionRows.map((r) => (
+                                    <th key={r.period} className="px-4 py-3 text-center font-semibold text-blue-900">
+                                        {r.label}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {QUANTILE_ROWS.map(({ label, get }) => (
+                                <tr key={label} className={`border-b border-gray-100 ${label === 'Threshold' ? 'bg-red-50 hover:bg-red-100' : label === 'Quantile 0.5 (median)' ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'}`}>
+                                    <td className={`px-4 py-3 ${label === 'Threshold' ? 'font-medium text-red-700' : label === 'Quantile 0.5 (median)' ? 'font-medium text-blue-700' : 'text-gray-700'}`}>{label}</td>
+                                    {predictionRows.map((r) => (
+                                        <td key={r.period} className="px-4 py-3 text-center tabular-nums text-gray-800">
+                                            {fmt(get(r))}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     )
 })

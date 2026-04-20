@@ -5,6 +5,9 @@ export const COUNTY_OU_LEVEL = 3
 // Actual malaria cases indicator
 export const ACTUAL_CASES_INDICATOR_ID = 'VqICaehXI2W'
 
+// Threshold data element
+export const THRESHOLD_INDICATOR_ID = 'HoTLp4sTUIS'
+
 // CHAP prediction dataset (ESysCAEIUDy) quantile data elements
 export const QUANTILE_LOW_ID = 'S0Zc8XguF16' // Q10 (0.1)
 export const QUANTILE_MID_LOW_ID = 'bxSGt9LiuFc' // Q25 (0.25)
