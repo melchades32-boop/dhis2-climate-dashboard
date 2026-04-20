@@ -103,11 +103,7 @@ export function VisualizationMenu({
                                 setPeriodOpen(true)
                             }}
                         />
-                        {/* <MenuItem
-                            label="Download"
-                            icon={<IconDownload16 />}
-                            onClick={() => setMenuOpen(false)}
-                        /> */}
+
                     </Card>
                 </Popover>
             )}

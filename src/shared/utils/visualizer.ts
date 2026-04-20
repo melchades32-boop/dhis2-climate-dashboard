@@ -5,14 +5,12 @@ import type { YAxisOptions } from 'highcharts'
 import {
     camelCase,
     compact,
-    flattenDeep,
     fromPairs,
     get,
     isEmpty,
 } from 'lodash'
 import {
     AnalyticsDimensionSchema,
-    DataDimensionItem,
     DimensionConfig,
     LegendSetConfig,
     VisualizationChartType,
@@ -39,43 +37,6 @@ export function getChartLayout(visualization: VisualizationConfig): {
         series: visualization.columns.map((col) => col.dimension),
         filter: visualization.filters.map((filter) => filter.dimension) ?? [],
     }
-}
-
-export function getDataItems(visualization: VisualizationConfig): string[] {
-    return compact(
-        visualization.dataDimensionItems.map((item) => {
-            const dataItem = item[
-                camelCase(item.dataDimensionItemType) as keyof typeof item
-            ] as DataDimensionItem
-            return dataItem?.id
-        })
-    )
-}
-
-export function getPeriods(visualization: VisualizationConfig) {
-    const allDimensions = [
-        ...visualization.rows,
-        ...visualization.columns,
-        ...visualization.filters,
-    ]
-    return flattenDeep(
-        allDimensions
-            .filter(({ dimension }) => dimension === 'pe')
-            .map((item) => item.items.map((item) => item.id))
-    )
-}
-
-export function getOrgUnits(visualization: VisualizationConfig): Array<string> {
-    const allDimensions = [
-        ...visualization.rows,
-        ...visualization.columns,
-        ...visualization.filters,
-    ]
-    return flattenDeep(
-        allDimensions
-            .filter(({ dimension }) => dimension === 'ou')
-            .map((item) => item.items.map((item) => item.id))
-    )
 }
 
 export type { MultiSeriesConfig }
