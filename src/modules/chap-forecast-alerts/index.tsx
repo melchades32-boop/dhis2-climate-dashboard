@@ -34,7 +34,7 @@ function ChapForecastAlerts() {
 
     const activeOrgUnit = selectedCounty ?? selectedState
 
-    const { rows } = useForecastData(activeOrgUnit?.id ?? null)
+    const { rows, loading: forecastLoading } = useForecastData(activeOrgUnit?.id ?? null)
 
     function handleStateSelect(ou: OrgUnit) {
         setSelectedState(ou)
@@ -73,6 +73,7 @@ function ChapForecastAlerts() {
                                 name: activeOrgUnit?.displayName ?? '…',
                             })}
                             chartRef={chartRef}
+                            loading={forecastLoading}
                         >
                             <PredictionChart
                                 ref={chartRef}
