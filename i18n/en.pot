@@ -5,35 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-04-18T16:41:13.796Z\n"
-"PO-Revision-Date: 2026-04-18T16:41:13.796Z\n"
-
-msgid "Period"
-msgstr "Period"
-
-msgid "Actual Cases"
-msgstr "Actual Cases"
-
-msgid "Q10"
-msgstr "Q10"
-
-msgid "Q25"
-msgstr "Q25"
-
-msgid "Median"
-msgstr "Median"
-
-msgid "Q75"
-msgstr "Q75"
-
-msgid "Q90"
-msgstr "Q90"
-
-msgid "Predicted month"
-msgstr "Predicted month"
-
-msgid "Q10–Q90 = CHAP model quantile prediction intervals"
-msgstr "Q10–Q90 = CHAP model quantile prediction intervals"
+"POT-Creation-Date: 2026-04-20T06:17:21.928Z\n"
+"PO-Revision-Date: 2026-04-20T06:17:21.930Z\n"
 
 msgid "States"
 msgstr "States"
@@ -49,6 +22,9 @@ msgstr "Malaria Forecast — {{name}}"
 
 msgid "Location"
 msgstr "Location"
+
+msgid "Period"
+msgstr "Period"
 
 msgid "Clear filters"
 msgstr "Clear filters"
@@ -73,3 +49,11 @@ msgstr "Full page"
 
 msgid "Filters"
 msgstr "Filters"
+
+msgctxt "Application title"
+msgid "__MANIFEST_APP_TITLE"
+msgstr "Climate Dashboard"
+
+msgctxt "Application description"
+msgid "__MANIFEST_APP_DESCRIPTION"
+msgstr ""
