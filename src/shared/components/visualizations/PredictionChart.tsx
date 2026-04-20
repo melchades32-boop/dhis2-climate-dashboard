@@ -46,12 +46,10 @@ export const PredictionChart = forwardRef<
             forecastLabel ? `CHAP Forecast: ${forecastLabel}` : '',
         ].filter(Boolean)
 
-        // Actual cases — historical only
         const actualData: (number | null)[] = rows.map((r) =>
             !r.isPrediction ? r.actual : null
         )
 
-        // Median forecast — anchor to last historical point for visual continuity
         const lastHistoricalIdx = historicalCount - 1
         const medianData: (number | null)[] = rows.map((r, i) => {
             if (r.isPrediction) {
@@ -123,12 +121,13 @@ export const PredictionChart = forwardRef<
                     const pts = this.points ?? []
                     let s = `<b>${this.x}</b><br/>`
                     for (const pt of pts) {
+                        const ptRange = pt as Highcharts.Point & { low?: number; high?: number }
                         s += `<span style="color:${pt.color}">\u25CF</span> ${pt.series.name}: `
                         if (
-                            pt.point.low !== undefined &&
-                            pt.point.high !== undefined
+                            ptRange.low !== undefined &&
+                            ptRange.high !== undefined
                         ) {
-                            s += `${Math.round(pt.point.low).toLocaleString()} – ${Math.round(pt.point.high).toLocaleString()}`
+                            s += `${Math.round(ptRange.low).toLocaleString()} – ${Math.round(ptRange.high).toLocaleString()}`
                         } else {
                             s +=
                                 pt.y !== null && pt.y !== undefined

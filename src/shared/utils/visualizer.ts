@@ -1,5 +1,6 @@
 import { ChartType } from '@hisptz/dhis2-analytics'
 import { LegendSet } from '@hisptz/dhis2-utils'
+import type Highcharts from 'highcharts'
 import type { YAxisOptions } from 'highcharts'
 import {
     camelCase,
@@ -142,14 +143,14 @@ export function getMultiSeriesConfig(
             plotLines: [
                 {
                     color: '#000000',
-                    dashStyle: 'Solid',
+                    dashStyle: 'Solid' as Highcharts.DashStyleValue,
                     width: 2,
                     zIndex: 1000,
                     label: { text: '' },
                 },
                 {
                     color: '#bbbbbb',
-                    dashStyle: 'Solid',
+                    dashStyle: 'Solid' as Highcharts.DashStyleValue,
                     zIndex: 1000,
                     width: 2,
                     label: { text: '' },

@@ -25,7 +25,7 @@ interface SingleValueCardProps {
 export function SingleValueCard({
     visualization,
     analytics,
-    colors = ['#147cd7'],
+    colors = ['#125687'],
     loading = false,
     showMenu = true,
     selectedOrgUnits,
@@ -82,7 +82,7 @@ export function SingleValueCard({
     const valueColor =
         legendStyle === 'TEXT' && legendColor
             ? legendColor
-            : (fgColor ?? colors[0] ?? '#147cd7')
+            : (fgColor ?? colors[0] ?? '#125687')
 
     return (
         <FullScreen handle={handle} className="h-full">
