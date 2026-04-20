@@ -4,7 +4,7 @@ import HighchartsReact from 'highcharts-react-official'
 import { useEffect, useRef, useState } from 'react'
 import { KpiVisualizationItem } from './components/KpiVisualizationItem'
 import { OrgUnitSidebar } from './components/OrgUnitSidebar'
-import { HISTORICAL_MONTHS, KPI_IDS, MAP_IDS, STATE_OU_LEVEL } from './constants'
+import { KPI_IDS, MAP_IDS, STATE_OU_LEVEL } from './constants'
 import { useForecastData } from './hooks/useForecastData'
 import { useCounties, useStates } from './hooks/useOrgUnitLevel'
 import type { OrgUnit } from './hooks/useOrgUnitLevel'
@@ -31,12 +31,6 @@ function ChapForecastAlerts() {
             setSelectedState(states[0] ?? null)
         }
     }, [states, selectedState])
-
-    useEffect(() => {
-        if (!selectedCounty && counties.length > 0) {
-            setSelectedCounty(counties[0] ?? null)
-        }
-    }, [counties, selectedCounty])
 
     const activeOrgUnit = selectedCounty ?? selectedState
 
@@ -83,7 +77,6 @@ function ChapForecastAlerts() {
                             <PredictionChart
                                 ref={chartRef}
                                 rows={rows}
-                                historicalCount={HISTORICAL_MONTHS}
                                 orgUnitName={activeOrgUnit?.displayName ?? ''}
                             />
                         </DisplayItemContainer>

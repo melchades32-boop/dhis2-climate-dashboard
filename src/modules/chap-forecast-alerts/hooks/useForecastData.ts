@@ -108,9 +108,9 @@ export function useForecastData(orgUnitId: string | null) {
         const historicalSet = new Set(historicalPeriods)
 
         return allPeriods.map((period): ForecastRow => {
-            const isPrediction = !historicalSet.has(period)
             const actualByDx = actualMap.get(period)
             const predByDx = predMap.get(period)
+            const isPrediction = !historicalSet.has(period)
 
             return {
                 period,

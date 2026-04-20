@@ -9,7 +9,6 @@ import type { ChartRef } from '@/shared/schemas'
 
 interface PredictionChartProps {
     rows: ForecastRow[]
-    historicalCount: number
     orgUnitName?: string
 }
 
@@ -30,7 +29,7 @@ function buildForecastLabel(rows: ForecastRow[]): string {
 export const PredictionChart = forwardRef<
     HighchartsReact.RefObject,
     PredictionChartProps
->(function PredictionChart({ rows, historicalCount, orgUnitName }, ref) {
+>(function PredictionChart({ rows, orgUnitName }, ref) {
     const containerRef = useRef<HTMLDivElement>(null)
     const { height = 0 } = useResizeObserver<HTMLDivElement>({
         // @ts-expect-error ref will always have a nullable value
@@ -50,7 +49,12 @@ export const PredictionChart = forwardRef<
             !r.isPrediction ? r.actual : null
         )
 
-        const lastHistoricalIdx = historicalCount - 1
+        // Find the last row where isPrediction is false — that's where we
+        // anchor the median line to create a visual connection to the forecast.
+        const lastHistoricalIdx = rows.reduce(
+            (last, r, i) => (!r.isPrediction ? i : last),
+            -1
+        )
         const medianData: (number | null)[] = rows.map((r, i) => {
             if (r.isPrediction) {
                 return r.quantileMedian
@@ -95,7 +99,13 @@ export const PredictionChart = forwardRef<
                     : undefined,
             xAxis: {
                 categories,
-                labels: { style: { fontSize: '11px' } },
+                labels: {
+                    useHTML: true,
+                    formatter() {
+                        const isPred = rows[this.pos]?.isPrediction
+                        return `<span style="font-size:11px;color:${isPred ? '#1e3a8a' : '#666666'};font-weight:${isPred ? '600' : 'normal'}">${this.value}</span>`
+                    },
+                },
             },
             yAxis: {
                 title: { text: 'Confirmed Cases' },
@@ -121,6 +131,10 @@ export const PredictionChart = forwardRef<
                     const pts = this.points ?? []
                     let s = `<b>${this.x}</b><br/>`
                     for (const pt of pts) {
+                        const row = rows[pt.index ?? -1]
+                        if (pt.series.name === 'Median Forecast' && !row?.isPrediction) {
+                            continue
+                        }
                         const ptRange = pt as Highcharts.Point & { low?: number; high?: number }
                         s += `<span style="color:${pt.color}">\u25CF</span> ${pt.series.name}: `
                         if (
@@ -224,7 +238,7 @@ export const PredictionChart = forwardRef<
             exporting: { enabled: false },
             credits: { enabled: false },
         }
-    }, [rows, historicalCount, orgUnitName, height])
+    }, [rows, orgUnitName, height])
 
     return (
         <div ref={containerRef} style={{ width: '100%', height: '100%' }}>

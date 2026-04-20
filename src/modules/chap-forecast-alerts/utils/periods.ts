@@ -6,17 +6,35 @@ export function getMonthPeriod(date: Date): string {
     return `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}`
 }
 
+/**
+ * Each month's data is submitted to DHIS2 on the 15th of the following month.
+ * e.g. March data is submitted on April 15th.
+ * - On/after the 15th: previous month's data is available → historical ends at
+ *   previous month, predictions start from current month.
+ * - Before the 15th: only data up to 2 months ago → predictions start from
+ *   the previous month.
+ */
+const DATA_SUBMISSION_DAY = 15
+
+function getDataOffset(): number {
+    return new Date().getDate() >= DATA_SUBMISSION_DAY ? 0 : -1
+}
+
 export function getHistoricalPeriods(count: number): string[] {
     const now = new Date()
+    const offset = getDataOffset()
+    // End at: previous month (if past 15th) or 2 months ago (before 15th)
     return Array.from({ length: count }, (_, i) =>
-        getMonthPeriod(addMonths(now, -(count - i)))
+        getMonthPeriod(addMonths(now, offset - count + i))
     )
 }
 
 export function getPredictionPeriods(count: number): string[] {
     const now = new Date()
+    const offset = getDataOffset()
+    // Start at: current month (if past 15th) or previous month (before 15th)
     return Array.from({ length: count }, (_, i) =>
-        getMonthPeriod(addMonths(now, i))
+        getMonthPeriod(addMonths(now, offset + i))
     )
 }
 
