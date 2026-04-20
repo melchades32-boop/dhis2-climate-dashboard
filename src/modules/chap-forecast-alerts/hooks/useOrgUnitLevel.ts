@@ -6,7 +6,6 @@ export interface OrgUnit {
     displayName: string
 }
 
-
 const statesQuery = {
     orgUnits: {
         resource: 'organisationUnits',
@@ -31,7 +30,6 @@ export function useStates(level: number) {
         loading,
     }
 }
-
 
 const countiesQuery = {
     parent: {

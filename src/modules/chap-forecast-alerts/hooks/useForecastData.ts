@@ -130,7 +130,10 @@ export function useForecastData(orgUnitId: string | null) {
             : new Map<string, Map<string, number>>()
 
         const threshMap = threshData?.result
-            ? parseAnalyticsRows(threshData.result.headers, threshData.result.rows)
+            ? parseAnalyticsRows(
+                  threshData.result.headers,
+                  threshData.result.rows
+              )
             : new Map<string, Map<string, number>>()
 
         const historicalSet = new Set(historicalPeriods)

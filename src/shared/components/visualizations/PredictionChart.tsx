@@ -16,13 +16,16 @@ function fmt(val: number | null): string {
     return val.toLocaleString('en-GB', { maximumFractionDigits: 0 })
 }
 
-const QUANTILE_ROWS: { label: string; get: (r: ForecastRow) => number | null }[] = [
-    { label: 'Quantile 0.1 (low)',   get: (r) => r.quantileLow },
-    { label: 'Quantile 0.25',        get: (r) => r.quantileMidLow },
-    { label: 'Quantile 0.5 (median)',get: (r) => r.quantileMedian },
-    { label: 'Quantile 0.75',        get: (r) => r.quantileMidHigh },
-    { label: 'Quantile 0.9 (high)',  get: (r) => r.quantileHigh },
-    { label: 'Threshold',            get: (r) => r.threshold },
+const QUANTILE_ROWS: {
+    label: string
+    get: (r: ForecastRow) => number | null
+}[] = [
+    { label: 'Quantile 0.1 (low)', get: (r) => r.quantileLow },
+    { label: 'Quantile 0.25', get: (r) => r.quantileMidLow },
+    { label: 'Quantile 0.5 (median)', get: (r) => r.quantileMedian },
+    { label: 'Quantile 0.75', get: (r) => r.quantileMidHigh },
+    { label: 'Quantile 0.9 (high)', get: (r) => r.quantileHigh },
+    { label: 'Threshold', get: (r) => r.threshold },
 ]
 
 interface PredictionChartProps {
@@ -43,7 +46,6 @@ function buildForecastLabel(rows: ForecastRow[]): string {
         ? `${firstMon}–${lastMon} ${firstYear}`
         : `${first}–${last}`
 }
-
 
 export const PredictionChart = forwardRef<
     HighchartsReact.RefObject,
@@ -148,10 +150,16 @@ export const PredictionChart = forwardRef<
                     let s = `<b>${this.x}</b><br/>`
                     for (const pt of pts) {
                         const row = rows[pt.index ?? -1]
-                        if (pt.series.name === 'Median Forecast' && !row?.isPrediction) {
+                        if (
+                            pt.series.name === 'Median Forecast' &&
+                            !row?.isPrediction
+                        ) {
                             continue
                         }
-                        const ptRange = pt as Highcharts.Point & { low?: number; high?: number }
+                        const ptRange = pt as Highcharts.Point & {
+                            low?: number
+                            high?: number
+                        }
                         s += `<span style="color:${pt.color}">\u25CF</span> ${pt.series.name}: `
                         if (
                             ptRange.low !== undefined &&
@@ -273,10 +281,16 @@ export const PredictionChart = forwardRef<
         <div className="flex h-full flex-col">
             <div className="shrink-0 border-b border-gray-200">
                 <TabBar>
-                    <Tab selected={view === 'chart'} onClick={() => setView('chart')}>
+                    <Tab
+                        selected={view === 'chart'}
+                        onClick={() => setView('chart')}
+                    >
                         {i18n.t('Chart')}
                     </Tab>
-                    <Tab selected={view === 'table'} onClick={() => setView('table')}>
+                    <Tab
+                        selected={view === 'table'}
+                        onClick={() => setView('table')}
+                    >
                         {i18n.t('Table')}
                     </Tab>
                 </TabBar>
@@ -300,7 +314,10 @@ export const PredictionChart = forwardRef<
                                     {i18n.t('Quantiles')}
                                 </th>
                                 {predictionRows.map((r) => (
-                                    <th key={r.period} className="px-4 py-3 text-center font-semibold text-blue-900">
+                                    <th
+                                        key={r.period}
+                                        className="px-4 py-3 text-center font-semibold text-blue-900"
+                                    >
                                         {r.label}
                                     </th>
                                 ))}
@@ -308,10 +325,20 @@ export const PredictionChart = forwardRef<
                         </thead>
                         <tbody>
                             {QUANTILE_ROWS.map(({ label, get }) => (
-                                <tr key={label} className={`border-b border-gray-100 ${label === 'Threshold' ? 'bg-red-50 hover:bg-red-100' : label === 'Quantile 0.5 (median)' ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'}`}>
-                                    <td className={`px-4 py-3 ${label === 'Threshold' ? 'font-medium text-red-700' : label === 'Quantile 0.5 (median)' ? 'font-medium text-blue-700' : 'text-gray-700'}`}>{label}</td>
+                                <tr
+                                    key={label}
+                                    className={`border-b border-gray-100 ${label === 'Threshold' ? 'bg-red-50 hover:bg-red-100' : label === 'Quantile 0.5 (median)' ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'}`}
+                                >
+                                    <td
+                                        className={`px-4 py-3 ${label === 'Threshold' ? 'font-medium text-red-700' : label === 'Quantile 0.5 (median)' ? 'font-medium text-blue-700' : 'text-gray-700'}`}
+                                    >
+                                        {label}
+                                    </td>
                                     {predictionRows.map((r) => (
-                                        <td key={r.period} className="px-4 py-3 text-center tabular-nums text-gray-800">
+                                        <td
+                                            key={r.period}
+                                            className="px-4 py-3 text-center tabular-nums text-gray-800"
+                                        >
                                             {fmt(get(r))}
                                         </td>
                                     ))}

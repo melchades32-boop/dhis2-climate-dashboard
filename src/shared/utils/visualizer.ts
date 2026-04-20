@@ -2,13 +2,7 @@ import { ChartType } from '@hisptz/dhis2-analytics'
 import { LegendSet } from '@hisptz/dhis2-utils'
 import type Highcharts from 'highcharts'
 import type { YAxisOptions } from 'highcharts'
-import {
-    camelCase,
-    compact,
-    fromPairs,
-    get,
-    isEmpty,
-} from 'lodash'
+import { camelCase, compact, fromPairs, get, isEmpty } from 'lodash'
 import {
     AnalyticsDimensionSchema,
     DimensionConfig,

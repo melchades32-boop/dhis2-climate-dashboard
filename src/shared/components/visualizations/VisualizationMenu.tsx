@@ -103,7 +103,6 @@ export function VisualizationMenu({
                                 setPeriodOpen(true)
                             }}
                         />
-
                     </Card>
                 </Popover>
             )}
