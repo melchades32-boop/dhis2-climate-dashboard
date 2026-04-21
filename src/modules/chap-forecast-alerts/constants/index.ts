@@ -23,7 +23,7 @@ export const PREDICTION_MONTHS = 3
 export const TOTAL_FEVER_ID = 'T9AMXThzdNK'
 export const CONFIRMED_FACILITY_ID = 'M7WaIRTcTGD'
 export const CLINICAL_DIAGNOSIS_ID = 'i22SNIx7ti9'
-export const CONFIRMED_COMMUNITY_ID = 'M7WaIRTcTGD'
+export const CONFIRMED_COMMUNITY_ID = 'MBcNJHIhEKh'
 
 export const KPI_IDS = [
     TOTAL_FEVER_ID,
