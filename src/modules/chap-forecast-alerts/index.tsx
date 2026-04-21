@@ -4,13 +4,20 @@ import HighchartsReact from 'highcharts-react-official'
 import { useEffect, useRef, useState } from 'react'
 import { KpiVisualizationItem } from './components/KpiVisualizationItem'
 import { OrgUnitSidebar } from './components/OrgUnitSidebar'
-import { KPI_IDS, MAP_IDS, STATE_OU_LEVEL } from './constants'
+import {
+    COUNTY_LEVEL_PIVOT,
+    KPI_IDS,
+    MAP_IDS,
+    NATIONAL_OU_LEVEL,
+    STATE_OU_LEVEL,
+} from './constants'
 import { useForecastData } from './hooks/useForecastData'
 import { useCounties, useStates } from './hooks/useOrgUnitLevel'
 import type { OrgUnit } from './hooks/useOrgUnitLevel'
 import { DisplayItemContainer } from '@/shared/components/visualizations/DisplayItemContainer'
 import { MapItem } from '@/shared/components/visualizations/MapItem'
 import { PredictionChart } from '@/shared/components/visualizations/PredictionChart'
+import { VisualizationItem } from '@/shared/components/visualizations/VisualizationItem'
 
 export const Route = createFileRoute('/chap-forecast-alerts/')({
     component: ChapForecastAlerts,
@@ -21,20 +28,29 @@ function ChapForecastAlerts() {
     const [selectedState, setSelectedState] = useState<OrgUnit | null>(null)
     const [selectedCounty, setSelectedCounty] = useState<OrgUnit | null>(null)
 
+    const { states: nationalOrgUnits, loading: nationalLoading } =
+        useStates(NATIONAL_OU_LEVEL)
     const { states, loading: statesLoading } = useStates(STATE_OU_LEVEL)
     const { counties, loading: countiesLoading } = useCounties(
         selectedState?.id ?? null
     )
 
+    const allStates = [...nationalOrgUnits, ...states]
+    const isNationalSelected = nationalOrgUnits.some(
+        (ou) => ou.id === selectedState?.id
+    )
+
     useEffect(() => {
-        if (!selectedState && states.length > 0) {
-            setSelectedState(states[0] ?? null)
+        if (!selectedState && nationalOrgUnits.length > 0) {
+            setSelectedState(nationalOrgUnits[0] ?? null)
         }
-    }, [states, selectedState])
+    }, [nationalOrgUnits, selectedState])
 
     const activeOrgUnit = selectedCounty ?? selectedState
 
-    const { rows, loading: forecastLoading } = useForecastData(activeOrgUnit?.id ?? null)
+    const { rows, loading: forecastLoading } = useForecastData(
+        activeOrgUnit?.id ?? null
+    )
 
     function handleStateSelect(ou: OrgUnit) {
         setSelectedState(ou)
@@ -43,12 +59,12 @@ function ChapForecastAlerts() {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-start">
                 <OrgUnitSidebar
-                    states={states}
-                    statesLoading={statesLoading}
-                    counties={counties}
-                    countiesLoading={countiesLoading}
+                    states={allStates}
+                    statesLoading={nationalLoading || statesLoading}
+                    counties={isNationalSelected ? [] : counties}
+                    countiesLoading={!isNationalSelected && countiesLoading}
                     selectedStateId={selectedState?.id ?? null}
                     onStateSelect={handleStateSelect}
                     selectedCountyId={selectedCounty?.id ?? null}
@@ -90,6 +106,9 @@ function ChapForecastAlerts() {
                 {[...MAP_IDS].map((mapId) => (
                     <MapItem key={mapId} id={mapId} className="h-144" />
                 ))}
+            </div>
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-1">
+                <VisualizationItem id={COUNTY_LEVEL_PIVOT} className="h-160" />
             </div>
         </div>
     )

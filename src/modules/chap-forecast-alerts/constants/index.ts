@@ -1,4 +1,5 @@
 // Org-unit hierarchy levels for South Sudan
+export const NATIONAL_OU_LEVEL = 1
 export const STATE_OU_LEVEL = 2
 export const COUNTY_OU_LEVEL = 3
 
@@ -33,3 +34,5 @@ export const KPI_IDS = [
 ] as const
 
 export const MAP_IDS = ['cMaYBmfzxqQ', 'LCjVaqtisxZ', 'JlH5zn6F4ft'] as const
+
+export const COUNTY_LEVEL_PIVOT = 'YCch5QcyBPY'

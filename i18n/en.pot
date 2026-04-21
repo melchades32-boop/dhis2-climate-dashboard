@@ -5,17 +5,26 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-04-20T13:10:08.321Z\n"
-"PO-Revision-Date: 2026-04-20T13:10:08.321Z\n"
+"POT-Creation-Date: 2026-04-21T13:03:30.437Z\n"
+"PO-Revision-Date: 2026-04-21T13:03:30.439Z\n"
 
-msgid "States"
-msgstr "States"
+msgid "No results"
+msgstr "No results"
+
+msgid "Country/States"
+msgstr "Country/States"
+
+msgid "Search states…"
+msgstr "Search states…"
 
 msgid "Counties"
 msgstr "Counties"
 
 msgid "Select a state to see counties"
 msgstr "Select a state to see counties"
+
+msgid "Search counties…"
+msgstr "Search counties…"
 
 msgid "Malaria Forecast — {{name}}"
 msgstr "Malaria Forecast — {{name}}"
@@ -58,11 +67,3 @@ msgstr "Full page"
 
 msgid "Filters"
 msgstr "Filters"
-
-msgctxt "Application title"
-msgid "__MANIFEST_APP_TITLE"
-msgstr "FLLOW-M Malaria & Climate Dashboard"
-
-msgctxt "Application description"
-msgid "__MANIFEST_APP_DESCRIPTION"
-msgstr ""

@@ -1,5 +1,6 @@
 import i18n from '@dhis2/d2-i18n'
-import { CircularLoader } from '@dhis2/ui'
+import { CircularLoader, Input } from '@dhis2/ui'
+import { useState } from 'react'
 import type { OrgUnit } from '../hooks/useOrgUnitLevel'
 
 interface OrgUnitSidebarProps {
@@ -21,16 +22,42 @@ function SectionHeader({ label }: { label: string }) {
     )
 }
 
+function SearchInput({
+    value,
+    onChange,
+    placeholder,
+}: {
+    value: string
+    onChange: (v: string) => void
+    placeholder: string
+}) {
+    return (
+        <div className="m-1">
+            <Input
+                type="search"
+                value={value}
+                onChange={({ value: v }: { value?: string }) =>
+                    onChange(v ?? '')
+                }
+                placeholder={placeholder}
+                dense
+            />
+        </div>
+    )
+}
+
 function OrgUnitList({
     items,
     loading,
     selectedId,
     onSelect,
+    query,
 }: {
     items: OrgUnit[]
     loading: boolean
     selectedId: string | null
     onSelect: (ou: OrgUnit) => void
+    query: string
 }) {
     if (loading) {
         return (
@@ -40,9 +67,23 @@ function OrgUnitList({
         )
     }
 
+    const filtered = query.trim()
+        ? items.filter((ou) =>
+              ou.displayName.toLowerCase().includes(query.toLowerCase())
+          )
+        : items
+
+    if (filtered.length === 0) {
+        return (
+            <p className="px-3 py-3 text-xs text-gray-400 italic">
+                {i18n.t('No results')}
+            </p>
+        )
+    }
+
     return (
         <ul className="overflow-y-auto">
-            {items.map((ou) => (
+            {filtered.map((ou) => (
                 <li key={ou.id}>
                     <button
                         onClick={() => onSelect(ou)}
@@ -70,33 +111,50 @@ export function OrgUnitSidebar({
     selectedCountyId,
     onCountySelect,
 }: OrgUnitSidebarProps) {
+    const [stateQuery, setStateQuery] = useState('')
+    const [countyQuery, setCountyQuery] = useState('')
+
     return (
-        <div className="flex w-52 shrink-0 flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-sm">
-            <SectionHeader label={i18n.t('States')} />
+        <div className="flex w-52 shrink-0 flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-sm h-168">
+            <SectionHeader label={i18n.t('Country/States')} />
+            <SearchInput
+                value={stateQuery}
+                onChange={setStateQuery}
+                placeholder={i18n.t('Search states…')}
+            />
             <div className="max-h-64 overflow-y-auto border-b border-gray-200">
                 <OrgUnitList
                     items={states}
                     loading={statesLoading}
                     selectedId={selectedStateId}
                     onSelect={onStateSelect}
+                    query={stateQuery}
                 />
             </div>
 
             <SectionHeader label={i18n.t('Counties')} />
-            <div className="flex-1 overflow-y-auto">
-                {!selectedStateId ? (
-                    <p className="px-3 py-3 text-xs text-gray-400 italic">
-                        {i18n.t('Select a state to see counties')}
-                    </p>
-                ) : (
-                    <OrgUnitList
-                        items={counties}
-                        loading={countiesLoading}
-                        selectedId={selectedCountyId}
-                        onSelect={onCountySelect}
+            {!selectedStateId ? (
+                <p className="px-3 py-3 text-xs text-gray-400 italic">
+                    {i18n.t('Select a state to see counties')}
+                </p>
+            ) : (
+                <>
+                    <SearchInput
+                        value={countyQuery}
+                        onChange={setCountyQuery}
+                        placeholder={i18n.t('Search counties…')}
                     />
-                )}
-            </div>
+                    <div className="flex-1 overflow-y-auto min-h-0">
+                        <OrgUnitList
+                            items={counties}
+                            loading={countiesLoading}
+                            selectedId={selectedCountyId}
+                            onSelect={onCountySelect}
+                            query={countyQuery}
+                        />
+                    </div>
+                </>
+            )}
         </div>
     )
 }

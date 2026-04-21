@@ -337,6 +337,20 @@ export const visualizationSchema = z.object({
             z.object({
                 index: z.number(),
                 type: z.string().optional(),
+                maxValue: z.number().optional(),
+                minValue: z.number().optional(),
+                steps: z.number().optional(),
+                label: z
+                    .object({
+                        fontStyle: z
+                            .object({
+                                fontSize: z.number().optional(),
+                                bold: z.boolean().optional(),
+                                textColor: z.string().optional(),
+                            })
+                            .optional(),
+                    })
+                    .optional(),
                 title: z
                     .object({
                         text: z.string().optional(),
@@ -345,6 +359,24 @@ export const visualizationSchema = z.object({
                             .object({
                                 bold: z.boolean().optional(),
                                 textColor: z.string().optional(),
+                            })
+                            .optional(),
+                    })
+                    .optional(),
+                targetLine: z
+                    .object({
+                        value: z.number(),
+                        title: z
+                            .object({
+                                text: z.string().optional(),
+                                fontStyle: z
+                                    .object({
+                                        fontSize: z.number().optional(),
+                                        bold: z.boolean().optional(),
+                                        textColor: z.string().optional(),
+                                        textAlign: z.string().optional(),
+                                    })
+                                    .optional(),
                             })
                             .optional(),
                     })
