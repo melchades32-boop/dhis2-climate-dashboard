@@ -7,12 +7,14 @@ import { useVisualization } from '@/shared/hooks/useVisualization'
 interface KpiVisualizationItemProps {
     id: string
     orgUnitId: string | null
+    defaultPeriodIds?: string[]
     className?: string
 }
 
 export function KpiVisualizationItem({
     id,
     orgUnitId,
+    defaultPeriodIds,
     className,
 }: KpiVisualizationItemProps) {
     const { visualization, loading: vizLoading } = useVisualization({
@@ -21,11 +23,15 @@ export function KpiVisualizationItem({
 
     const params = useMemo(() => {
         const m = new Map<string, string>()
+        const periodIds = defaultPeriodIds ?? []
         if (orgUnitId) {
             m.set('ou', orgUnitId)
         }
+        if (periodIds.length > 0) {
+            m.set('pe', periodIds.join(','))
+        }
         return m
-    }, [orgUnitId])
+    }, [orgUnitId, defaultPeriodIds])
 
     const { analytics, loading: analyticsLoading } = useAnalytics({
         visualizationConfig: visualization ?? null,

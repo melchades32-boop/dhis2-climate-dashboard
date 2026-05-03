@@ -13,6 +13,7 @@ import {
     getChartType,
     getMultiSeriesConfig,
     getSeriesColors,
+    getYAxisOverrides,
     getVisualizationLegendSet,
 } from '@/shared/utils'
 
@@ -36,6 +37,7 @@ export const ChartVisualizer = memo(function ChartVisualizer({
     const legendSet = getVisualizationLegendSet(visualization)
     const { seriesColors, hasCustomColors } = getSeriesColors(visualization)
     const activeColors = hasCustomColors ? seriesColors : colors
+    const targetPlotLines = getYAxisOverrides(visualization)
 
     const ref = useRef<HTMLDivElement>(null)
     const { height = 0 } = useResizeObserver<HTMLDivElement>({
@@ -67,18 +69,23 @@ export const ChartVisualizer = memo(function ChartVisualizer({
                     allowChartTypeChange: false,
                     legendSet: legendSet,
                     multiSeries,
-                    highChartOverrides: visualization.subtitle
-                        ? {
-                              subtitle: {
-                                  text: visualization.subtitle,
-                                  style: {
-                                      color: '#000',
-                                      fontSize: '16px',
-                                      fontWeight: 'bold',
+                    highChartOverrides: {
+                        ...(visualization.subtitle
+                            ? {
+                                  subtitle: {
+                                      text: visualization.subtitle,
+                                      style: {
+                                          color: '#000',
+                                          fontSize: '16px',
+                                          fontWeight: 'bold',
+                                      },
                                   },
-                              },
-                          }
-                        : undefined,
+                              }
+                            : {}),
+                        ...(targetPlotLines
+                            ? { yAxis: targetPlotLines }
+                            : {}),
+                    },
                 }}
             />
         </div>

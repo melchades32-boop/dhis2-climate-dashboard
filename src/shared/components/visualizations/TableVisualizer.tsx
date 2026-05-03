@@ -25,20 +25,13 @@ export interface TableVisualizerProps {
     fullScreen: boolean
 }
 
-/** Return a human-readable label for a dimension (e.g. "LEVEL-3 levels"). */
 function getDimensionLabel(dim: DimensionConfig): string | undefined {
     if (dim.dimension !== 'ou') {
         return undefined
     }
-    const levelItem = dim.items.find((item) => item.id.startsWith('LEVEL-'))
-    if (!levelItem) {
-        return undefined
-    }
-    const name = levelItem.displayName || levelItem.name
-    return name ? `${name} levels` : undefined
+    return 'Organisation Units'
 }
 
-/** Build a Map<dxId, LegendSet> for coloring cells. */
 function buildLegendMap(
     visualization: VisualizationConfig
 ): Map<string, LegendSet> | undefined {
@@ -85,7 +78,6 @@ interface CellStyleParams {
     value: number | undefined
 }
 
-/** Derive cell background / text styles from a legend map + value. */
 function getCellStyle({
     legendMap,
     legendStyle,
@@ -121,7 +113,6 @@ function getCellStyle({
     return {}
 }
 
-/** Format a numeric value for display. */
 function formatValue(value: number | undefined): string {
     if (value === undefined) {
         return ''
@@ -142,15 +133,14 @@ export function TableVisualizer({
     )
     const legendStyle = visualization.legend?.style
 
-    // ----- Resolve dimension ordering from analytics metaData -----
     const getMetaItems = (dimId: string) =>
         (analytics.metaData?.dimensions?.[dimId] ?? []).map((id) => ({
             id,
             name:
                 (
                     analytics.metaData?.items?.[id] as
-                        | { name?: string }
-                        | undefined
+                    | { name?: string }
+                    | undefined
                 )?.name ?? id,
         }))
 
@@ -160,14 +150,10 @@ export function TableVisualizer({
     const innerColItems = colDims[1] ? getMetaItems(colDims[1]) : []
     const hasInnerCol = innerColItems.length > 0
 
-    // Row dimensions — typically just [ou]
     const rowDims = visualization.rows.map((d) => d.dimension)
     const outerRowItems = getMetaItems(rowDims[0] ?? 'ou')
-
-    // The primary "dx" dimension id (used for legend lookup)
     const dxDimId = colDims.find((d) => d === 'dx') ?? colDims[0] ?? 'dx'
 
-    // ----- Build value lookup -----
     const headers = analytics.headers ?? []
     const valueIdx = headers.findIndex((h) => h.name === 'value')
     const valueMap = useMemo(() => {
@@ -187,7 +173,7 @@ export function TableVisualizer({
             }
         }
         return map
-    }, [analytics]) // value map only changes when analytics data changes
+    }, [analytics])
 
     function getValue(dims: Record<string, string>): number | undefined {
         const key = Object.entries(dims)
@@ -197,11 +183,10 @@ export function TableVisualizer({
         return valueMap.get(key)
     }
 
-    // Row label (e.g. "LEVEL-3 levels")
-    const rowLabel =
-        getDimensionLabel(visualization.rows[0]!) ??
-        visualization.rows[0]?.dimension ??
-        ''
+    const rawRowLabel =
+        getDimensionLabel(visualization.rows[0]!) ?? visualization.rows[0]?.dimension ?? ''
+    const HIDDEN_DIMENSION_KEYS = new Set(['pe', 'ou', 'dx', 'co'])
+    const rowLabel = HIDDEN_DIMENSION_KEYS.has(rawRowLabel) ? '' : rawRowLabel
 
     const scrollHeight = fullScreen
         ? 'calc(100dvh - 96px)'
@@ -271,62 +256,62 @@ export function TableVisualizer({
                             {outerColItems.flatMap((outer) => {
                                 const colCells = hasInnerCol
                                     ? innerColItems.map((inner) => {
-                                          const dims: Record<string, string> =
-                                              {
-                                                  [rowDims[0]!]: rowItem.id,
-                                                  [colDims[0]!]: outer.id,
-                                                  [colDims[1]!]: inner.id,
-                                              }
-                                          const value = getValue(dims)
-                                          const dxId =
-                                              dxDimId === colDims[0]
-                                                  ? outer.id
-                                                  : inner.id
-                                          const style = getCellStyle({
-                                              legendMap,
-                                              legendStyle,
-                                              dxId,
-                                              value,
-                                          })
-                                          return (
-                                              <DataTableCell
-                                                  key={`${outer.id}-${inner.id}`}
-                                                  align="center"
-                                                  bordered
-                                                  style={style}
-                                              >
-                                                  {formatValue(value)}
-                                              </DataTableCell>
-                                          )
-                                      })
+                                        const dims: Record<string, string> =
+                                        {
+                                            [rowDims[0]!]: rowItem.id,
+                                            [colDims[0]!]: outer.id,
+                                            [colDims[1]!]: inner.id,
+                                        }
+                                        const value = getValue(dims)
+                                        const dxId =
+                                            dxDimId === colDims[0]
+                                                ? outer.id
+                                                : inner.id
+                                        const style = getCellStyle({
+                                            legendMap,
+                                            legendStyle,
+                                            dxId,
+                                            value,
+                                        })
+                                        return (
+                                            <DataTableCell
+                                                key={`${outer.id}-${inner.id}`}
+                                                align="center"
+                                                bordered
+                                                style={style}
+                                            >
+                                                {formatValue(value)}
+                                            </DataTableCell>
+                                        )
+                                    })
                                     : [
-                                          (() => {
-                                              const dims: Record<
-                                                  string,
-                                                  string
-                                              > = {
-                                                  [rowDims[0]!]: rowItem.id,
-                                                  [colDims[0]!]: outer.id,
-                                              }
-                                              const value = getValue(dims)
-                                              const style = getCellStyle({
-                                                  legendMap,
-                                                  legendStyle,
-                                                  dxId: outer.id,
-                                                  value,
-                                              })
-                                              return (
-                                                  <DataTableCell
-                                                      key={outer.id}
-                                                      align="center"
-                                                      bordered
-                                                      style={style}
-                                                  >
-                                                      {formatValue(value)}
-                                                  </DataTableCell>
-                                              )
-                                          })(),
-                                      ]
+                                        (() => {
+                                            const dims: Record<
+                                                string,
+                                                string
+                                            > = {
+                                                [rowDims[0]!]: rowItem.id,
+                                                [colDims[0]!]: outer.id,
+                                            }
+                                            const value = getValue(dims)
+                                            const style = getCellStyle({
+                                                legendMap,
+                                                legendStyle,
+                                                dxId: outer.id,
+                                                value,
+                                            })
+                                            return (
+                                                <DataTableCell
+                                                    key={outer.id}
+                                                    align="center"
+                                                    bordered
+                                                    style={style}
+                                                >
+                                                    {formatValue(value)}
+                                                </DataTableCell>
+                                            )
+                                        })(),
+                                    ]
                                 return colCells
                             })}
                         </DataTableRow>

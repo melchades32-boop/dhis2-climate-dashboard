@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-04-21T13:03:30.437Z\n"
-"PO-Revision-Date: 2026-04-21T13:03:30.439Z\n"
+"POT-Creation-Date: 2026-04-22T05:29:57.530Z\n"
+"PO-Revision-Date: 2026-04-22T05:29:57.530Z\n"
 
 msgid "No results"
 msgstr "No results"
@@ -67,3 +67,11 @@ msgstr "Full page"
 
 msgid "Filters"
 msgstr "Filters"
+
+msgctxt "Application title"
+msgid "__MANIFEST_APP_TITLE"
+msgstr "FLLOW-M Dashboard"
+
+msgctxt "Application description"
+msgid "__MANIFEST_APP_DESCRIPTION"
+msgstr ""

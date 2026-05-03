@@ -49,7 +49,7 @@ export function getMultiSeriesConfig(
 
     const baseAs: 'column' | 'line' =
         config.type === VisualizationChartType.COLUMN ||
-        config.type === VisualizationChartType.BAR
+            config.type === VisualizationChartType.BAR
             ? 'column'
             : 'line'
 
@@ -152,6 +152,63 @@ export function getChartType(config: VisualizationConfig): ChartType {
             .replace('_', '-') as ChartType
     }
     return config.type.toLowerCase().replace('_', '-') as ChartType
+}
+
+export function getYAxisOverrides(
+    config: VisualizationConfig
+): Highcharts.YAxisOptions | undefined {
+    const rangeAxes = (config.axes ?? []).filter((a) => a.type === 'RANGE')
+    if (rangeAxes.length === 0) {
+        return undefined
+    }
+
+    const primaryAxis = rangeAxes[0]!
+
+    const plotLines = compact(
+        rangeAxes.map((axis) => {
+            if (!axis.targetLine) {
+                return undefined
+            }
+            const { value, title } = axis.targetLine
+            const color = title?.fontStyle?.textColor ?? '#000000'
+            const label = title?.text
+                ? {
+                    text: title.text,
+                    style: {
+                        color,
+                        fontWeight: title.fontStyle?.bold ? 'bold' : 'normal',
+                        fontSize: title.fontStyle?.fontSize
+                            ? `${title.fontStyle.fontSize}px`
+                            : '13px',
+                    },
+                    align: 'center' as const,
+                    y: -8,
+                }
+                : undefined
+            return {
+                value,
+                color,
+                dashStyle: 'Solid' as Highcharts.DashStyleValue,
+                width: 2,
+                zIndex: 5,
+                label,
+            } satisfies Highcharts.YAxisPlotLinesOptions
+        })
+    )
+
+    const overrides: Highcharts.YAxisOptions = {}
+
+    if (primaryAxis.maxValue !== undefined) {
+        overrides.max = primaryAxis.maxValue
+    }
+    if (primaryAxis.minValue !== undefined) {
+        overrides.min = primaryAxis.minValue
+    }
+    if (plotLines.length > 0) {
+        overrides.plotLines = plotLines
+    }
+
+    return Object.keys(overrides).length > 0 ? overrides : undefined
 }
 
 export function getVisualizationLegendSet(

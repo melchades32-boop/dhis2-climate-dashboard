@@ -7,10 +7,11 @@ import { useMapConfig } from '@/shared/hooks/useMapConfig'
 
 interface MapItemProps {
     id: string
+    defaultPeriodIds?: string[]
     className?: string
 }
 
-export function MapItem({ id, className }: MapItemProps) {
+export function MapItem({ id, defaultPeriodIds = [], className }: MapItemProps) {
     const mapRef = useRef<LeafletMap | null>(null)
     const { mapConfig, loading, error } = useMapConfig(id)
     const { paramsMap } = useFilters()
@@ -22,10 +23,11 @@ export function MapItem({ id, className }: MapItemProps) {
         selectedOrgUnits.length > 0
             ? selectedOrgUnits
             : (paramsMap.get('ou')?.split(',') ?? [])
+    const fallbackPeriods = paramsMap.get('pe')?.split(',') ?? defaultPeriodIds
     const activePeriods =
         selectedPeriods.length > 0
             ? selectedPeriods
-            : (paramsMap.get('pe')?.split(',') ?? [])
+            : fallbackPeriods
 
     const orgUnitSelection =
         activeOrgUnits.length > 0

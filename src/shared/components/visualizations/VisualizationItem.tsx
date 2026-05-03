@@ -22,12 +22,14 @@ const YOY_TYPES = new Set([
 
 interface VisualizationItemProps {
     id: string
+    defaultPeriodIds?: string[]
     colors?: string[]
     className?: string
 }
 
 export function VisualizationItem({
     id,
+    defaultPeriodIds = [],
     colors = DEFAULT_COLORS,
     className,
 }: VisualizationItemProps) {
@@ -37,6 +39,10 @@ export function VisualizationItem({
         error,
     } = useVisualization({ visualizationId: id })
     const { paramsMap } = useFilters()
+    const effectiveParamsMap = new Map(paramsMap)
+    if (!effectiveParamsMap.has('pe') && defaultPeriodIds.length > 0) {
+        effectiveParamsMap.set('pe', defaultPeriodIds.join(','))
+    }
     const { chartRef, tableRef } = useVisualizationRefs()
 
     const isYoY =
@@ -51,7 +57,7 @@ export function VisualizationItem({
         selectedPeriods,
     } = useAnalytics({
         visualizationConfig: isYoY ? null : (visualization ?? null),
-        params: paramsMap,
+        params: effectiveParamsMap,
     })
 
     const {
@@ -65,13 +71,21 @@ export function VisualizationItem({
         visualizationConfig: isYoY
             ? (visualization as YearOverYearVisualizationConfig)
             : null,
-        params: paramsMap,
+        params: effectiveParamsMap,
     })
 
     const activeSetOrgUnits = isYoY ? yoySetOrgUnits : setSelectedOrgUnits
     const activeSetPeriods = isYoY ? yoySetPeriods : setSelectedPeriods
-    const activeOrgUnits = isYoY ? yoyOrgUnits : selectedOrgUnits
-    const activePeriods = isYoY ? yoyPeriods : selectedPeriods
+    const activeOrgUnitsRaw = isYoY ? yoyOrgUnits : selectedOrgUnits
+    const activePeriodsRaw = isYoY ? yoyPeriods : selectedPeriods
+    const activeOrgUnits =
+        activeOrgUnitsRaw.length > 0
+            ? activeOrgUnitsRaw
+            : (effectiveParamsMap.get('ou')?.split(',') ?? [])
+    const activePeriods =
+        activePeriodsRaw.length > 0
+            ? activePeriodsRaw
+            : (effectiveParamsMap.get('pe')?.split(',') ?? [])
 
     const loading = vizLoading || (isYoY ? yoyLoading : analyticsLoading)
     const isSingleValue =

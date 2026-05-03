@@ -14,6 +14,7 @@ import {
 import { useForecastData } from './hooks/useForecastData'
 import { useCounties, useStates } from './hooks/useOrgUnitLevel'
 import type { OrgUnit } from './hooks/useOrgUnitLevel'
+import { getPredictionPeriods } from './utils/periods'
 import { DisplayItemContainer } from '@/shared/components/visualizations/DisplayItemContainer'
 import { MapItem } from '@/shared/components/visualizations/MapItem'
 import { PredictionChart } from '@/shared/components/visualizations/PredictionChart'
@@ -27,6 +28,7 @@ function ChapForecastAlerts() {
     const chartRef = useRef<HighchartsReact.RefObject | null>(null)
     const [selectedState, setSelectedState] = useState<OrgUnit | null>(null)
     const [selectedCounty, setSelectedCounty] = useState<OrgUnit | null>(null)
+    const defaultPeriodIds = getPredictionPeriods(1)
 
     const { states: nationalOrgUnits, loading: nationalLoading } =
         useStates(NATIONAL_OU_LEVEL)
@@ -78,6 +80,7 @@ function ChapForecastAlerts() {
                                 key={id}
                                 id={id}
                                 orgUnitId={activeOrgUnit?.id ?? null}
+                                defaultPeriodIds={defaultPeriodIds}
                                 className="h-36"
                             />
                         ))}
@@ -101,14 +104,22 @@ function ChapForecastAlerts() {
                 </div>
             </div>
 
-            {/* Maps row - not affected by org unit sidebar */}
             <div className="grid grid-cols-3 gap-4">
                 {[...MAP_IDS].map((mapId) => (
-                    <MapItem key={mapId} id={mapId} className="h-144" />
+                    <MapItem
+                        key={mapId}
+                        id={mapId}
+                        defaultPeriodIds={defaultPeriodIds}
+                        className="h-144"
+                    />
                 ))}
             </div>
             <div className="grid grid-cols-1 gap-2 md:grid-cols-1">
-                <VisualizationItem id={COUNTY_LEVEL_PIVOT} className="h-160" />
+                <VisualizationItem
+                    id={COUNTY_LEVEL_PIVOT}
+                    defaultPeriodIds={defaultPeriodIds}
+                    className="h-160"
+                />
             </div>
         </div>
     )
