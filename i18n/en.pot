@@ -5,38 +5,73 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-01-03T10:11:58.219Z\n"
-"PO-Revision-Date: 2026-01-03T10:11:58.220Z\n"
+"POT-Creation-Date: 2026-04-22T05:29:57.530Z\n"
+"PO-Revision-Date: 2026-04-22T05:29:57.530Z\n"
 
-msgid "ERROR"
-msgstr "ERROR"
+msgid "No results"
+msgstr "No results"
 
-msgid "Loading..."
-msgstr "Loading..."
+msgid "Country/States"
+msgstr "Country/States"
 
-msgid "Hello {{name}}"
-msgstr "Hello {{name}}"
+msgid "Search states…"
+msgstr "Search states…"
 
-msgid "Welcome to DHIS2 with TypeScript!"
-msgstr "Welcome to DHIS2 with TypeScript!"
+msgid "Counties"
+msgstr "Counties"
 
-msgid "Error"
-msgstr "Error"
+msgid "Select a state to see counties"
+msgstr "Select a state to see counties"
 
-msgid "Error loading the data elements"
-msgstr "Error loading the data elements"
+msgid "Search counties…"
+msgstr "Search counties…"
 
-msgid "ID"
-msgstr "ID"
+msgid "Malaria Forecast — {{name}}"
+msgstr "Malaria Forecast — {{name}}"
 
-msgid "Name"
-msgstr "Name"
+msgid "Location"
+msgstr "Location"
 
-msgid "Domain"
-msgstr "Domain"
+msgid "Period"
+msgstr "Period"
 
-msgid "Value Type"
-msgstr "Value Type"
+msgid "Clear filters"
+msgstr "Clear filters"
 
-msgid "Created by"
-msgstr "Created by"
+msgid "Org unit"
+msgstr "Org unit"
+
+msgid "Visualization Error"
+msgstr "Visualization Error"
+
+msgid "An error occurred while loading the visualization"
+msgstr "An error occurred while loading the visualization"
+
+msgid "Chart"
+msgstr "Chart"
+
+msgid "Table"
+msgstr "Table"
+
+msgid "Quantiles"
+msgstr "Quantiles"
+
+msgid "No data"
+msgstr "No data"
+
+msgid "View"
+msgstr "View"
+
+msgid "Full page"
+msgstr "Full page"
+
+msgid "Filters"
+msgstr "Filters"
+
+msgctxt "Application title"
+msgid "__MANIFEST_APP_TITLE"
+msgstr "FLLOW-M Dashboard"
+
+msgctxt "Application description"
+msgid "__MANIFEST_APP_DESCRIPTION"
+msgstr ""
