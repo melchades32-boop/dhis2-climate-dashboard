@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './modules/index'
 import { Route as CurrentMalariaSituationIndexRouteImport } from './modules/current-malaria-situation/index'
 import { Route as ClimateMalariaRelationshipIndexRouteImport } from './modules/climate-malaria-relationship/index'
 import { Route as ChapForecastAlertsIndexRouteImport } from './modules/chap-forecast-alerts/index'
+import { Route as ChapEvaluationIndexRouteImport } from './modules/chap-evaluation/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,15 +37,22 @@ const ChapForecastAlertsIndexRoute = ChapForecastAlertsIndexRouteImport.update({
   path: '/chap-forecast-alerts/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChapEvaluationIndexRoute = ChapEvaluationIndexRouteImport.update({
+  id: '/chap-evaluation/',
+  path: '/chap-evaluation/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chap-evaluation/': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts/': typeof ChapForecastAlertsIndexRoute
   '/climate-malaria-relationship/': typeof ClimateMalariaRelationshipIndexRoute
   '/current-malaria-situation/': typeof CurrentMalariaSituationIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chap-evaluation': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts': typeof ChapForecastAlertsIndexRoute
   '/climate-malaria-relationship': typeof ClimateMalariaRelationshipIndexRoute
   '/current-malaria-situation': typeof CurrentMalariaSituationIndexRoute
@@ -52,6 +60,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chap-evaluation/': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts/': typeof ChapForecastAlertsIndexRoute
   '/climate-malaria-relationship/': typeof ClimateMalariaRelationshipIndexRoute
   '/current-malaria-situation/': typeof CurrentMalariaSituationIndexRoute
@@ -60,18 +69,21 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/chap-evaluation/'
     | '/chap-forecast-alerts/'
     | '/climate-malaria-relationship/'
     | '/current-malaria-situation/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/chap-evaluation'
     | '/chap-forecast-alerts'
     | '/climate-malaria-relationship'
     | '/current-malaria-situation'
   id:
     | '__root__'
     | '/'
+    | '/chap-evaluation/'
     | '/chap-forecast-alerts/'
     | '/climate-malaria-relationship/'
     | '/current-malaria-situation/'
@@ -79,6 +91,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChapEvaluationIndexRoute: typeof ChapEvaluationIndexRoute
   ChapForecastAlertsIndexRoute: typeof ChapForecastAlertsIndexRoute
   ClimateMalariaRelationshipIndexRoute: typeof ClimateMalariaRelationshipIndexRoute
   CurrentMalariaSituationIndexRoute: typeof CurrentMalariaSituationIndexRoute
@@ -114,11 +127,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChapForecastAlertsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chap-evaluation/': {
+      id: '/chap-evaluation/'
+      path: '/chap-evaluation'
+      fullPath: '/chap-evaluation/'
+      preLoaderRoute: typeof ChapEvaluationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChapEvaluationIndexRoute: ChapEvaluationIndexRoute,
   ChapForecastAlertsIndexRoute: ChapForecastAlertsIndexRoute,
   ClimateMalariaRelationshipIndexRoute: ClimateMalariaRelationshipIndexRoute,
   CurrentMalariaSituationIndexRoute: CurrentMalariaSituationIndexRoute,

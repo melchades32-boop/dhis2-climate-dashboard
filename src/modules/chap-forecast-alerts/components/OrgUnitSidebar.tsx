@@ -8,6 +8,8 @@ interface OrgUnitSidebarProps {
     statesLoading: boolean
     counties: OrgUnit[]
     countiesLoading: boolean
+    allCounties: OrgUnit[]
+    allCountiesLoading: boolean
     selectedStateId: string | null
     onStateSelect: (ou: OrgUnit) => void
     selectedCountyId: string | null
@@ -106,21 +108,26 @@ export function OrgUnitSidebar({
     statesLoading,
     counties,
     countiesLoading,
+    allCounties,
+    allCountiesLoading,
     selectedStateId,
     onStateSelect,
     selectedCountyId,
     onCountySelect,
 }: OrgUnitSidebarProps) {
-    const [stateQuery, setStateQuery] = useState('')
-    const [countyQuery, setCountyQuery] = useState('')
+    const [query, setQuery] = useState('')
+
+    const isSearching = query.trim().length > 0
+    const countyItems = isSearching ? allCounties : counties
+    const countyLoading = isSearching ? allCountiesLoading : countiesLoading
 
     return (
         <div className="flex w-52 shrink-0 flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-sm h-168">
             <SectionHeader label={i18n.t('Country/States')} />
             <SearchInput
-                value={stateQuery}
-                onChange={setStateQuery}
-                placeholder={i18n.t('Search states…')}
+                value={query}
+                onChange={setQuery}
+                placeholder={i18n.t('Search states or counties…')}
             />
             <div className="max-h-64 overflow-y-auto border-b border-gray-200">
                 <OrgUnitList
@@ -128,32 +135,25 @@ export function OrgUnitSidebar({
                     loading={statesLoading}
                     selectedId={selectedStateId}
                     onSelect={onStateSelect}
-                    query={stateQuery}
+                    query={query}
                 />
             </div>
 
             <SectionHeader label={i18n.t('Counties')} />
-            {!selectedStateId ? (
+            {!selectedStateId && !isSearching ? (
                 <p className="px-3 py-3 text-xs text-gray-400 italic">
                     {i18n.t('Select a state to see counties')}
                 </p>
             ) : (
-                <>
-                    <SearchInput
-                        value={countyQuery}
-                        onChange={setCountyQuery}
-                        placeholder={i18n.t('Search counties…')}
+                <div className="flex-1 overflow-y-auto min-h-0">
+                    <OrgUnitList
+                        items={countyItems}
+                        loading={countyLoading}
+                        selectedId={selectedCountyId}
+                        onSelect={onCountySelect}
+                        query={query}
                     />
-                    <div className="flex-1 overflow-y-auto min-h-0">
-                        <OrgUnitList
-                            items={counties}
-                            loading={countiesLoading}
-                            selectedId={selectedCountyId}
-                            onSelect={onCountySelect}
-                            query={countyQuery}
-                        />
-                    </div>
-                </>
+                </div>
             )}
         </div>
     )

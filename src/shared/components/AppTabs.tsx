@@ -7,7 +7,8 @@ const TABS = [
         to: '/climate-malaria-relationship',
         label: '2. Climate & Malaria Relationship',
     },
-    { to: '/chap-forecast-alerts', label: '3. CHAP Forecast & Alerts' },
+    { to: '/chap-evaluation', label: '3. CHAP Evaluation' },
+    { to: '/chap-forecast-alerts', label: '4. CHAP Forecast & Alerts' },
 ] as const
 
 export function AppTabs() {

@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { ChartSelector } from './ChartSelector'
 import { DisplayItemContainer } from './DisplayItemContainer'
 import { SingleValueCard } from './SingleValueCard'
@@ -39,10 +40,14 @@ export function VisualizationItem({
         error,
     } = useVisualization({ visualizationId: id })
     const { paramsMap } = useFilters()
-    const effectiveParamsMap = new Map(paramsMap)
-    if (!effectiveParamsMap.has('pe') && defaultPeriodIds.length > 0) {
-        effectiveParamsMap.set('pe', defaultPeriodIds.join(','))
-    }
+    const defaultPeriodKey = defaultPeriodIds.join(',')
+    const effectiveParamsMap = useMemo(() => {
+        const m = new Map(paramsMap)
+        if (!m.has('pe') && defaultPeriodKey) {
+            m.set('pe', defaultPeriodKey)
+        }
+        return m
+    }, [paramsMap, defaultPeriodKey])
     const { chartRef, tableRef } = useVisualizationRefs()
 
     const isYoY =

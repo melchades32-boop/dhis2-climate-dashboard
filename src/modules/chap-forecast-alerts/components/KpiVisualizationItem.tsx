@@ -21,17 +21,17 @@ export function KpiVisualizationItem({
         visualizationId: id,
     })
 
+    const defaultPeriodKey = (defaultPeriodIds ?? []).join(',')
     const params = useMemo(() => {
         const m = new Map<string, string>()
-        const periodIds = defaultPeriodIds ?? []
         if (orgUnitId) {
             m.set('ou', orgUnitId)
         }
-        if (periodIds.length > 0) {
-            m.set('pe', periodIds.join(','))
+        if (defaultPeriodKey) {
+            m.set('pe', defaultPeriodKey)
         }
         return m
-    }, [orgUnitId, defaultPeriodIds])
+    }, [orgUnitId, defaultPeriodKey])
 
     const { analytics, loading: analyticsLoading } = useAnalytics({
         visualizationConfig: visualization ?? null,

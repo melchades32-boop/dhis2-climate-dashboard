@@ -33,6 +33,7 @@ export const mapSchema = z.object({
             id: z.string(),
             layer: z.string(),
             thematicMapType: z.string().optional(),
+            renderingStrategy: z.enum(['SINGLE', 'TIMELINE']).optional(),
             type: z.string().optional(),
             name: z.string().optional(),
             displayName: z.string().optional(),

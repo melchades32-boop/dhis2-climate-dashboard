@@ -1,18 +1,19 @@
 import i18n from '@dhis2/d2-i18n'
 import { createFileRoute } from '@tanstack/react-router'
 import HighchartsReact from 'highcharts-react-official'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { KpiVisualizationItem } from './components/KpiVisualizationItem'
 import { OrgUnitSidebar } from './components/OrgUnitSidebar'
 import {
     COUNTY_LEVEL_PIVOT,
+    COUNTY_OU_LEVEL,
     KPI_IDS,
     MAP_IDS,
     NATIONAL_OU_LEVEL,
     STATE_OU_LEVEL,
 } from './constants'
 import { useForecastData } from './hooks/useForecastData'
-import { useCounties, useStates } from './hooks/useOrgUnitLevel'
+import { useAllCounties, useCounties, useStates } from './hooks/useOrgUnitLevel'
 import type { OrgUnit } from './hooks/useOrgUnitLevel'
 import { getPredictionPeriods } from './utils/periods'
 import { DisplayItemContainer } from '@/shared/components/visualizations/DisplayItemContainer'
@@ -28,7 +29,7 @@ function ChapForecastAlerts() {
     const chartRef = useRef<HighchartsReact.RefObject | null>(null)
     const [selectedState, setSelectedState] = useState<OrgUnit | null>(null)
     const [selectedCounty, setSelectedCounty] = useState<OrgUnit | null>(null)
-    const defaultPeriodIds = getPredictionPeriods(1)
+    const predictionPeriods = useMemo(() => getPredictionPeriods(3), [])
 
     const { states: nationalOrgUnits, loading: nationalLoading } =
         useStates(NATIONAL_OU_LEVEL)
@@ -36,6 +37,7 @@ function ChapForecastAlerts() {
     const { counties, loading: countiesLoading } = useCounties(
         selectedState?.id ?? null
     )
+    const { allCounties, loading: allCountiesLoading } = useAllCounties(COUNTY_OU_LEVEL)
 
     const allStates = [...nationalOrgUnits, ...states]
     const isNationalSelected = nationalOrgUnits.some(
@@ -67,6 +69,8 @@ function ChapForecastAlerts() {
                     statesLoading={nationalLoading || statesLoading}
                     counties={isNationalSelected ? [] : counties}
                     countiesLoading={!isNationalSelected && countiesLoading}
+                    allCounties={allCounties}
+                    allCountiesLoading={allCountiesLoading}
                     selectedStateId={selectedState?.id ?? null}
                     onStateSelect={handleStateSelect}
                     selectedCountyId={selectedCounty?.id ?? null}
@@ -80,7 +84,7 @@ function ChapForecastAlerts() {
                                 key={id}
                                 id={id}
                                 orgUnitId={activeOrgUnit?.id ?? null}
-                                defaultPeriodIds={defaultPeriodIds}
+                                defaultPeriodIds={predictionPeriods}
                                 className="h-36"
                             />
                         ))}
@@ -104,20 +108,20 @@ function ChapForecastAlerts() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
                 {[...MAP_IDS].map((mapId) => (
                     <MapItem
                         key={mapId}
                         id={mapId}
-                        defaultPeriodIds={defaultPeriodIds}
-                        className="h-144"
+                        defaultPeriodIds={predictionPeriods}
+                        className="h-160"
                     />
                 ))}
             </div>
             <div className="grid grid-cols-1 gap-2 md:grid-cols-1">
                 <VisualizationItem
                     id={COUNTY_LEVEL_PIVOT}
-                    defaultPeriodIds={defaultPeriodIds}
+                    defaultPeriodIds={predictionPeriods}
                     className="h-160"
                 />
             </div>

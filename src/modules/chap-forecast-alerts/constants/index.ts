@@ -33,6 +33,6 @@ export const KPI_IDS = [
     CONFIRMED_COMMUNITY_ID,
 ] as const
 
-export const MAP_IDS = ['cMaYBmfzxqQ', 'LCjVaqtisxZ', 'JlH5zn6F4ft'] as const
+export const MAP_IDS = ['cMaYBmfzxqQ', 'LCjVaqtisxZ'] as const
 
 export const COUNTY_LEVEL_PIVOT = 'YCch5QcyBPY'

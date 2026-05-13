@@ -134,6 +134,14 @@ export const MapVisualizer = memo(function MapVisualizer({
             })
     }, [mapConfig.mapViews])
 
+    const renderingStrategy = useMemo(() => {
+        return head(
+            mapConfig.mapViews.filter((view) =>
+                view.layer.includes(MapLayerType.THEMATIC)
+            )
+        )?.renderingStrategy
+    }, [mapConfig.mapViews])
+
     const activePeriodSelection = useMemo(() => {
         if (periodSelection) {
             return periodSelection
@@ -147,10 +155,17 @@ export const MapVisualizer = memo(function MapVisualizer({
             ?.filters?.map(({ items }) => items.map(({ id }) => id))
             .flat()
 
-        return {
-            periods: !isEmpty(periods) ? periods : ['THIS_YEAR'],
+        const resolvedPeriods: string[] = !isEmpty(periods) ? periods! : ['THIS_YEAR']
+
+        // For SINGLE renderingStrategy (non-timeline), use only the latest period.
+        // Passing all periods as analytics dimensions returns per-period rows which
+        // can't be meaningfully aggregated client-side for indicators.
+        if (renderingStrategy !== 'TIMELINE' && resolvedPeriods.length > 1) {
+            return { periods: [resolvedPeriods[resolvedPeriods.length - 1]] }
         }
-    }, [mapConfig.mapViews, periodSelection])
+
+        return { periods: resolvedPeriods }
+    }, [mapConfig.mapViews, periodSelection, renderingStrategy])
 
     const activeOrgUnitSelection = useMemo(() => {
         if (orgUnitSelection) {
@@ -167,7 +182,6 @@ export const MapVisualizer = memo(function MapVisualizer({
 
         return getOrgUnitSelectionFromIds(orgUnitConfig ?? [])
     }, [mapConfig.mapViews, orgUnitSelection])
-
     return (
         <DHIS2Map
             mapOptions={{
@@ -201,6 +215,7 @@ export const MapVisualizer = memo(function MapVisualizer({
             boundaryLayer={boundaryLayer}
             orgUnitSelection={activeOrgUnitSelection}
             thematicLayers={thematicLayers}
+            renderingStrategy={renderingStrategy}
             analyticsOptions={{ displayProperty: 'SHORTNAME' }}
         />
     )

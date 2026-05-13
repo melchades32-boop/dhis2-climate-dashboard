@@ -5,26 +5,81 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-04-22T05:29:57.530Z\n"
-"PO-Revision-Date: 2026-04-22T05:29:57.530Z\n"
+"POT-Creation-Date: 2026-05-12T08:11:59.657Z\n"
+"PO-Revision-Date: 2026-05-12T08:11:59.657Z\n"
+
+msgid "Evaluation"
+msgstr "Evaluation"
+
+msgid "Real Cases"
+msgstr "Real Cases"
+
+msgid "80% prediction interval"
+msgstr "80% prediction interval"
+
+msgid "50% prediction interval"
+msgstr "50% prediction interval"
+
+msgid "Median prediction"
+msgstr "Median prediction"
+
+msgid "No data available for this org unit"
+msgstr "No data available for this org unit"
 
 msgid "No results"
 msgstr "No results"
 
-msgid "Country/States"
-msgstr "Country/States"
+msgid "No evaluation data available"
+msgstr "No evaluation data available"
 
-msgid "Search states…"
-msgstr "Search states…"
+msgid "No matching counties"
+msgstr "No matching counties"
+
+msgid "States"
+msgstr "States"
+
+msgid "Search states or counties…"
+msgstr "Search states or counties…"
 
 msgid "Counties"
 msgstr "Counties"
 
+msgid "Select a max  of 10 counties"
+msgstr "Select a max  of 10 counties"
+
 msgid "Select a state to see counties"
 msgstr "Select a state to see counties"
 
-msgid "Search counties…"
-msgstr "Search counties…"
+msgid "Split period"
+msgstr "Split period"
+
+msgid "Failed to load evaluations"
+msgstr "Failed to load evaluations"
+
+msgid "Select evaluation…"
+msgstr "Select evaluation…"
+
+msgid "Compare with"
+msgstr "Compare with"
+
+msgid "Select evaluation to compare…"
+msgstr "Select evaluation to compare…"
+
+msgid "Organisation Units"
+msgstr "Organisation Units"
+
+msgid "No org units selected"
+msgstr "No org units selected"
+
+msgid ""
+"Select counties in the sidebar to view evaluation charts. Only counties "
+"with CHAP data are shown."
+msgstr ""
+"Select counties in the sidebar to view evaluation charts. Only counties "
+"with CHAP data are shown."
+
+msgid "Country/States"
+msgstr "Country/States"
 
 msgid "Malaria Forecast — {{name}}"
 msgstr "Malaria Forecast — {{name}}"

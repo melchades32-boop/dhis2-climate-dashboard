@@ -31,6 +31,17 @@ export function useStates(level: number) {
     }
 }
 
+export function useAllCounties(level: number) {
+    const { data, loading } = useDataQuery<{
+        orgUnits: { organisationUnits: OrgUnit[] }
+    }>(statesQuery, { variables: { level } })
+
+    const raw =
+        (data?.orgUnits as unknown as { organisationUnits: OrgUnit[] })
+            ?.organisationUnits ?? []
+    return { allCounties: raw, loading }
+}
+
 const countiesQuery = {
     parent: {
         resource: 'organisationUnits',
