@@ -9,6 +9,7 @@ const TABS = [
     },
     { to: '/chap-evaluation', label: '3. CHAP Evaluation' },
     { to: '/chap-forecast-alerts', label: '4. CHAP Forecast & Alerts' },
+    { to: '/chap-threshold', label: '5. Threshold Analysis' },
 ] as const
 
 export function AppTabs() {

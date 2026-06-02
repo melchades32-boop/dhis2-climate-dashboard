@@ -18,13 +18,8 @@ import { SplitPeriodSlider } from './components/SplitPeriodSlider'
 import { useBacktestOrgUnits } from './hooks/useBacktestOrgUnits'
 import {
     useBacktests,
-    // useCompatibleBacktests,
 } from './hooks/useBacktests'
 import { useEvaluationData } from './hooks/useEvaluationData'
-
-// ---------------------------------------------------------------------------
-// Route
-// ---------------------------------------------------------------------------
 
 export const Route = createFileRoute('/chap-evaluation/')({
     validateSearch: z.object({
@@ -32,10 +27,6 @@ export const Route = createFileRoute('/chap-evaluation/')({
     }),
     component: ChapEvaluation,
 })
-
-// ---------------------------------------------------------------------------
-// Page
-// ----------------------------------------------------------------------------___++
 
 function ChapEvaluation() {
     const { ou } = Route.useSearch()
@@ -46,14 +37,11 @@ function ChapEvaluation() {
     // const [compareBacktestId, setCompareBacktestId] = useState<number | null>(null)
     const [selectedSplitPeriod, setSelectedSplitPeriod] = useState<string | null>(null)
     const [orgUnits, setOrgUnitsState] = useState<OrgUnitOption[]>([])
-
-    // IDs from URL (stable reference via useMemo)
     const urlIds = useMemo(
         () => ou?.split(',').filter(Boolean) ?? [],
         [ou]
     )
 
-    // Resolve display names when IDs are in the URL (e.g. on page load/refresh)
     const resolvedIdsKey = urlIds.join(',')
     const currentIdsKey = orgUnits.map((o) => o.id).join(',')
     const needsResolve = resolvedIdsKey !== '' && resolvedIdsKey !== currentIdsKey
@@ -76,7 +64,6 @@ function ChapEvaluation() {
         }
     }, [resolvedOus])
 
-    // When URL is cleared externally, sync state
     useEffect(() => {
         if (urlIds.length === 0) { setOrgUnitsState([]) }
     }, [urlIds.length])
@@ -91,23 +78,18 @@ function ChapEvaluation() {
         })
     }
 
-    // Backtests
     const { data: backtests, isLoading: backtestsLoading, error: backtestsError } = useBacktests()
 
     const activeBacktestId: number | null =
         selectedBacktestId ?? (backtests && backtests.length > 0 ? Number(backtests[0]!.id) : null)
 
     // const { data: compatibleBacktests } = useCompatibleBacktests(activeBacktestId)
-
-    // CHAP available org units
     const { orgUnitIds: chapOrgUnitIds, loading: chapOrgUnitsLoading } =
         useBacktestOrgUnits(activeBacktestId)
 
-    // Evaluation data
     const { actualCases, evalEntries, orgUnitDataMap, loading: dataLoading } =
         useEvaluationData({ backtestId: activeBacktestId, orgUnits })
 
-    // Union of all split periods across selected org units, sorted ascending
     const allSplitPeriods = useMemo(() => {
         const set = new Set<string>()
         for (const [, meta] of orgUnitDataMap) {
@@ -116,7 +98,6 @@ function ChapEvaluation() {
         return [...set].sort()
     }, [orgUnitDataMap])
 
-    // Auto-fall-back if the selected period disappears (e.g. backtest change)
     const effectiveSplitPeriod = allSplitPeriods.includes(selectedSplitPeriod ?? '')
         ? selectedSplitPeriod
         : (allSplitPeriods[0] ?? null)

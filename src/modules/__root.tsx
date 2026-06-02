@@ -15,7 +15,8 @@ function RootComponent() {
     const pathname = useRouterState({ select: (s) => s.location.pathname })
     const showFilterBar =
         !pathname.startsWith('/chap-forecast-alerts') &&
-        !pathname.startsWith('/chap-evaluation')
+        !pathname.startsWith('/chap-evaluation') &&
+        !pathname.startsWith('/chap-threshold')
 
     return (
         <div className="flex h-full w-full flex-col bg-gray-50">
