@@ -1,4 +1,5 @@
 export * from './useAnalytics'
+export * from './useCurrentUserGroups'
 export * from './useFilters'
 export * from './useMapConfig'
 export * from './useVisualization'

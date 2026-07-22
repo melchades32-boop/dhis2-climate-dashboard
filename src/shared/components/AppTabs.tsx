@@ -1,5 +1,9 @@
 import { Tab, TabBar } from '@dhis2/ui'
 import { useNavigate, useRouterState } from '@tanstack/react-router'
+import { FLLOW_M_ADMIN_USER_GROUP_ID } from '@/shared/constants/accessControl'
+import { useHasUserGroup } from '@/shared/hooks/useCurrentUserGroups'
+
+const RESTRICTED_TABS = new Set(['/chap-evaluation', '/chap-threshold'])
 
 const TABS = [
     { to: '/current-malaria-situation', label: '1. Current Malaria Situation' },
@@ -15,10 +19,15 @@ const TABS = [
 export function AppTabs() {
     const navigate = useNavigate()
     const pathname = useRouterState({ select: (s) => s.location.pathname })
+    const { hasAccess } = useHasUserGroup(FLLOW_M_ADMIN_USER_GROUP_ID)
+
+    const visibleTabs = TABS.filter(
+        ({ to }) => hasAccess || !RESTRICTED_TABS.has(to)
+    )
 
     return (
         <TabBar>
-            {TABS.map(({ to, label }) => (
+            {visibleTabs.map(({ to, label }) => (
                 <Tab
                     key={to}
                     selected={pathname.startsWith(to)}

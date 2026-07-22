@@ -15,7 +15,9 @@ import { useAllCounties, useCounties, useStates } from './hooks/useOrgUnitLevel'
 import type { OrgUnit } from './hooks/useOrgUnitLevel'
 import { useThresholdData } from './hooks/useThresholdData'
 import { OrgUnitSidebar } from '@/modules/chap-forecast-alerts/components/OrgUnitSidebar'
+import { RequireUserGroup } from '@/shared/components/RequireUserGroup'
 import { DisplayItemContainer } from '@/shared/components/visualizations/DisplayItemContainer'
+import { FLLOW_M_ADMIN_USER_GROUP_ID } from '@/shared/constants/accessControl'
 
 export const Route = createFileRoute('/chap-threshold/')({
     validateSearch: z.object({
@@ -61,6 +63,14 @@ function ThresholdTypeToggle({
 }
 
 function ChapThreshold() {
+    return (
+        <RequireUserGroup userGroupId={FLLOW_M_ADMIN_USER_GROUP_ID}>
+            <ChapThresholdContent />
+        </RequireUserGroup>
+    )
+}
+
+function ChapThresholdContent() {
     const { ou } = Route.useSearch()
     const navigate = useNavigate({ from: '/chap-threshold/' })
 

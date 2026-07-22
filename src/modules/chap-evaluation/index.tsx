@@ -16,10 +16,10 @@ import { EvaluationOrgUnitSidebar } from './components/EvaluationOrgUnitSidebar'
 import { OrgUnitChartCard } from './components/OrgUnitChartCard'
 import { SplitPeriodSlider } from './components/SplitPeriodSlider'
 import { useBacktestOrgUnits } from './hooks/useBacktestOrgUnits'
-import {
-    useBacktests,
-} from './hooks/useBacktests'
+import { useBacktests } from './hooks/useBacktests'
 import { useEvaluationData } from './hooks/useEvaluationData'
+import { RequireUserGroup } from '@/shared/components/RequireUserGroup'
+import { FLLOW_M_ADMIN_USER_GROUP_ID } from '@/shared/constants/accessControl'
 
 export const Route = createFileRoute('/chap-evaluation/')({
     validateSearch: z.object({
@@ -29,6 +29,14 @@ export const Route = createFileRoute('/chap-evaluation/')({
 })
 
 function ChapEvaluation() {
+    return (
+        <RequireUserGroup userGroupId={FLLOW_M_ADMIN_USER_GROUP_ID}>
+            <ChapEvaluationContent />
+        </RequireUserGroup>
+    )
+}
+
+function ChapEvaluationContent() {
     const { ou } = Route.useSearch()
     const navigate = useNavigate({ from: '/chap-evaluation/' })
     const { baseUrl } = useConfig()
