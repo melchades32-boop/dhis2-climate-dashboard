@@ -24,6 +24,7 @@ const YOY_TYPES = new Set([
 interface VisualizationItemProps {
     id: string
     defaultPeriodIds?: string[]
+    forcedPeriodIds?: string[]
     colors?: string[]
     className?: string
 }
@@ -31,6 +32,7 @@ interface VisualizationItemProps {
 export function VisualizationItem({
     id,
     defaultPeriodIds = [],
+    forcedPeriodIds = [],
     colors = DEFAULT_COLORS,
     className,
 }: VisualizationItemProps) {
@@ -41,13 +43,16 @@ export function VisualizationItem({
     } = useVisualization({ visualizationId: id })
     const { paramsMap } = useFilters()
     const defaultPeriodKey = defaultPeriodIds.join(',')
+    const forcedPeriodKey = forcedPeriodIds.join(',')
     const effectiveParamsMap = useMemo(() => {
         const m = new Map(paramsMap)
-        if (!m.has('pe') && defaultPeriodKey) {
+        if (forcedPeriodKey) {
+            m.set('pe', forcedPeriodKey)
+        } else if (!m.has('pe') && defaultPeriodKey) {
             m.set('pe', defaultPeriodKey)
         }
         return m
-    }, [paramsMap, defaultPeriodKey])
+    }, [paramsMap, defaultPeriodKey, forcedPeriodKey])
     const { chartRef, tableRef } = useVisualizationRefs()
 
     const isYoY =
