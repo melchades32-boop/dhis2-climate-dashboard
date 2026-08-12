@@ -1,13 +1,60 @@
-// Org-unit hierarchy levels for South Sudan
 export const NATIONAL_OU_LEVEL = 1
 export const STATE_OU_LEVEL = 2
 export const COUNTY_OU_LEVEL = 3
-
-// Actual malaria cases indicator
 export const ACTUAL_CASES_INDICATOR_ID = 'VqICaehXI2W'
+export type ForecastLineDashStyle = 'Solid' | 'ShortDash' | 'Dash' | 'Dot'
 
-// Threshold data element
-export const THRESHOLD_INDICATOR_ID = 'HoTLp4sTUIS'
+export interface ForecastReferenceLine {
+    id: string
+    label: string
+    indicatorId: string
+    color: string
+    dashStyle: ForecastLineDashStyle
+    tableEmphasis: 'alert' | 'neutral'
+}
+
+export const EPIDEMIC_THRESHOLD_LINE: ForecastReferenceLine = {
+    id: 'threshold',
+    label: 'Threshold',
+    indicatorId: 'HoTLp4sTUIS',
+    color: '#dc2626',
+    dashStyle: 'Solid',
+    tableEmphasis: 'alert',
+}
+
+export const FIRST_QUARTILE_LINE: ForecastReferenceLine = {
+    id: '1st-quartile',
+    label: '1st Quartile',
+    indicatorId: 'v81bfitDlJb',
+    color: '#ca8a04',
+    dashStyle: 'ShortDash',
+    tableEmphasis: 'neutral',
+}
+
+/** Every reference line the page fetches, in legend order. */
+export const FORECAST_REFERENCE_LINES: ForecastReferenceLine[] = [
+    EPIDEMIC_THRESHOLD_LINE,
+    FIRST_QUARTILE_LINE,
+]
+
+export interface ForecastChartTab {
+    id: string
+    label: string
+    referenceLines: ForecastReferenceLine[]
+}
+
+export const FORECAST_CHART_TABS: ForecastChartTab[] = [
+    {
+        id: 'chart',
+        label: 'Prediction Chart',
+        referenceLines: [EPIDEMIC_THRESHOLD_LINE],
+    },
+    {
+        id: 'chart-1st-quartile',
+        label: 'Quartile Chart',
+        referenceLines: [EPIDEMIC_THRESHOLD_LINE, FIRST_QUARTILE_LINE],
+    },
+]
 
 // CHAP prediction dataset (ESysCAEIUDy) quantile data elements
 export const QUANTILE_LOW_ID = 'S0Zc8XguF16' // Q10 (0.1)

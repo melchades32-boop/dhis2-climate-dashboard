@@ -9,8 +9,8 @@ import {
     QUANTILE_MEDIAN_ID,
     QUANTILE_MID_HIGH_ID,
     QUANTILE_MID_LOW_ID,
-    THRESHOLD_INDICATOR_ID,
 } from '../constants'
+import type { ForecastReferenceLine } from '../constants'
 import type { ForecastRow } from '../schemas'
 import {
     formatPeriod,
@@ -54,12 +54,12 @@ const predictionsQuery = {
     },
 }
 
-const thresholdQuery = {
+const referenceLinesQuery = {
     result: {
         resource: 'analytics',
         params: (vars: Record<string, unknown>) => ({
             dimension: [
-                `dx:${THRESHOLD_INDICATOR_ID}`,
+                `dx:${(vars.indicatorIds as string[]).join(';')}`,
                 `pe:${(vars.periods as string[]).join(';')}`,
             ],
             filter: `ou:${vars.orgUnitId}`,
@@ -68,7 +68,19 @@ const thresholdQuery = {
     },
 }
 
-export function useForecastData(orgUnitId: string | null) {
+export function useForecastData(
+    orgUnitId: string | null,
+    referenceLines: ForecastReferenceLine[]
+) {
+    const activeReferenceLines = useMemo(
+        () => referenceLines.filter((l) => l.indicatorId !== ''),
+        [referenceLines]
+    )
+    const referenceIndicatorIds = useMemo(
+        () => activeReferenceLines.map((l) => l.indicatorId),
+        [activeReferenceLines]
+    )
+
     const historicalPeriods = useMemo(
         () => getHistoricalPeriods(HISTORICAL_MONTHS),
         []
@@ -95,10 +107,10 @@ export function useForecastData(orgUnitId: string | null) {
     } = useDataQuery<AnalyticsQueryData>(predictionsQuery, { lazy: true })
 
     const {
-        data: threshData,
-        loading: threshLoading,
-        refetch: refetchThresh,
-    } = useDataQuery<AnalyticsQueryData>(thresholdQuery, { lazy: true })
+        data: refData,
+        loading: refLoading,
+        refetch: refetchRefLines,
+    } = useDataQuery<AnalyticsQueryData>(referenceLinesQuery, { lazy: true })
 
     useEffect(() => {
         if (!orgUnitId) {
@@ -106,15 +118,22 @@ export function useForecastData(orgUnitId: string | null) {
         }
         refetchActual({ orgUnitId, periods: historicalPeriods })
         refetchPred({ orgUnitId, periods: predictionPeriods })
-        refetchThresh({ orgUnitId, periods: allPeriods })
+        if (referenceIndicatorIds.length > 0) {
+            refetchRefLines({
+                orgUnitId,
+                periods: allPeriods,
+                indicatorIds: referenceIndicatorIds,
+            })
+        }
     }, [
         orgUnitId,
         historicalPeriods,
         predictionPeriods,
         allPeriods,
+        referenceIndicatorIds,
         refetchActual,
         refetchPred,
-        refetchThresh,
+        refetchRefLines,
     ])
 
     const rows = useMemo<ForecastRow[]>(() => {
@@ -129,11 +148,8 @@ export function useForecastData(orgUnitId: string | null) {
             ? parseAnalyticsRows(predData.result.headers, predData.result.rows)
             : new Map<string, Map<string, number>>()
 
-        const threshMap = threshData?.result
-            ? parseAnalyticsRows(
-                  threshData.result.headers,
-                  threshData.result.rows
-              )
+        const refMap = refData?.result
+            ? parseAnalyticsRows(refData.result.headers, refData.result.rows)
             : new Map<string, Map<string, number>>()
 
         const historicalSet = new Set(historicalPeriods)
@@ -141,8 +157,14 @@ export function useForecastData(orgUnitId: string | null) {
         return allPeriods.map((period): ForecastRow => {
             const actualByDx = actualMap.get(period)
             const predByDx = predMap.get(period)
-            const threshByDx = threshMap.get(period)
+            const refByDx = refMap.get(period)
             const isPrediction = !historicalSet.has(period)
+
+            const referenceValues: Record<string, number | null> = {}
+            for (const line of activeReferenceLines) {
+                referenceValues[line.id] =
+                    refByDx?.get(line.indicatorId) ?? null
+            }
 
             return {
                 period,
@@ -153,15 +175,22 @@ export function useForecastData(orgUnitId: string | null) {
                 quantileMedian: predByDx?.get(QUANTILE_MEDIAN_ID) ?? null,
                 quantileMidHigh: predByDx?.get(QUANTILE_MID_HIGH_ID) ?? null,
                 quantileHigh: predByDx?.get(QUANTILE_HIGH_ID) ?? null,
-                threshold: threshByDx?.get(THRESHOLD_INDICATOR_ID) ?? null,
+                referenceValues,
                 isPrediction,
             }
         })
-    }, [actualData, predData, threshData, allPeriods, historicalPeriods])
+    }, [
+        actualData,
+        predData,
+        refData,
+        allPeriods,
+        historicalPeriods,
+        activeReferenceLines,
+    ])
 
     return {
         rows,
-        loading: actualLoading || predLoading || threshLoading,
+        loading: actualLoading || predLoading || refLoading,
         historicalPeriods,
         predictionPeriods,
         allPeriods,

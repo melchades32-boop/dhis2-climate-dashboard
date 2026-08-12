@@ -28,6 +28,13 @@ export const THRESHOLD_TYPES: ThresholdType[] = [
         description: 'Historical median weekly case count — represents the expected baseline level',
     },
     {
+        id: '1st-quartile',
+        label: '1st Quartile Method',
+        indicatorId: 'v81bfitDlJb',
+        color: '#db2777',
+        description: 'Lower quartile threshold — 25% of historical weekly case counts fall below this value',
+    },
+    {
         id: '3rd-quartile',
         label: ' 3rd Quartile Method ',
         indicatorId: 'yAnvXW6kVNk',

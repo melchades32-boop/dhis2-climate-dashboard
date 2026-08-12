@@ -7,6 +7,8 @@ import { OrgUnitSidebar } from './components/OrgUnitSidebar'
 import {
     COUNTY_LEVEL_PIVOT,
     COUNTY_OU_LEVEL,
+    FORECAST_CHART_TABS,
+    FORECAST_REFERENCE_LINES,
     KPI_IDS,
     MAP_IDS,
     NATIONAL_OU_LEVEL,
@@ -37,7 +39,8 @@ function ChapForecastAlerts() {
     const { counties, loading: countiesLoading } = useCounties(
         selectedState?.id ?? null
     )
-    const { allCounties, loading: allCountiesLoading } = useAllCounties(COUNTY_OU_LEVEL)
+    const { allCounties, loading: allCountiesLoading } =
+        useAllCounties(COUNTY_OU_LEVEL)
 
     const allStates = [...nationalOrgUnits, ...states]
     const isNationalSelected = nationalOrgUnits.some(
@@ -53,7 +56,8 @@ function ChapForecastAlerts() {
     const activeOrgUnit = selectedCounty ?? selectedState
 
     const { rows, loading: forecastLoading } = useForecastData(
-        activeOrgUnit?.id ?? null
+        activeOrgUnit?.id ?? null,
+        FORECAST_REFERENCE_LINES
     )
 
     function handleStateSelect(ou: OrgUnit) {
@@ -102,6 +106,7 @@ function ChapForecastAlerts() {
                                 ref={chartRef}
                                 rows={rows}
                                 orgUnitName={activeOrgUnit?.displayName ?? ''}
+                                chartTabs={FORECAST_CHART_TABS}
                             />
                         </DisplayItemContainer>
                     </div>
