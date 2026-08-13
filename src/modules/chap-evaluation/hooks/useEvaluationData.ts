@@ -34,13 +34,7 @@ function periodToInt(period: string): number {
     return parseInt(period.replace('-', ''), 10)
 }
 
-/**
- * Given the list of all periods that have prediction data for one org unit,
- * derive the set of "split period" starts (= first period of each 3-month window).
- *
- * Strategy: sort all unique prediction periods; every PREDICTION_WINDOW_MONTHS
- * contiguous months form one window.  We return the first period of each window.
- */
+
 function deriveSplitPeriods(predictionPeriods: string[]): string[] {
     const sorted = [...new Set(predictionPeriods)].sort((a, b) =>
         periodToInt(a) - periodToInt(b)
@@ -49,15 +43,11 @@ function deriveSplitPeriods(predictionPeriods: string[]): string[] {
     let i = 0
     while (i < sorted.length) {
         windows.push(sorted[i]!)
-        i += 3 // advance by prediction window size
+        i += 3 
     }
     return windows
 }
 
-/**
- * Build the per-org-unit chart rows for a given split period.
- * `splitPeriod` is the first period of the 3-month prediction window.
- */
 interface BuildRowsArgs {
     orgUnitId: string
     actualCases: ActualCase[]
@@ -82,11 +72,11 @@ export function buildRows({
     // Evaluation entries for this org unit
     const ouEntries = evalEntries.filter((e) => e.orgUnit === orgUnitId)
 
-    // Determine prediction periods for the active split period
+
     let predictionPeriodSet = new Set<string>()
-    if (activeSplitPeriod !== null) {
-        // If entries have explicit split_period, filter by it; otherwise take
-        // the 3 months starting at activeSplitPeriod.
+    if (activeSplitPeriod === null) {
+        predictionPeriodSet = new Set(ouEntries.map((e) => e.period))
+    } else {
         const hasSplitPeriodField = ouEntries.some(
             (e) => e.splitPeriod !== undefined
         )

@@ -106,9 +106,13 @@ function ChapEvaluationContent() {
         return [...set].sort()
     }, [orgUnitDataMap])
 
-    const effectiveSplitPeriod = allSplitPeriods.includes(selectedSplitPeriod ?? '')
-        ? selectedSplitPeriod
-        : (allSplitPeriods[0] ?? null)
+
+    const SHOW_SPLIT_PERIOD_SLIDER = false
+    const effectiveSplitPeriod = !SHOW_SPLIT_PERIOD_SLIDER
+        ? null
+        : allSplitPeriods.includes(selectedSplitPeriod ?? '')
+            ? selectedSplitPeriod
+            : (allSplitPeriods[0] ?? null)
 
     const activeBacktest = backtests?.find((b) => b.id === activeBacktestId)
 
@@ -240,7 +244,7 @@ function ChapEvaluationContent() {
             </div>
 
             {/* Floating bottom split period slider */}
-            {orgUnits.length > 0 && allSplitPeriods.length > 0 && (
+            {SHOW_SPLIT_PERIOD_SLIDER && orgUnits.length > 0 && allSplitPeriods.length > 0 && (
                 <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
                     <div className="w-full max-w-2xl rounded-xl border border-gray-200 bg-white px-6 shadow-[0_8px_32px_rgba(0,0,0,0.14)] pointer-events-auto">
                         <SplitPeriodSlider
