@@ -16,8 +16,18 @@ import { ActualCasesResponseSchema, EvaluationEntrySchema } from '../schemas'
 // ---------------------------------------------------------------------------
 
 const MONTH_LABELS = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
 ]
 
 /** "2024-03" or "202403" → "March 2024" */
@@ -34,16 +44,15 @@ function periodToInt(period: string): number {
     return parseInt(period.replace('-', ''), 10)
 }
 
-
 function deriveSplitPeriods(predictionPeriods: string[]): string[] {
-    const sorted = [...new Set(predictionPeriods)].sort((a, b) =>
-        periodToInt(a) - periodToInt(b)
+    const sorted = [...new Set(predictionPeriods)].sort(
+        (a, b) => periodToInt(a) - periodToInt(b)
     )
     const windows: string[] = []
     let i = 0
     while (i < sorted.length) {
         windows.push(sorted[i]!)
-        i += 3 
+        i += 3
     }
     return windows
 }
@@ -72,7 +81,6 @@ export function buildRows({
     // Evaluation entries for this org unit
     const ouEntries = evalEntries.filter((e) => e.orgUnit === orgUnitId)
 
-
     let predictionPeriodSet = new Set<string>()
     if (activeSplitPeriod === null) {
         predictionPeriodSet = new Set(ouEntries.map((e) => e.period))
@@ -88,10 +96,16 @@ export function buildRows({
             )
         } else {
             // Derive: 3 months from activeSplitPeriod
-            const [startYear, startMon] = activeSplitPeriod.split('-').map(Number)
+            const [startYear, startMon] = activeSplitPeriod
+                .split('-')
+                .map(Number)
             const startDate = new Date(startYear!, (startMon ?? 1) - 1, 1)
             for (let m = 0; m < 3; m++) {
-                const d = new Date(startDate.getFullYear(), startDate.getMonth() + m, 1)
+                const d = new Date(
+                    startDate.getFullYear(),
+                    startDate.getMonth() + m,
+                    1
+                )
                 const period = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
                 predictionPeriodSet.add(period)
             }
@@ -101,7 +115,9 @@ export function buildRows({
     // Quantile values per prediction period
     const quantileByPeriod = new Map<string, Map<number, number>>()
     for (const entry of ouEntries) {
-        if (!predictionPeriodSet.has(entry.period)) { continue }
+        if (!predictionPeriodSet.has(entry.period)) {
+            continue
+        }
         if (!quantileByPeriod.has(entry.period)) {
             quantileByPeriod.set(entry.period, new Map())
         }
@@ -110,10 +126,7 @@ export function buildRows({
 
     // Union all periods, sorted
     const allPeriods = [
-        ...new Set([
-            ...actualByPeriod.keys(),
-            ...predictionPeriodSet,
-        ]),
+        ...new Set([...actualByPeriod.keys(), ...predictionPeriodSet]),
     ].sort((a, b) => periodToInt(a) - periodToInt(b))
 
     return allPeriods.map((period): EvaluationPeriodRow => {
@@ -216,7 +229,9 @@ export function useEvaluationData({
      */
     const orgUnitDataMap = useMemo((): Map<string, OrgUnitEvalData> => {
         const map = new Map<string, OrgUnitEvalData>()
-        if (!actualCases && !evalEntries) { return map }
+        if (!actualCases && !evalEntries) {
+            return map
+        }
 
         const ee = evalEntries ?? []
 
@@ -225,13 +240,13 @@ export function useEvaluationData({
 
             // Derive split periods
             let splitPeriods: string[]
-            const hasSplitField = ouEntries.some((e) => e.splitPeriod !== undefined)
+            const hasSplitField = ouEntries.some(
+                (e) => e.splitPeriod !== undefined
+            )
             if (hasSplitField) {
                 splitPeriods = [
                     ...new Set(
-                        ouEntries
-                            .map((e) => e.splitPeriod)
-                            .filter(Boolean)
+                        ouEntries.map((e) => e.splitPeriod).filter(Boolean)
                     ),
                 ].sort((a, b) => periodToInt(a) - periodToInt(b))
             } else {

@@ -15,6 +15,7 @@ import { Route as ClimateMalariaRelationshipIndexRouteImport } from './modules/c
 import { Route as ChapThresholdIndexRouteImport } from './modules/chap-threshold/index'
 import { Route as ChapForecastAlertsIndexRouteImport } from './modules/chap-forecast-alerts/index'
 import { Route as ChapEvaluationIndexRouteImport } from './modules/chap-evaluation/index'
+import { Route as ChapCompareIndexRouteImport } from './modules/chap-compare/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -48,9 +49,15 @@ const ChapEvaluationIndexRoute = ChapEvaluationIndexRouteImport.update({
   path: '/chap-evaluation/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChapCompareIndexRoute = ChapCompareIndexRouteImport.update({
+  id: '/chap-compare/',
+  path: '/chap-compare/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chap-compare/': typeof ChapCompareIndexRoute
   '/chap-evaluation/': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts/': typeof ChapForecastAlertsIndexRoute
   '/chap-threshold/': typeof ChapThresholdIndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chap-compare': typeof ChapCompareIndexRoute
   '/chap-evaluation': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts': typeof ChapForecastAlertsIndexRoute
   '/chap-threshold': typeof ChapThresholdIndexRoute
@@ -68,6 +76,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chap-compare/': typeof ChapCompareIndexRoute
   '/chap-evaluation/': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts/': typeof ChapForecastAlertsIndexRoute
   '/chap-threshold/': typeof ChapThresholdIndexRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/chap-compare/'
     | '/chap-evaluation/'
     | '/chap-forecast-alerts/'
     | '/chap-threshold/'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/chap-compare'
     | '/chap-evaluation'
     | '/chap-forecast-alerts'
     | '/chap-threshold'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/chap-compare/'
     | '/chap-evaluation/'
     | '/chap-forecast-alerts/'
     | '/chap-threshold/'
@@ -103,6 +115,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChapCompareIndexRoute: typeof ChapCompareIndexRoute
   ChapEvaluationIndexRoute: typeof ChapEvaluationIndexRoute
   ChapForecastAlertsIndexRoute: typeof ChapForecastAlertsIndexRoute
   ChapThresholdIndexRoute: typeof ChapThresholdIndexRoute
@@ -154,11 +167,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChapEvaluationIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chap-compare/': {
+      id: '/chap-compare/'
+      path: '/chap-compare'
+      fullPath: '/chap-compare/'
+      preLoaderRoute: typeof ChapCompareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChapCompareIndexRoute: ChapCompareIndexRoute,
   ChapEvaluationIndexRoute: ChapEvaluationIndexRoute,
   ChapForecastAlertsIndexRoute: ChapForecastAlertsIndexRoute,
   ChapThresholdIndexRoute: ChapThresholdIndexRoute,

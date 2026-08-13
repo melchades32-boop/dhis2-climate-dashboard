@@ -16,6 +16,7 @@ function RootComponent() {
     const showFilterBar =
         !pathname.startsWith('/chap-forecast-alerts') &&
         !pathname.startsWith('/chap-evaluation') &&
+        !pathname.startsWith('/chap-compare') &&
         !pathname.startsWith('/chap-threshold')
 
     return (

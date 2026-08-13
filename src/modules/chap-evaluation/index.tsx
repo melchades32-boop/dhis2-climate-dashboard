@@ -41,18 +41,20 @@ function ChapEvaluationContent() {
     const navigate = useNavigate({ from: '/chap-evaluation/' })
     const { baseUrl } = useConfig()
 
-    const [selectedBacktestId, setSelectedBacktestId] = useState<number | null>(null)
-    // const [compareBacktestId, setCompareBacktestId] = useState<number | null>(null)
-    const [selectedSplitPeriod, setSelectedSplitPeriod] = useState<string | null>(null)
-    const [orgUnits, setOrgUnitsState] = useState<OrgUnitOption[]>([])
-    const urlIds = useMemo(
-        () => ou?.split(',').filter(Boolean) ?? [],
-        [ou]
+    const [selectedBacktestId, setSelectedBacktestId] = useState<number | null>(
+        null
     )
+    // const [compareBacktestId, setCompareBacktestId] = useState<number | null>(null)
+    const [selectedSplitPeriod, setSelectedSplitPeriod] = useState<
+        string | null
+    >(null)
+    const [orgUnits, setOrgUnitsState] = useState<OrgUnitOption[]>([])
+    const urlIds = useMemo(() => ou?.split(',').filter(Boolean) ?? [], [ou])
 
     const resolvedIdsKey = urlIds.join(',')
     const currentIdsKey = orgUnits.map((o) => o.id).join(',')
-    const needsResolve = resolvedIdsKey !== '' && resolvedIdsKey !== currentIdsKey
+    const needsResolve =
+        resolvedIdsKey !== '' && resolvedIdsKey !== currentIdsKey
     const { data: resolvedOus } = useQuery({
         queryKey: ['orgUnits-resolve', resolvedIdsKey],
         enabled: needsResolve,
@@ -60,8 +62,12 @@ function ChapEvaluationContent() {
         queryFn: async (): Promise<OrgUnitOption[]> => {
             const url = `${baseUrl}/api/organisationUnits?filter=id:in:[${urlIds.join(',')}]&fields=id,displayName&paging=false`
             const res = await fetch(url, { credentials: 'include' })
-            if (!res.ok) { throw new Error(`Failed to resolve org units`) }
-            const json = await res.json() as { organisationUnits: OrgUnitOption[] }
+            if (!res.ok) {
+                throw new Error(`Failed to resolve org units`)
+            }
+            const json = (await res.json()) as {
+                organisationUnits: OrgUnitOption[]
+            }
             return json.organisationUnits
         },
     })
@@ -73,7 +79,9 @@ function ChapEvaluationContent() {
     }, [resolvedOus])
 
     useEffect(() => {
-        if (urlIds.length === 0) { setOrgUnitsState([]) }
+        if (urlIds.length === 0) {
+            setOrgUnitsState([])
+        }
     }, [urlIds.length])
 
     function setOrgUnits(units: OrgUnitOption[]) {
@@ -81,38 +89,51 @@ function ChapEvaluationContent() {
         void navigate({
             search: (prev) => ({
                 ...prev,
-                ou: units.length > 0 ? units.map((u) => u.id).join(',') : undefined,
+                ou:
+                    units.length > 0
+                        ? units.map((u) => u.id).join(',')
+                        : undefined,
             }),
         })
     }
 
-    const { data: backtests, isLoading: backtestsLoading, error: backtestsError } = useBacktests()
+    const {
+        data: backtests,
+        isLoading: backtestsLoading,
+        error: backtestsError,
+    } = useBacktests()
 
     const activeBacktestId: number | null =
-        selectedBacktestId ?? (backtests && backtests.length > 0 ? Number(backtests[0]!.id) : null)
+        selectedBacktestId ??
+        (backtests && backtests.length > 0 ? Number(backtests[0]!.id) : null)
 
     // const { data: compatibleBacktests } = useCompatibleBacktests(activeBacktestId)
     const { orgUnitIds: chapOrgUnitIds, loading: chapOrgUnitsLoading } =
         useBacktestOrgUnits(activeBacktestId)
 
-    const { actualCases, evalEntries, orgUnitDataMap, loading: dataLoading } =
-        useEvaluationData({ backtestId: activeBacktestId, orgUnits })
+    const {
+        actualCases,
+        evalEntries,
+        orgUnitDataMap,
+        loading: dataLoading,
+    } = useEvaluationData({ backtestId: activeBacktestId, orgUnits })
 
     const allSplitPeriods = useMemo(() => {
         const set = new Set<string>()
         for (const [, meta] of orgUnitDataMap) {
-            for (const p of meta.splitPeriods) { set.add(p) }
+            for (const p of meta.splitPeriods) {
+                set.add(p)
+            }
         }
         return [...set].sort()
     }, [orgUnitDataMap])
-
 
     const SHOW_SPLIT_PERIOD_SLIDER = false
     const effectiveSplitPeriod = !SHOW_SPLIT_PERIOD_SLIDER
         ? null
         : allSplitPeriods.includes(selectedSplitPeriod ?? '')
-            ? selectedSplitPeriod
-            : (allSplitPeriods[0] ?? null)
+          ? selectedSplitPeriod
+          : (allSplitPeriods[0] ?? null)
 
     const activeBacktest = backtests?.find((b) => b.id === activeBacktestId)
 
@@ -138,8 +159,14 @@ function ChapEvaluationContent() {
                     ) : (
                         <SingleSelect
                             selected={String(activeBacktestId ?? '')}
-                            onChange={({ selected }: { selected: string | undefined }) => {
-                                setSelectedBacktestId(selected ? Number(selected) : null)
+                            onChange={({
+                                selected,
+                            }: {
+                                selected: string | undefined
+                            }) => {
+                                setSelectedBacktestId(
+                                    selected ? Number(selected) : null
+                                )
                                 // setCompareBacktestId(null)
                                 setSelectedSplitPeriod(null)
                                 setOrgUnits([])
@@ -191,10 +218,18 @@ function ChapEvaluationContent() {
                                 <Chip
                                     key={ou.id}
                                     onClick={() =>
-                                        setOrgUnits(orgUnits.filter((o) => o.id !== ou.id))
+                                        setOrgUnits(
+                                            orgUnits.filter(
+                                                (o) => o.id !== ou.id
+                                            )
+                                        )
                                     }
                                     onRemove={() =>
-                                        setOrgUnits(orgUnits.filter((o) => o.id !== ou.id))
+                                        setOrgUnits(
+                                            orgUnits.filter(
+                                                (o) => o.id !== ou.id
+                                            )
+                                        )
                                     }
                                 >
                                     {ou.displayName}
@@ -244,17 +279,19 @@ function ChapEvaluationContent() {
             </div>
 
             {/* Floating bottom split period slider */}
-            {SHOW_SPLIT_PERIOD_SLIDER && orgUnits.length > 0 && allSplitPeriods.length > 0 && (
-                <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-                    <div className="w-full max-w-2xl rounded-xl border border-gray-200 bg-white px-6 shadow-[0_8px_32px_rgba(0,0,0,0.14)] pointer-events-auto">
-                        <SplitPeriodSlider
-                            splitPeriods={allSplitPeriods}
-                            selectedSplitPeriod={effectiveSplitPeriod}
-                            onChange={setSelectedSplitPeriod}
-                        />
+            {SHOW_SPLIT_PERIOD_SLIDER &&
+                orgUnits.length > 0 &&
+                allSplitPeriods.length > 0 && (
+                    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+                        <div className="w-full max-w-2xl rounded-xl border border-gray-200 bg-white px-6 shadow-[0_8px_32px_rgba(0,0,0,0.14)] pointer-events-auto">
+                            <SplitPeriodSlider
+                                splitPeriods={allSplitPeriods}
+                                selectedSplitPeriod={effectiveSplitPeriod}
+                                onChange={setSelectedSplitPeriod}
+                            />
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
         </div>
     )
 }
