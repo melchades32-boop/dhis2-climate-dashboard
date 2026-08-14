@@ -10,15 +10,15 @@ const RESTRICTED_TABS = new Set([
 ])
 
 const TABS = [
-    { to: '/current-malaria-situation', label: '1. Current Malaria Situation' },
+    { to: '/current-malaria-situation', label: 'Current Malaria Situation' },
     {
         to: '/climate-malaria-relationship',
-        label: '2. Climate & Malaria Relationship',
+        label: 'Climate & Malaria Relationship',
     },
-    { to: '/chap-evaluation', label: '3. CHAP Evaluation' },
-    { to: '/chap-compare', label: '4. Compare Evaluations' },
-    { to: '/chap-forecast-alerts', label: '5. CHAP Forecast & Alerts' },
-    { to: '/chap-threshold', label: '6. Threshold Analysis' },
+    { to: '/chap-evaluation', label: 'CHAP Evaluation' },
+    { to: '/chap-compare', label: 'Compare Evaluations' },
+    { to: '/chap-forecast-alerts', label: 'CHAP Forecast & Alerts' },
+    { to: '/chap-threshold', label: 'Threshold Analysis' },
 ] as const
 
 export function AppTabs() {
