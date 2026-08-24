@@ -9,7 +9,18 @@ import { OrgUnitSelection } from '@hisptz/dhis2-utils'
 import { Map as LeafletMap } from 'leaflet'
 import { forEach, head, isEmpty, set } from 'lodash'
 import { memo, useMemo } from 'react'
+import styles from './MapVisualizer.module.css'
 import { MapConfig, MapLayerType } from '@/shared/schemas'
+
+/**
+ * Renders the value of each org unit as a label. Hidden on screen by
+ * `.mapRoot`, revealed by the image export.
+ */
+const VALUE_LABEL_CONFIG = {
+    labels: true,
+    labelFontWeight: 'bold',
+    labelTemplate: '{value}',
+}
 
 export interface MapViewProps {
     setRef: (map: LeafletMap) => void
@@ -85,6 +96,7 @@ export const MapVisualizer = memo(function MapVisualizer({
                         },
                     },
                     name: view.displayName ?? dataItem.name,
+                    labelConfig: VALUE_LABEL_CONFIG,
                     control: {
                         enabled: true,
                         position: 'topright',
@@ -155,7 +167,9 @@ export const MapVisualizer = memo(function MapVisualizer({
             ?.filters?.map(({ items }) => items.map(({ id }) => id))
             .flat()
 
-        const resolvedPeriods: string[] = !isEmpty(periods) ? periods! : ['THIS_YEAR']
+        const resolvedPeriods: string[] = !isEmpty(periods)
+            ? periods!
+            : ['THIS_YEAR']
 
         // For SINGLE renderingStrategy (non-timeline), use only the latest period.
         // Passing all periods as analytics dimensions returns per-period rows which
@@ -183,40 +197,46 @@ export const MapVisualizer = memo(function MapVisualizer({
         return getOrgUnitSelectionFromIds(orgUnitConfig ?? [])
     }, [mapConfig.mapViews, orgUnitSelection])
     return (
-        <DHIS2Map
-            mapOptions={{
-                trackResize: true,
-                zoomControl: true,
-                scrollWheelZoom: false,
-                bounceAtZoomLimits: true,
-                boxZoom: true,
-                zoom: mapConfig.zoom ?? 1,
-                attributionControl: false,
-                style: {
-                    height: '100%',
-                    width: '100%',
-                    background: '#FFFFFF',
-                },
-            }}
-            earthEngineLayers={earthEngineLayers}
-            base={{ enabled: false, url: '', attribution: '' }}
-            controls={[
-                {
-                    type: 'scale',
-                    position: 'bottomleft',
-                    options: { imperial: false, metric: true },
-                },
-                { type: 'compass', position: 'bottomleft' },
-            ]}
-            legends={{ collapsible: true, enabled: true, position: 'topright' }}
-            setRef={setRef}
-            showPeriodTitle
-            periodSelection={activePeriodSelection}
-            boundaryLayer={boundaryLayer}
-            orgUnitSelection={activeOrgUnitSelection}
-            thematicLayers={thematicLayers}
-            renderingStrategy={renderingStrategy}
-            analyticsOptions={{ displayProperty: 'SHORTNAME' }}
-        />
+        <div className={styles.mapRoot}>
+            <DHIS2Map
+                mapOptions={{
+                    trackResize: true,
+                    zoomControl: true,
+                    scrollWheelZoom: false,
+                    bounceAtZoomLimits: true,
+                    boxZoom: true,
+                    zoom: mapConfig.zoom ?? 1,
+                    attributionControl: false,
+                    style: {
+                        height: '100%',
+                        width: '100%',
+                        background: '#FFFFFF',
+                    },
+                }}
+                earthEngineLayers={earthEngineLayers}
+                base={{ enabled: false, url: '', attribution: '' }}
+                controls={[
+                    {
+                        type: 'scale',
+                        position: 'bottomleft',
+                        options: { imperial: false, metric: true },
+                    },
+                    { type: 'compass', position: 'bottomleft' },
+                ]}
+                legends={{
+                    collapsible: true,
+                    enabled: true,
+                    position: 'topright',
+                }}
+                setRef={setRef}
+                showPeriodTitle
+                periodSelection={activePeriodSelection}
+                boundaryLayer={boundaryLayer}
+                orgUnitSelection={activeOrgUnitSelection}
+                thematicLayers={thematicLayers}
+                renderingStrategy={renderingStrategy}
+                analyticsOptions={{ displayProperty: 'SHORTNAME' }}
+            />
+        </div>
     )
 })

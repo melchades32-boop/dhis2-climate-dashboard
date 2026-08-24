@@ -8,9 +8,10 @@ import {
 } from '@dhis2/ui-icons'
 import { OrgUnitSelectorModal, PeriodSelectorModal } from '@hisptz/dhis2-ui'
 import { useRef, useState } from 'react'
+import { DownloadHandlers, DownloadMenuItems } from './DownloadMenuItems'
 import { useFilters } from '@/shared/hooks/useFilters'
 
-interface VisualizationMenuProps {
+interface VisualizationMenuProps extends DownloadHandlers {
     onFullscreen: () => void
     selectedOrgUnits?: string[]
     selectedPeriods?: string[]
@@ -24,6 +25,9 @@ export function VisualizationMenu({
     selectedPeriods: itemPeriods,
     onOrgUnitChange,
     onPeriodChange,
+    onDownloadImage,
+    onDownloadData,
+    imageFormats,
 }: VisualizationMenuProps) {
     const menuRef = useRef<HTMLDivElement>(null)
     const [menuOpen, setMenuOpen] = useState(false)
@@ -102,6 +106,12 @@ export function VisualizationMenu({
                                 setMenuOpen(false)
                                 setPeriodOpen(true)
                             }}
+                        />
+                        <DownloadMenuItems
+                            onSelect={() => setMenuOpen(false)}
+                            onDownloadImage={onDownloadImage}
+                            onDownloadData={onDownloadData}
+                            imageFormats={imageFormats}
                         />
                     </Card>
                 </Popover>

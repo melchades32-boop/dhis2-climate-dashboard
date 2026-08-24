@@ -1,9 +1,19 @@
+import { useAlert } from '@dhis2/app-runtime'
 import i18n from '@dhis2/d2-i18n'
 import { Card, CircularLoader, NoticeBox } from '@dhis2/ui'
-import React, { Suspense, memo } from 'react'
+import { Map as LeafletMap } from 'leaflet'
+import React, { RefObject, Suspense, memo, useCallback } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { VisualizationMenu } from './VisualizationMenu'
 import type { ChartRef, DisplayItemProps } from '@/shared/schemas'
+import {
+    downloadChartImage,
+    downloadMapImage,
+    downloadTableData,
+    ImageFormat,
+    TableDataFormat,
+    TableMatrix,
+} from '@/shared/utils'
 
 const CardLoading = () => (
     <div className="flex h-full items-center justify-center">
@@ -64,6 +74,8 @@ interface DisplayItemContainerProps extends DisplayItemProps {
     selectedPeriods?: string[]
     onOrgUnitChange?: (ids: string[]) => void
     onPeriodChange?: (ids: string[]) => void
+    tableMatrix?: TableMatrix
+    mapRef?: RefObject<LeafletMap | null>
 }
 
 export const DisplayItemContainer = memo<DisplayItemContainerProps>(
@@ -77,8 +89,52 @@ export const DisplayItemContainer = memo<DisplayItemContainerProps>(
         selectedPeriods,
         onOrgUnitChange,
         onPeriodChange,
+        tableMatrix,
+        mapRef,
     }) => {
         const handle = useFullScreenHandle()
+        const { show: showError } = useAlert(
+            ({ message }: { message: string }) => message,
+            { critical: true }
+        )
+
+        const handleDownloadImage = useCallback(
+            (format: ImageFormat) => {
+                const chart = chartRef?.current?.chart
+                const map = mapRef?.current
+                const download = chart
+                    ? downloadChartImage({ chart, format, title })
+                    : map
+                      ? downloadMapImage({ map, title })
+                      : undefined
+
+                if (!download) {
+                    showError({
+                        message: i18n.t('The visualization is not ready yet'),
+                    })
+                    return
+                }
+
+                download.catch((downloadError: Error) => {
+                    showError({
+                        message:
+                            downloadError.message ||
+                            i18n.t('Could not download the visualization'),
+                    })
+                })
+            },
+            [chartRef, mapRef, title, showError]
+        )
+
+        const handleDownloadData = useCallback(
+            (format: TableDataFormat) => {
+                if (!tableMatrix) {
+                    return
+                }
+                downloadTableData({ matrix: tableMatrix, format, title })
+            },
+            [tableMatrix, title]
+        )
 
         function handleFullscreen() {
             if (handle.active) {
@@ -108,6 +164,17 @@ export const DisplayItemContainer = memo<DisplayItemContainerProps>(
                                 selectedPeriods={selectedPeriods}
                                 onOrgUnitChange={onOrgUnitChange}
                                 onPeriodChange={onPeriodChange}
+                                onDownloadImage={
+                                    chartRef || mapRef
+                                        ? handleDownloadImage
+                                        : undefined
+                                }
+                                imageFormats={
+                                    mapRef && !chartRef ? ['png'] : undefined
+                                }
+                                onDownloadData={
+                                    tableMatrix ? handleDownloadData : undefined
+                                }
                             />
                         </div>
                     </div>

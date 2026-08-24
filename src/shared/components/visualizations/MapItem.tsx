@@ -43,6 +43,7 @@ export function MapItem({ id, defaultPeriodIds = [], className }: MapItemProps) 
                 title={mapConfig?.name}
                 loading={loading}
                 error={error}
+                mapRef={mapRef}
                 selectedOrgUnits={selectedOrgUnits}
                 selectedPeriods={selectedPeriods}
                 onOrgUnitChange={setSelectedOrgUnits}

@@ -4,65 +4,38 @@ import { IconChevronDown16, IconChevronUp16 } from '@dhis2/ui-icons'
 import Highcharts from 'highcharts'
 import 'highcharts/highcharts-more'
 import HighchartsReact from 'highcharts-react-official'
-import { forwardRef, useMemo, useRef, useState } from 'react'
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
 import { useResizeObserver } from 'usehooks-ts'
 import { FORECAST_CHART_TABS } from '@/modules/chap-forecast-alerts/constants'
 import type { ForecastChartTab } from '@/modules/chap-forecast-alerts/constants'
 import type { ForecastRow } from '@/modules/chap-forecast-alerts/schemas'
+import {
+    formatForecastValue,
+    getForecastTableRows,
+    type ForecastRowEmphasis,
+} from '@/modules/chap-forecast-alerts/utils/forecastTable'
 import { formatPeriod } from '@/modules/chap-forecast-alerts/utils/periods'
 import type { ChartRef } from '@/shared/schemas'
 
-function fmt(val: number | null): string {
-    if (val === null) {
-        return '—'
+const ROW_CLASSES: Record<ForecastRowEmphasis, { row: string; label: string }> =
+    {
+        none: { row: 'hover:bg-gray-50', label: 'text-gray-700' },
+        median: {
+            row: 'bg-blue-50 hover:bg-blue-100',
+            label: 'font-medium text-blue-700',
+        },
+        alert: {
+            row: 'bg-red-50 hover:bg-red-100',
+            label: 'font-medium text-red-700',
+        },
     }
-    return val.toLocaleString('en-GB', { maximumFractionDigits: 0 })
-}
-
-type TableRowEmphasis = 'none' | 'median' | 'alert'
-
-interface TableRowDef {
-    label: string
-    emphasis: TableRowEmphasis
-    get: (r: ForecastRow) => number | null
-}
-
-const QUANTILE_ROWS: TableRowDef[] = [
-    {
-        label: 'Quantile 0.1 (low)',
-        emphasis: 'none',
-        get: (r) => r.quantileLow,
-    },
-    { label: 'Quantile 0.25', emphasis: 'none', get: (r) => r.quantileMidLow },
-    {
-        label: 'Quantile 0.5 (median)',
-        emphasis: 'median',
-        get: (r) => r.quantileMedian,
-    },
-    { label: 'Quantile 0.75', emphasis: 'none', get: (r) => r.quantileMidHigh },
-    {
-        label: 'Quantile 0.9 (high)',
-        emphasis: 'none',
-        get: (r) => r.quantileHigh,
-    },
-]
-
-const ROW_CLASSES: Record<TableRowEmphasis, { row: string; label: string }> = {
-    none: { row: 'hover:bg-gray-50', label: 'text-gray-700' },
-    median: {
-        row: 'bg-blue-50 hover:bg-blue-100',
-        label: 'font-medium text-blue-700',
-    },
-    alert: {
-        row: 'bg-red-50 hover:bg-red-100',
-        label: 'font-medium text-red-700',
-    },
-}
 
 interface PredictionChartProps {
     rows: ForecastRow[]
     orgUnitName?: string
     chartTabs?: ForecastChartTab[]
+    /** Reports which view is on screen, so the card can offer the right download. */
+    onTableViewChange?: (isTable: boolean) => void
 }
 
 const TABLE_VIEW = 'table'
@@ -85,7 +58,7 @@ export const PredictionChart = forwardRef<
     HighchartsReact.RefObject,
     PredictionChartProps
 >(function PredictionChart(
-    { rows, orgUnitName, chartTabs = FORECAST_CHART_TABS },
+    { rows, orgUnitName, chartTabs = FORECAST_CHART_TABS, onTableViewChange },
     ref
 ) {
     const containerRef = useRef<HTMLDivElement>(null)
@@ -345,24 +318,15 @@ export const PredictionChart = forwardRef<
 
     const predictionRows = rows.filter((r) => r.isPrediction)
 
-    const tableRows = useMemo<TableRowDef[]>(() => {
-        const seen = new Set<string>()
-        const referenceRows: TableRowDef[] = []
-        for (const tab of visibleTabs) {
-            for (const line of tab.referenceLines) {
-                if (seen.has(line.id)) {
-                    continue
-                }
-                seen.add(line.id)
-                referenceRows.push({
-                    label: line.label,
-                    emphasis: line.tableEmphasis === 'alert' ? 'alert' : 'none',
-                    get: (r) => r.referenceValues[line.id] ?? null,
-                })
-            }
-        }
-        return [...QUANTILE_ROWS, ...referenceRows]
-    }, [visibleTabs])
+    const tableRows = useMemo(
+        () => getForecastTableRows(visibleTabs),
+        [visibleTabs]
+    )
+
+    const isTableView = view === TABLE_VIEW
+    useEffect(() => {
+        onTableViewChange?.(isTableView)
+    }, [isTableView, onTableViewChange])
 
     return (
         <div className="flex h-full flex-col">
@@ -470,7 +434,7 @@ export const PredictionChart = forwardRef<
                                             key={r.period}
                                             className="px-4 py-3 text-center tabular-nums text-gray-800"
                                         >
-                                            {fmt(get(r))}
+                                            {formatForecastValue(get(r))}
                                         </td>
                                     ))}
                                 </tr>

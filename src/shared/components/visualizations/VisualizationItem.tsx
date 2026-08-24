@@ -13,6 +13,7 @@ import {
     VisualizationChartType,
     YearOverYearVisualizationConfig,
 } from '@/shared/schemas'
+import { buildPivotModel, buildTableMatrix } from '@/shared/utils'
 
 const DEFAULT_COLORS = ['#125687', '#e53935', '#43a047', '#8e24aa', '#f9a825']
 
@@ -97,6 +98,15 @@ export function VisualizationItem({
             ? activePeriodsRaw
             : (effectiveParamsMap.get('pe')?.split(',') ?? [])
 
+    const isTable = visualization?.type === VisualizationChartType.TABLE
+    const tableMatrix = useMemo(
+        () =>
+            isTable && visualization && analytics
+                ? buildTableMatrix(buildPivotModel({ analytics, visualization }))
+                : undefined,
+        [isTable, visualization, analytics]
+    )
+
     const loading = vizLoading || (isYoY ? yoyLoading : analyticsLoading)
     const isSingleValue =
         visualization?.type === VisualizationChartType.SINGLE_VALUE
@@ -126,7 +136,8 @@ export function VisualizationItem({
                 title={visualization?.displayName}
                 loading={loading}
                 error={error}
-                chartRef={chartRef}
+                chartRef={isTable ? undefined : chartRef}
+                tableMatrix={tableMatrix}
                 selectedOrgUnits={activeOrgUnits}
                 selectedPeriods={activePeriods}
                 onOrgUnitChange={activeSetOrgUnits}

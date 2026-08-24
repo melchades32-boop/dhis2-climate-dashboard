@@ -17,6 +17,7 @@ import {
 import { useForecastData } from './hooks/useForecastData'
 import { useAllCounties, useCounties, useStates } from './hooks/useOrgUnitLevel'
 import type { OrgUnit } from './hooks/useOrgUnitLevel'
+import { buildForecastTableMatrix } from './utils/forecastTable'
 import { getPredictionPeriods } from './utils/periods'
 import { DisplayItemContainer } from '@/shared/components/visualizations/DisplayItemContainer'
 import { MapItem } from '@/shared/components/visualizations/MapItem'
@@ -60,6 +61,13 @@ function ChapForecastAlerts() {
         FORECAST_REFERENCE_LINES
     )
 
+    const [isTableView, setIsTableView] = useState(false)
+    const forecastMatrix = useMemo(
+        () =>
+            buildForecastTableMatrix({ rows, chartTabs: FORECAST_CHART_TABS }),
+        [rows]
+    )
+
     function handleStateSelect(ou: OrgUnit) {
         setSelectedState(ou)
         setSelectedCounty(null)
@@ -99,7 +107,10 @@ function ChapForecastAlerts() {
                             title={i18n.t('Malaria Forecast — {{name}}', {
                                 name: activeOrgUnit?.displayName ?? '…',
                             })}
-                            chartRef={chartRef}
+                            chartRef={isTableView ? undefined : chartRef}
+                            tableMatrix={
+                                isTableView ? forecastMatrix : undefined
+                            }
                             loading={forecastLoading}
                         >
                             <PredictionChart
@@ -107,6 +118,7 @@ function ChapForecastAlerts() {
                                 rows={rows}
                                 orgUnitName={activeOrgUnit?.displayName ?? ''}
                                 chartTabs={FORECAST_CHART_TABS}
+                                onTableViewChange={setIsTableView}
                             />
                         </DisplayItemContainer>
                     </div>
