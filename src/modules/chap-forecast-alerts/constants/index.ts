@@ -31,10 +31,20 @@ export const FIRST_QUARTILE_LINE: ForecastReferenceLine = {
     tableEmphasis: 'neutral',
 }
 
+export const THIRD_QUARTILE_LINE: ForecastReferenceLine = {
+    id: '3rd-quartile',
+    label: '3rd Quartile',
+    indicatorId: 'yAnvXW6kVNk',
+    color: '#7c3aed',
+    dashStyle: 'ShortDash',
+    tableEmphasis: 'neutral',
+}
+
 /** Every reference line the page fetches, in legend order. */
 export const FORECAST_REFERENCE_LINES: ForecastReferenceLine[] = [
     EPIDEMIC_THRESHOLD_LINE,
     FIRST_QUARTILE_LINE,
+    THIRD_QUARTILE_LINE,
 ]
 
 export interface ForecastChartTab {
@@ -52,7 +62,11 @@ export const FORECAST_CHART_TABS: ForecastChartTab[] = [
     {
         id: 'chart-1st-quartile',
         label: 'Quartile Chart',
-        referenceLines: [EPIDEMIC_THRESHOLD_LINE, FIRST_QUARTILE_LINE],
+        referenceLines: [
+            EPIDEMIC_THRESHOLD_LINE,
+            FIRST_QUARTILE_LINE,
+            THIRD_QUARTILE_LINE,
+        ],
     },
 ]
 
