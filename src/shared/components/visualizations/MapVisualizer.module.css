@@ -1,0 +1,8 @@
+.mapRoot {
+    height: 100%;
+    width: 100%;
+}
+
+.mapRoot :global(.label-icon) {
+    display: none;
+}

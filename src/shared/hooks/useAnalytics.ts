@@ -2,7 +2,7 @@ import { useDataQuery } from '@dhis2/app-runtime'
 import { PeriodTypeCategory, PeriodUtility } from '@hisptz/dhis2-utils'
 import { snakeCase } from 'lodash'
 import { DateTime, Interval } from 'luxon'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
     AnalyticsData,
     VisualizationConfig,
@@ -127,36 +127,40 @@ export function useYearOverYearAnalytics({
         analytics: AnalyticsData
     }>(analyticsQuery, { lazy: true })
 
-    const selectedRelativePeriods = Object.entries(
-        visualizationConfig?.relativePeriods || {}
-    )
-        .filter(([, value]) => value === true)
-        .map(([key]) => snakeCase(key).toUpperCase())
-
-    const selectedYears = selectedPeriods.filter(
-        (periodId: string) =>
-            PeriodUtility.getPeriodById(periodId).type.rank === 8 ||
-            periodId.includes('YEAR')
+    const selectedRelativePeriods = useMemo(
+        () =>
+            Object.entries(visualizationConfig?.relativePeriods || {})
+                .filter(([, value]) => value === true)
+                .map(([key]) => snakeCase(key).toUpperCase()),
+        [visualizationConfig]
     )
 
-    const years =
-        selectedYears.length > 0
+    const years = useMemo(() => {
+        const selectedYears = selectedPeriods.filter(
+            (periodId: string) =>
+                PeriodUtility.getPeriodById(periodId).type.rank === 8 ||
+                periodId.includes('YEAR')
+        )
+        return selectedYears.length > 0
             ? selectedYears
-            : visualizationConfig?.yearlySeries || []
+            : (visualizationConfig?.yearlySeries ?? [])
+    }, [selectedPeriods, visualizationConfig])
 
-    const yearsToFetch = normalizeYears(years)
+    const yearsToFetch = useMemo(() => normalizeYears(years), [years])
 
-    const orgUnitFilter = (visualizationConfig?.filters || []).find(
-        (filter) => filter.dimension === 'ou'
-    )
-    const orgUnits = orgUnitFilter
-        ? orgUnitFilter.items.map((item) => item.id)
-        : []
+    const orgUnits = useMemo(() => {
+        const orgUnitFilter = (visualizationConfig?.filters || []).find(
+            (filter) => filter.dimension === 'ou'
+        )
+        return orgUnitFilter ? orgUnitFilter.items.map((item) => item.id) : []
+    }, [visualizationConfig])
 
-    const dataFilter = (visualizationConfig?.filters || []).find(
-        (filter) => filter.dimension === 'dx'
-    )
-    const dx = dataFilter ? dataFilter.items.map((item) => item.id) : []
+    const dx = useMemo(() => {
+        const dataFilter = (visualizationConfig?.filters || []).find(
+            (filter) => filter.dimension === 'dx'
+        )
+        return dataFilter ? dataFilter.items.map((item) => item.id) : []
+    }, [visualizationConfig])
 
     useEffect(() => {
         if (!visualizationConfig) {
@@ -164,7 +168,7 @@ export function useYearOverYearAnalytics({
         }
         async function fetchYearlyAnalytics() {
             const yearData = new Map<string, AnalyticsData>()
-            for (const yearId of yearsToFetch.reverse()) {
+            for (const yearId of yearsToFetch.slice().reverse()) {
                 const date = new Date()
                 const period = PeriodUtility.getPeriodById(yearId)
                 const year = period.start.year
@@ -195,7 +199,7 @@ export function useYearOverYearAnalytics({
         }
 
         fetchYearlyAnalytics()
-    }, [selectedOrgUnits, selectedPeriods, visualizationConfig, years])
+    }, [selectedOrgUnits, selectedPeriods, visualizationConfig, yearsToFetch, orgUnits, dx, selectedRelativePeriods, refetch])
 
     return {
         analytics: data,

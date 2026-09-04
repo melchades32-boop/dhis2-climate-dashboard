@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './modules/__root'
 import { Route as IndexRouteImport } from './modules/index'
 import { Route as CurrentMalariaSituationIndexRouteImport } from './modules/current-malaria-situation/index'
 import { Route as ClimateMalariaRelationshipIndexRouteImport } from './modules/climate-malaria-relationship/index'
+import { Route as ChapThresholdIndexRouteImport } from './modules/chap-threshold/index'
 import { Route as ChapForecastAlertsIndexRouteImport } from './modules/chap-forecast-alerts/index'
+import { Route as ChapEvaluationIndexRouteImport } from './modules/chap-evaluation/index'
+import { Route as ChapCompareIndexRouteImport } from './modules/chap-compare/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -31,28 +34,52 @@ const ClimateMalariaRelationshipIndexRoute =
     path: '/climate-malaria-relationship/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ChapThresholdIndexRoute = ChapThresholdIndexRouteImport.update({
+  id: '/chap-threshold/',
+  path: '/chap-threshold/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChapForecastAlertsIndexRoute = ChapForecastAlertsIndexRouteImport.update({
   id: '/chap-forecast-alerts/',
   path: '/chap-forecast-alerts/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChapEvaluationIndexRoute = ChapEvaluationIndexRouteImport.update({
+  id: '/chap-evaluation/',
+  path: '/chap-evaluation/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChapCompareIndexRoute = ChapCompareIndexRouteImport.update({
+  id: '/chap-compare/',
+  path: '/chap-compare/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chap-compare/': typeof ChapCompareIndexRoute
+  '/chap-evaluation/': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts/': typeof ChapForecastAlertsIndexRoute
+  '/chap-threshold/': typeof ChapThresholdIndexRoute
   '/climate-malaria-relationship/': typeof ClimateMalariaRelationshipIndexRoute
   '/current-malaria-situation/': typeof CurrentMalariaSituationIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chap-compare': typeof ChapCompareIndexRoute
+  '/chap-evaluation': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts': typeof ChapForecastAlertsIndexRoute
+  '/chap-threshold': typeof ChapThresholdIndexRoute
   '/climate-malaria-relationship': typeof ClimateMalariaRelationshipIndexRoute
   '/current-malaria-situation': typeof CurrentMalariaSituationIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chap-compare/': typeof ChapCompareIndexRoute
+  '/chap-evaluation/': typeof ChapEvaluationIndexRoute
   '/chap-forecast-alerts/': typeof ChapForecastAlertsIndexRoute
+  '/chap-threshold/': typeof ChapThresholdIndexRoute
   '/climate-malaria-relationship/': typeof ClimateMalariaRelationshipIndexRoute
   '/current-malaria-situation/': typeof CurrentMalariaSituationIndexRoute
 }
@@ -60,26 +87,38 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/chap-compare/'
+    | '/chap-evaluation/'
     | '/chap-forecast-alerts/'
+    | '/chap-threshold/'
     | '/climate-malaria-relationship/'
     | '/current-malaria-situation/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/chap-compare'
+    | '/chap-evaluation'
     | '/chap-forecast-alerts'
+    | '/chap-threshold'
     | '/climate-malaria-relationship'
     | '/current-malaria-situation'
   id:
     | '__root__'
     | '/'
+    | '/chap-compare/'
+    | '/chap-evaluation/'
     | '/chap-forecast-alerts/'
+    | '/chap-threshold/'
     | '/climate-malaria-relationship/'
     | '/current-malaria-situation/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChapCompareIndexRoute: typeof ChapCompareIndexRoute
+  ChapEvaluationIndexRoute: typeof ChapEvaluationIndexRoute
   ChapForecastAlertsIndexRoute: typeof ChapForecastAlertsIndexRoute
+  ChapThresholdIndexRoute: typeof ChapThresholdIndexRoute
   ClimateMalariaRelationshipIndexRoute: typeof ClimateMalariaRelationshipIndexRoute
   CurrentMalariaSituationIndexRoute: typeof CurrentMalariaSituationIndexRoute
 }
@@ -107,6 +146,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClimateMalariaRelationshipIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chap-threshold/': {
+      id: '/chap-threshold/'
+      path: '/chap-threshold'
+      fullPath: '/chap-threshold/'
+      preLoaderRoute: typeof ChapThresholdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chap-forecast-alerts/': {
       id: '/chap-forecast-alerts/'
       path: '/chap-forecast-alerts'
@@ -114,12 +160,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChapForecastAlertsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chap-evaluation/': {
+      id: '/chap-evaluation/'
+      path: '/chap-evaluation'
+      fullPath: '/chap-evaluation/'
+      preLoaderRoute: typeof ChapEvaluationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chap-compare/': {
+      id: '/chap-compare/'
+      path: '/chap-compare'
+      fullPath: '/chap-compare/'
+      preLoaderRoute: typeof ChapCompareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChapCompareIndexRoute: ChapCompareIndexRoute,
+  ChapEvaluationIndexRoute: ChapEvaluationIndexRoute,
   ChapForecastAlertsIndexRoute: ChapForecastAlertsIndexRoute,
+  ChapThresholdIndexRoute: ChapThresholdIndexRoute,
   ClimateMalariaRelationshipIndexRoute: ClimateMalariaRelationshipIndexRoute,
   CurrentMalariaSituationIndexRoute: CurrentMalariaSituationIndexRoute,
 }

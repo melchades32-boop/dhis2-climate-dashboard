@@ -18,6 +18,6 @@ export interface ForecastRow {
     quantileMedian: number | null
     quantileMidHigh: number | null
     quantileHigh: number | null
-    threshold: number | null
+    referenceValues: Record<string, number | null>
     isPrediction: boolean
 }

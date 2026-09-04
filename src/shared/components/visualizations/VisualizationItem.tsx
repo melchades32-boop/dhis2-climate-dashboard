@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { ChartSelector } from './ChartSelector'
 import { DisplayItemContainer } from './DisplayItemContainer'
 import { SingleValueCard } from './SingleValueCard'
@@ -12,6 +13,7 @@ import {
     VisualizationChartType,
     YearOverYearVisualizationConfig,
 } from '@/shared/schemas'
+import { buildPivotModel, buildTableMatrix } from '@/shared/utils'
 
 const DEFAULT_COLORS = ['#125687', '#e53935', '#43a047', '#8e24aa', '#f9a825']
 
@@ -23,6 +25,7 @@ const YOY_TYPES = new Set([
 interface VisualizationItemProps {
     id: string
     defaultPeriodIds?: string[]
+    forcedPeriodIds?: string[]
     colors?: string[]
     className?: string
 }
@@ -30,6 +33,7 @@ interface VisualizationItemProps {
 export function VisualizationItem({
     id,
     defaultPeriodIds = [],
+    forcedPeriodIds = [],
     colors = DEFAULT_COLORS,
     className,
 }: VisualizationItemProps) {
@@ -39,10 +43,17 @@ export function VisualizationItem({
         error,
     } = useVisualization({ visualizationId: id })
     const { paramsMap } = useFilters()
-    const effectiveParamsMap = new Map(paramsMap)
-    if (!effectiveParamsMap.has('pe') && defaultPeriodIds.length > 0) {
-        effectiveParamsMap.set('pe', defaultPeriodIds.join(','))
-    }
+    const defaultPeriodKey = defaultPeriodIds.join(',')
+    const forcedPeriodKey = forcedPeriodIds.join(',')
+    const effectiveParamsMap = useMemo(() => {
+        const m = new Map(paramsMap)
+        if (forcedPeriodKey) {
+            m.set('pe', forcedPeriodKey)
+        } else if (!m.has('pe') && defaultPeriodKey) {
+            m.set('pe', defaultPeriodKey)
+        }
+        return m
+    }, [paramsMap, defaultPeriodKey, forcedPeriodKey])
     const { chartRef, tableRef } = useVisualizationRefs()
 
     const isYoY =
@@ -87,6 +98,15 @@ export function VisualizationItem({
             ? activePeriodsRaw
             : (effectiveParamsMap.get('pe')?.split(',') ?? [])
 
+    const isTable = visualization?.type === VisualizationChartType.TABLE
+    const tableMatrix = useMemo(
+        () =>
+            isTable && visualization && analytics
+                ? buildTableMatrix(buildPivotModel({ analytics, visualization }))
+                : undefined,
+        [isTable, visualization, analytics]
+    )
+
     const loading = vizLoading || (isYoY ? yoyLoading : analyticsLoading)
     const isSingleValue =
         visualization?.type === VisualizationChartType.SINGLE_VALUE
@@ -116,7 +136,8 @@ export function VisualizationItem({
                 title={visualization?.displayName}
                 loading={loading}
                 error={error}
-                chartRef={chartRef}
+                chartRef={isTable ? undefined : chartRef}
+                tableMatrix={tableMatrix}
                 selectedOrgUnits={activeOrgUnits}
                 selectedPeriods={activePeriods}
                 onOrgUnitChange={activeSetOrgUnits}

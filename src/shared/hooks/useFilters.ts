@@ -1,4 +1,5 @@
 import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useMemo } from 'react'
 
 type FilterSearch = { ou?: string; pe?: string }
 type NavigateFn = (opts: { search: FilterSearch }) => void
@@ -25,13 +26,12 @@ export function useFilters() {
         })
     }
 
-    const paramsMap = new Map<string, string>()
-    if (search.ou) {
-        paramsMap.set('ou', search.ou)
-    }
-    if (search.pe) {
-        paramsMap.set('pe', search.pe)
-    }
+    const paramsMap = useMemo(() => {
+        const m = new Map<string, string>()
+        if (search.ou) { m.set('ou', search.ou) }
+        if (search.pe) { m.set('pe', search.pe) }
+        return m
+    }, [search.ou, search.pe])
 
     function clearFilters() {
         navigate({ search: { ou: undefined, pe: undefined } })
