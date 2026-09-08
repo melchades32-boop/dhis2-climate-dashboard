@@ -1,8 +1,9 @@
 import i18n from '@dhis2/d2-i18n'
 import { Button, Card } from '@dhis2/ui'
 import { IconCalendar16, IconCross16, IconWorld16 } from '@dhis2/ui-icons'
-import { OrgUnitSelectorModal, PeriodSelectorModal } from '@hisptz/dhis2-ui'
+import { PeriodSelectorModal } from '@hisptz/dhis2-ui'
 import { useState } from 'react'
+import { OrgUnitFilterModal } from '@/shared/components/OrgUnitFilterModal'
 import { useFilters } from '@/shared/hooks/useFilters'
 
 function FilterInput({
@@ -75,23 +76,13 @@ export function FilterBarCompact() {
                 )}
 
                 {ouOpen && (
-                    <OrgUnitSelectorModal
-                        value={{
-                            orgUnits: orgUnitIds.map((id) => ({
-                                id,
-                                children: [],
-                            })),
-                        }}
-                        onUpdate={(sel: {
-                            orgUnits?: Array<{ id: string }>
-                        }) => {
-                            setOrgUnitIds(
-                                (sel.orgUnits ?? []).map((ou) => ou.id)
-                            )
+                    <OrgUnitFilterModal
+                        selectedIds={orgUnitIds}
+                        onUpdate={(ids) => {
+                            setOrgUnitIds(ids)
                             setOuOpen(false)
                         }}
                         onClose={() => setOuOpen(false)}
-                        hide={false}
                     />
                 )}
                 {peOpen && (

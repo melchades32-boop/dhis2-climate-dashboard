@@ -1,6 +1,7 @@
 export * from './visualizer'
 export * from './colors'
 export * from './numbers'
+export * from './orgUnits'
 export * from './legends'
 export * from './periods'
 export * from './download'
