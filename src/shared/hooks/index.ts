@@ -1,6 +1,7 @@
 export * from './useAnalytics'
 export * from './useCurrentUserGroups'
 export * from './useFilters'
+export * from './useFitFontSize'
 export * from './useMapConfig'
 export * from './useVisualization'
 export * from './useVisualizationRefs'

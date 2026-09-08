@@ -3,6 +3,7 @@ import { flatten, get, head } from 'lodash'
 import { useMemo } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { VisualizationMenu } from './VisualizationMenu'
+import { useFitFontSize } from '@/shared/hooks/useFitFontSize'
 import type { AnalyticsData, VisualizationConfig } from '@/shared/schemas'
 import {
     getForeground,
@@ -64,8 +65,13 @@ export function SingleValueCard({
     const displayValue = isNaN(value)
         ? '—'
         : isPercentage
-          ? `${numberFormatter(value)}%`
-          : numberFormatter(value)
+            ? `${numberFormatter(value)}%`
+            : numberFormatter(value)
+
+    const { containerRef, textRef, fontSize } = useFitFontSize(
+        loading ? '' : displayValue,
+        { maxSize: 48, minSize: 18 }
+    )
 
     const legendStyle = visualization.legend?.style
     const legendColor = useMemo(
@@ -120,13 +126,18 @@ export function SingleValueCard({
                     )}
                 </div>
 
-                <div className="flex flex-1 items-center justify-center">
+                <div
+                    ref={containerRef}
+                    className="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
+                >
                     {loading ? (
                         <CircularLoader />
                     ) : (
                         <span
-                            className="text-5xl font-bold"
-                            style={{ color: valueColor }}
+                            ref={textRef}
+                            className="whitespace-nowrap font-bold tabular-nums leading-tight"
+                            style={{ color: valueColor, fontSize }}
+                            title={displayValue}
                         >
                             {displayValue}
                         </span>
