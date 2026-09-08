@@ -8,18 +8,15 @@ import {
 import { OrgUnitSelection } from '@hisptz/dhis2-utils'
 import { Map as LeafletMap } from 'leaflet'
 import { forEach, head, isEmpty, set } from 'lodash'
-import { memo, useMemo } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import styles from './MapVisualizer.module.css'
+import { useMapLabelCollision } from '@/shared/hooks/useMapLabelCollision'
 import { MapConfig, MapLayerType } from '@/shared/schemas'
 
-/**
- * Renders the value of each org unit as a label. Hidden on screen by
- * `.mapRoot`, revealed by the image export.
- */
 const VALUE_LABEL_CONFIG = {
     labels: true,
     labelFontWeight: 'bold',
-    labelTemplate: '{value}',
+    labelTemplate: '{name}\n{value}',
 }
 
 export interface MapViewProps {
@@ -70,6 +67,16 @@ export const MapVisualizer = memo(function MapVisualizer({
     periodSelection,
     orgUnitSelection,
 }: MapViewProps) {
+    const [map, setMap] = useState<LeafletMap | null>(null)
+    const handleRef = useCallback(
+        (instance: LeafletMap) => {
+            setMap(instance)
+            setRef(instance)
+        },
+        [setRef]
+    )
+    useMapLabelCollision(map)
+
     const thematicLayers = useMemo(() => {
         return mapConfig.mapViews
             ?.filter((view) => view.layer.includes(MapLayerType.THEMATIC))
@@ -228,7 +235,7 @@ export const MapVisualizer = memo(function MapVisualizer({
                     enabled: true,
                     position: 'topright',
                 }}
-                setRef={setRef}
+                setRef={handleRef}
                 showPeriodTitle
                 periodSelection={activePeriodSelection}
                 boundaryLayer={boundaryLayer}

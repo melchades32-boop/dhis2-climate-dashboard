@@ -14,7 +14,6 @@ function isExcluded(node: HTMLElement): boolean {
     return EXCLUDED_SELECTORS.some((selector) => node.matches?.(selector))
 }
 
-
 function mountExportClone(
     container: HTMLElement,
     width: number,
@@ -36,10 +35,6 @@ function mountExportClone(
         target.getContext('2d')?.drawImage(source, 0, 0)
     })
 
-    clone
-        .querySelectorAll<HTMLElement>('.label-icon')
-        .forEach((label) => label.style.setProperty('display', 'block'))
-
     const host = document.createElement('div')
     host.style.cssText = [
         'position: fixed',
@@ -60,7 +55,6 @@ interface DownloadMapImageParams {
     map: LeafletMap
     title?: string
 }
-
 
 export async function downloadMapImage({ map, title }: DownloadMapImageParams) {
     const container = map.getContainer()
