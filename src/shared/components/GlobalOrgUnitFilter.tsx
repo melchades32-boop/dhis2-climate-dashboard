@@ -1,8 +1,8 @@
 import i18n from '@dhis2/d2-i18n'
 import { Chip } from '@dhis2/ui'
 import { IconWorld16 } from '@dhis2/ui-icons'
-import { OrgUnitSelectorModal } from '@hisptz/dhis2-ui'
 import { useState } from 'react'
+import { OrgUnitFilterModal } from '@/shared/components/OrgUnitFilterModal'
 import { useFilters } from '@/shared/hooks/useFilters'
 
 export function GlobalOrgUnitFilter() {
@@ -10,12 +10,8 @@ export function GlobalOrgUnitFilter() {
     const { orgUnitIds, setOrgUnitIds } = useFilters()
     const isActive = orgUnitIds.length > 0
 
-    const value = {
-        orgUnits: orgUnitIds.map((id) => ({ id, children: [] })),
-    }
-
-    function handleUpdate(selection: { orgUnits?: Array<{ id: string }> }) {
-        setOrgUnitIds((selection.orgUnits ?? []).map((ou) => ou.id))
+    function handleUpdate(ids: string[]) {
+        setOrgUnitIds(ids)
         setOpen(false)
     }
 
@@ -41,11 +37,10 @@ export function GlobalOrgUnitFilter() {
                 </span>
             </Chip>
             {open && (
-                <OrgUnitSelectorModal
-                    value={value}
+                <OrgUnitFilterModal
+                    selectedIds={orgUnitIds}
                     onUpdate={handleUpdate}
                     onClose={() => setOpen(false)}
-                    hide={false}
                 />
             )}
         </>

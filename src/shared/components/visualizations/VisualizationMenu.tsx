@@ -6,9 +6,10 @@ import {
     IconLocation16,
     IconMore16,
 } from '@dhis2/ui-icons'
-import { OrgUnitSelectorModal, PeriodSelectorModal } from '@hisptz/dhis2-ui'
+import { PeriodSelectorModal } from '@hisptz/dhis2-ui'
 import { useRef, useState } from 'react'
 import { DownloadHandlers, DownloadMenuItems } from './DownloadMenuItems'
+import { OrgUnitFilterModal } from '@/shared/components/OrgUnitFilterModal'
 import { useFilters } from '@/shared/hooks/useFilters'
 
 interface VisualizationMenuProps extends DownloadHandlers {
@@ -40,8 +41,7 @@ export function VisualizationMenu({
     const activeOrgUnits = isPerItem ? (itemOrgUnits ?? []) : orgUnitIds
     const activePeriods = isPerItem ? (itemPeriods ?? []) : periodIds
 
-    function handleOuUpdate(selection: { orgUnits?: Array<{ id: string }> }) {
-        const ids = (selection.orgUnits ?? []).map((ou) => ou.id)
+    function handleOuUpdate(ids: string[]) {
         if (isPerItem) {
             onOrgUnitChange?.(ids)
         } else {
@@ -118,16 +118,10 @@ export function VisualizationMenu({
             )}
 
             {ouOpen && (
-                <OrgUnitSelectorModal
-                    value={{
-                        orgUnits: activeOrgUnits.map((id) => ({
-                            id,
-                            children: [],
-                        })),
-                    }}
+                <OrgUnitFilterModal
+                    selectedIds={activeOrgUnits}
                     onUpdate={handleOuUpdate}
                     onClose={() => setOuOpen(false)}
-                    hide={false}
                 />
             )}
 
