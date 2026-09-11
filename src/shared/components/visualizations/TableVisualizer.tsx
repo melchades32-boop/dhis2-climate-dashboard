@@ -8,6 +8,7 @@ import {
 } from '@dhis2/ui'
 import { LegendSet } from '@hisptz/dhis2-utils'
 import { CSSProperties, RefObject, useMemo } from 'react'
+import { useHeaderRowHeight } from '@/shared/hooks/useHeaderRowHeight'
 import { AnalyticsData, VisualizationConfig } from '@/shared/schemas'
 import { buildLegendMap, buildPivotModel, formatValue } from '@/shared/utils'
 import { getForeground } from '@/shared/utils/colors'
@@ -18,6 +19,8 @@ export interface TableVisualizerProps {
     setRef: RefObject<HTMLTableElement | null>
     fullScreen: boolean
 }
+
+const ROW_HEADER_LEFT = '0' as unknown as boolean
 
 interface CellStyleParams {
     legendMap: Map<string, LegendSet> | undefined
@@ -87,14 +90,16 @@ export function TableVisualizer({
         [analytics, visualization]
     )
 
-    const scrollHeight = fullScreen
-        ? 'calc(100dvh - 96px)'
-        : 'calc(100% - 48px)'
+    const { containerRef, height: outerHeaderRowHeight } = useHeaderRowHeight()
+    const innerHeaderTop = `${outerHeaderRowHeight}px`
 
     return (
         <div
-            style={{ overflowY: 'auto', maxHeight: scrollHeight }}
-            className="w-full"
+            ref={containerRef}
+            className={`w-full overflow-auto ${fullScreen
+                    ? 'max-h-[calc(100dvh-96px)]'
+                    : 'max-h-[calc(100%-48px)]'
+                }`}
         >
             <DataTable>
                 <TableHead>
@@ -103,6 +108,7 @@ export function TableVisualizer({
                         <DataTableColumnHeader
                             fixed
                             top="0"
+                            left="0"
                             rowSpan={hasInnerCol ? '2' : '1'}
                         >
                             {rowLabel}
@@ -132,7 +138,7 @@ export function TableVisualizer({
                                         key={`${outer.id}-${inner.id}`}
                                         align="center"
                                         fixed
-                                        top="0"
+                                        top={innerHeaderTop}
                                     >
                                         {inner.name}
                                     </DataTableColumnHeader>
@@ -147,6 +153,7 @@ export function TableVisualizer({
                             <DataTableCell
                                 tag="th"
                                 fixed
+                                left={ROW_HEADER_LEFT}
                                 bordered
                                 className="font-medium whitespace-nowrap"
                             >
